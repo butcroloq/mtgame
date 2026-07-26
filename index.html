@@ -3,31 +3,274 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Game Interaktif</title>
+  <title>KUIZ INTERAKTIF SIR SYAH</title>
+  <!-- Google Fonts untuk font ceria dan kemas -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
-    h1 { text-align: center; color: #333; }
-    .menu { display: flex; flex-wrap: wrap; justify-content: center; }
-    .card {
-      background: white; border: 1px solid #ddd; border-radius: 8px;
-      width: 200px; margin: 10px; padding: 15px; text-align: center;
-      box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+    :root {
+      --primary-color: #4A00E0;
+      --secondary-color: #8E2DE2;
+      --accent-color: #FFD166;
+      --card-bg: #FFFFFF;
+      --text-dark: #2D3748;
     }
-    .card a { text-decoration: none; color: #007BFF; font-weight: bold; display: block; }
-    .card a:hover { color: #0056b3; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px 15px;
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Container Utama */
+    .container {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    /* Header & Tajuk */
+    h1 {
+      font-family: 'Fredoka', sans-serif;
+      text-align: center;
+      color: #FFFFFF;
+      font-size: 2.3rem;
+      margin-bottom: 25px;
+      text-shadow: 2px 4px 10px rgba(0,0,0,0.2);
+      letter-spacing: 1px;
+    }
+
+    /* Seksyen Maskot Sir Syah & Ucapan */
+    .mascot-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      margin-bottom: 30px;
+      backdrop-filter: blur(5px);
+    }
+
+    .mascot-avatar {
+      flex-shrink: 0;
+      width: 100px;
+      height: 100px;
+    }
+
+    .speech-bubble {
+      position: relative;
+      background: #F0F4FF;
+      border: 2px solid #D0E0FF;
+      border-radius: 15px;
+      padding: 15px 20px;
+      color: #334155;
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    /* Ekor kotak dialog ucapan */
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 8px 12px 8px 0;
+      border-style: solid;
+      border-color: transparent #D0E0FF transparent transparent;
+    }
+
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      left: -9px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 7px 10px 7px 0;
+      border-style: solid;
+      border-color: transparent #F0F4FF transparent transparent;
+    }
+
+    .speech-bubble strong {
+      color: var(--primary-color);
+      font-size: 1.05rem;
+    }
+
+    /* Grid Pilihan Kuiz */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    /* Reka Bentuk Kad */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px 15px;
+      text-align: center;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #FF6B6B, #FFD93D);
+    }
+
+    .card:nth-child(even)::before {
+      background: linear-gradient(90deg, #4E65FF, #92EFFD);
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 22px rgba(0,0,0,0.2);
+    }
+
+    .card-icon {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-family: 'Fredoka', sans-serif;
+      color: #1A202C;
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+
+    .card-sub {
+      font-size: 0.78rem;
+      color: #718096;
+      margin-top: 4px;
+    }
+
+    /* Responsive untuk Skrin Telefon */
+    @media (max-width: 600px) {
+      h1 { font-size: 1.8rem; }
+      
+      .mascot-section {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .speech-bubble::before,
+      .speech-bubble::after {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Portal Game Interaktif Matematik</h1>
-  <div class="menu">
-    <div class="card"><a href="MT TAHUN 2.html">Matematik Tahun 2</a></div>
-    <div class="card"><a href="MT TAHUN 3.html">Matematik Tahun 3</a></div>
-    <div class="card"><a href="MT TAHUN 4.html">Matematik Tahun 4</a></div>
-    <div class="card"><a href="MT TAHUN 5.html">Matematik Tahun 5</a></div>
-    <!-- Nama fail ini disesuaikan mengikut gambar repo GitHub korang -->
-    <div class="card"><a href="Mt tahun 6.html">Matematik Tahun 6</a></div>
-    <div class="card"><a href="KUIZ PERPULUHAN.html">Kuiz Perpuluhan</a></div>
-    <div class="card"><a href="KUIZ UKURAN.html">Kuiz Ukuran</a></div>
+
+  <div class="container">
+    <!-- TAJUK UTAMA -->
+    <h1>KUIZ INTERAKTIF SIR SYAH</h1>
+
+    <!-- MASKOT SIR SYAH & UCAPAN -->
+    <div class="mascot-section">
+      <!-- Maskot SVG Cg Lelaki (Sir Syah) -->
+      <svg class="mascot-avatar" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <!-- Bulatan Belakang Maskot -->
+        <circle cx="60" cy="60" r="55" fill="#E2E8F0" />
+        <!-- Badan / Baju Kemeja & Tali Leher -->
+        <path d="M 30 110 Q 60 85 90 110 Z" fill="#2B6CB0" />
+        <polygon points="60,90 55,105 60,115 65,105" fill="#E53E3E" />
+        <!-- Leher -->
+        <rect x="52" y="70" width="16" height="15" fill="#FBD38D" rx="3" />
+        <!-- Muka Sir Syah -->
+        <circle cx="60" cy="55" r="28" fill="#FBD38D" />
+        <!-- Rambut -->
+        <path d="M 32 50 C 30 30 45 22 60 22 C 75 22 90 30 88 50 C 82 35 70 30 60 30 C 50 30 38 35 32 50 Z" fill="#2D3748" />
+        <!-- Cermin Mata -->
+        <rect x="42" y="48" width="14" height="10" rx="3" fill="none" stroke="#1A202C" stroke-width="2.5" />
+        <rect x="64" y="48" width="14" height="10" rx="3" fill="none" stroke="#1A202C" stroke-width="2.5" />
+        <line x1="56" y1="53" x2="64" y2="53" stroke="#1A202C" stroke-width="2.5" />
+        <!-- Mata & Senyuman -->
+        <circle cx="49" cy="53" r="2" fill="#1A202C" />
+        <circle cx="71" cy="53" r="2" fill="#1A202C" />
+        <path d="M 52 64 Q 60 72 68 64" fill="none" stroke="#1A202C" stroke-width="2.5" stroke-linecap="round" />
+      </svg>
+
+      <!-- Kotak Ucapan -->
+      <div class="speech-bubble">
+        <strong>Hai murid-murid! 👋</strong><br>
+        Selamat datang ke portal matematik Sir Syah. Pilih kuiz di bawah dan mari kita uji kebolehan Matematik korang hari ini! Semoga berjaya! 🚀✨
+      </div>
+    </div>
+
+    <!-- SENARAI KUIZ INTERAKTIF -->
+    <div class="menu-grid">
+      
+      <a href="MT TAHUN 2.html" class="card">
+        <div class="card-icon">🎈</div>
+        <div class="card-title">Matematik Tahun 2</div>
+        <div class="card-sub">Klik untuk mula kuiz</div>
+      </a>
+
+      <a href="MT TAHUN 3.html" class="card">
+        <div class="card-icon">🚀</div>
+        <div class="card-title">Matematik Tahun 3</div>
+        <div class="card-sub">Klik untuk mula kuiz</div>
+      </a>
+
+      <a href="MT TAHUN 4.html" class="card">
+        <div class="card-icon">🌟</div>
+        <div class="card-title">Matematik Tahun 4</div>
+        <div class="card-sub">Klik me Mula kuiz</div>
+      </a>
+
+      <a href="MT TAHUN 5.html" class="card">
+        <div class="card-icon">🏆</div>
+        <div class="card-title">Matematik Tahun 5</div>
+        <div class="card-sub">Klik untuk mula kuiz</div>
+      </a>
+
+      <!-- Pautan mengikut nama fail 'Mt tahun 6.html' di GitHub korang -->
+      <a href="Mt tahun 6.html" class="card">
+        <div class="card-icon">🎓</div>
+        <div class="card-title">Matematik Tahun 6</div>
+        <div class="card-sub">Klik untuk mula kuiz</div>
+      </a>
+
+      <a href="KUIZ PERPULUHAN.html" class="card">
+        <div class="card-icon">🔢</div>
+        <div class="card-title">Kuiz Perpuluhan</div>
+        <div class="card-sub">Klik untuk mula kuiz</div>
+      </a>
+
+      <a href="KUIZ UKURAN.html" class="card">
+        <div class="card-icon">📏</div>
+        <div class="card-title">Kuiz Ukuran</div>
+        <div class="card-sub">Klik untuk mula kuiz</div>
+      </a>
+
+    </div>
   </div>
+
 </body>
 </html>

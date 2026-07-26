@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuiz Matematik Tahun 5 - PUBG Battle Pass Edition</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0e14;
+            color: #e2e8f0;
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
+                linear-gradient(to bottom, #090c10, #0d1117);
+            background-attachment: fixed;
+        }
+        .pubg-font {
+            font-family: 'Teko', sans-serif;
+            letter-spacing: 1px;
+        }
+        .pubg-card {
+            background: linear-gradient(145deg, rgba(23, 29, 41, 0.95), rgba(15, 20, 28, 0.98));
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+        .pubg-btn {
+            background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+            color: #000;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pubg-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+            background: linear-gradient(180deg, #fbbf24 0%, #ea580c 100%);
+        }
+        .pubg-btn:active {
+            transform: translateY(1px);
+        }
+        .pubg-btn-dark {
+            background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #f59e0b;
+        }
+        .pubg-btn-dark:hover {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border-color: #f59e0b;
+        }
+        .pubg-badge {
+            clip-path: polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d97706;
+            border-radius: 3px;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableCertificate, #printableCertificate * {
+                visibility: visible;
+            }
+            #printableCertificate {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-100 antialiased selection:bg-amber-500 selection:text-black">
+
+    <!-- HEADER BAR -->
+    <header class="bg-slate-950/80 backdrop-blur-md border-b border-amber-500/30 sticky top-0 z-40 px-4 py-3 shadow-lg">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-3">
+            <!-- Brand / Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showView('view-menu')">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-amber-600 to-yellow-400 p-0.5 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                    <div class="w-full h-full bg-slate-900 rounded-[7px] flex items-center justify-center">
+                        <span class="text-amber-500 font-bold text-xl pubg-font">M5</span>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xl tracking-wider text-amber-400 pubg-font uppercase leading-none">PUBG MATH V</h1>
+                    <p class="text-[10px] text-slate-400 font-semibold tracking-widest uppercase">Misi Matematik Tahun 5</p>
+                </div>
+            </div>
+
+            <!-- Player Profile & Star Rewards -->
+            <div class="flex items-center gap-3">
+                <!-- Name Tag -->
+                <div class="bg-slate-900/90 border border-slate-700/80 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                    <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <span id="headerPlayerName" class="font-bold text-xs md:text-sm text-slate-200">Pemain</span>
+                    <button onclick="openEditNameModal()" class="text-xs text-amber-500 hover:underline ml-1">✏️</button>
+                </div>
+
+                <!-- Stars Counter -->
+                <div class="bg-amber-500/10 border border-amber-500/40 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                    <span class="text-amber-400 text-lg">⭐</span>
+                    <span id="headerTotalStars" class="font-extrabold text-amber-400 text-sm md:text-base pubg-font">0 / 36</span>
+                </div>
+
+                <!-- Sound FX Toggle -->
+                <button id="soundToggleBtn" onclick="toggleAudio()" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-amber-400 border border-slate-700 transition" title="Kesan Suara">
+                    🔊
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-5xl mx-auto w-full px-4 py-6 flex-grow">
+
+        <!-- ==================== VIEW 1: MAIN MENU ==================== -->
+        <section id="view-menu" class="space-y-6">
+            <!-- PUBG Mascot Greeting Banner -->
+            <div class="pubg-card rounded-2xl p-6 relative overflow-hidden border-l-4 border-l-amber-500">
+                <div class="flex flex-col md:flex-row items-center gap-5 relative z-10">
+                    <!-- Mascot Helmet Graphic -->
+                    <div class="relative group">
+                        <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500 via-yellow-600 to-amber-700 p-1 shadow-xl flex items-center justify-center text-4xl">
+                            🪖
+                        </div>
+                        <span class="absolute -bottom-2 -right-2 bg-emerald-500 text-black text-[10px] font-black px-2 py-0.5 rounded-full border border-black uppercase tracking-wider">ONLINE</span>
+                    </div>
+
+                    <!-- Mascot Speech -->
+                    <div class="flex-1 text-center md:text-left">
+                        <div class="inline-block bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2.5 py-0.5 rounded text-xs font-bold uppercase mb-1">
+                            Kapten Math PUBG
+                        </div>
+                        <h2 id="mascotGreeting" class="text-xl md:text-2xl font-black text-white pubg-font tracking-wide">
+                            SIAP TERTIB, SQUAD LEADER!
+                        </h2>
+                        <p class="text-xs md:text-sm text-slate-300 mt-1">
+                            Pilih Tema dan Unit di bawah untuk melengkapkan Misi Pertempuran Matematik Tahun 5. Setiap unit mengandungi 20 soalan dirawakkan (Aras Rendah, Sederhana & Susah)!
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2">
+                        <button onclick="showCertificateView()" class="pubg-btn-dark px-4 py-2.5 rounded-xl font-bold text-xs uppercase flex items-center gap-1.5 shadow">
+                            📜 Sijil
+                        </button>
+                        <button onclick="confirmResetProgress()" class="px-3 py-2.5 bg-red-950/40 hover:bg-red-900/60 border border-red-800/50 text-red-300 rounded-xl font-bold text-xs transition" title="Semula">
+                            🔄
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MENU TEMA (SEKOLAH / BUKU TEKS) -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <h3 class="text-xl font-extrabold text-amber-400 pubg-font tracking-wider flex items-center gap-2">
+                        <span>🎯</span> ZON TEMA BUKU TEKS
+                    </h3>
+                    <span class="text-xs text-slate-400">12 Unit • 240 Soalan Kaboom!</span>
+                </div>
+
+                <!-- Themes Accordion / Grid -->
+                <div id="themesListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Dynamic Theme Cards Rendered via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 2: QUIZ INTERACTIVE ==================== -->
+        <section id="view-quiz" class="hidden space-y-6">
+            <!-- Top HUD Bar -->
+            <div class="pubg-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+                <button onclick="confirmExitQuiz()" class="text-xs font-extrabold uppercase px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition flex items-center gap-1">
+                    ⬅️ Terlepas Misi
+                </button>
+                <div class="flex items-center gap-3">
+                    <span id="quizUnitBadge" class="bg-amber-500/20 text-amber-400 border border-amber-500/40 text-xs font-bold px-3 py-1 rounded-full pubg-font tracking-wide">
+                        UNIT 1
+                    </span>
+                    <span id="quizScoreHUD" class="text-sm font-extrabold text-emerald-400 font-mono">
+                        Skor: 0 / 20
+                    </span>
+                </div>
+            </div>
+
+            <!-- Health/Progress Bar -->
+            <div class="space-y-1">
+                <div class="flex justify-between text-xs font-bold text-slate-400">
+                    <span id="quizProgressText">Soalan 1 daripada 20</span>
+                    <span id="quizProgressPercent">0%</span>
+                </div>
+                <div class="w-full h-3 bg-slate-900 rounded-full border border-slate-800 overflow-hidden p-0.5">
+                    <div id="quizProgressBar" class="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-300" style="width: 5%;"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="pubg-card rounded-2xl p-6 md:p-8 space-y-6 relative border-t-2 border-t-amber-500">
+                <!-- Level Badge -->
+                <div class="flex justify-between items-center">
+                    <span id="questionTaxonomyBadge" class="text-[11px] font-black uppercase px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-amber-400">
+                        ARAS: RENDAH
+                    </span>
+                    <span class="text-slate-500 text-xs">PUBG Battle MCQ</span>
+                </div>
+
+                <!-- Question Text -->
+                <div class="text-slate-100 font-semibold text-lg md:text-xl leading-relaxed min-h-[80px]" id="quizQuestionText">
+                    Loading question...
+                </div>
+
+                <!-- Options Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="quizOptionsContainer">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <!-- Mascot Feedback & Tactical Explanation Box (Modal/Inline) -->
+            <div id="mascotFeedbackBox" class="hidden pubg-card rounded-2xl p-5 border-l-4 border-l-emerald-500 space-y-3 transition-all duration-300">
+                <div class="flex items-start gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-2xl shrink-0">
+                        🪖
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                            <h4 id="feedbackTitle" class="font-bold text-base pubg-font tracking-wide text-emerald-400">
+                                TEPAT SEPERTI DIPERINTAHKAN!
+                            </h4>
+                            <span id="feedbackStatusIcon" class="text-xl">✅</span>
+                        </div>
+                        <p id="feedbackExplanation" class="text-xs md:text-sm text-slate-300 mt-1 leading-relaxed">
+                            Penjelasan taktikal...
+                        </p>
+                    </div>
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button id="btnNextQuestion" onclick="nextQuestion()" class="pubg-btn px-6 py-2.5 rounded-xl font-bold text-xs uppercase flex items-center gap-2">
+                        Seterusnya ➔
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 3: UNIT RESULT ==================== -->
+        <section id="view-result" class="hidden space-y-6 text-center">
+            <div class="pubg-card rounded-2xl p-8 max-w-xl mx-auto space-y-6 border-t-4 border-t-amber-500 relative overflow-hidden">
+                <!-- Winner Banner Header -->
+                <div id="resultBannerBg" class="bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 p-4 rounded-xl border border-amber-500/30">
+                    <h2 id="resultTitle" class="text-3xl md:text-4xl font-black text-amber-400 pubg-font tracking-wider uppercase">
+                        WINNER WINNER CHICKEN DINNER!
+                    </h2>
+                    <p id="resultSubtitle" class="text-xs md:text-sm text-slate-300 mt-1">
+                        Misi Unit Berjaya Diselesaikan!
+                    </p>
+                </div>
+
+                <!-- Stars Earned Animation Container -->
+                <div class="space-y-2">
+                    <div class="text-xs text-slate-400 uppercase font-bold tracking-widest">Bintang Diberikan</div>
+                    <div id="resultStarsDisplay" class="text-4xl md:text-5xl flex justify-center gap-2">
+                        ⭐ ⭐ ⭐
+                    </div>
+                </div>
+
+                <!-- Score Details Grid -->
+                <div class="grid grid-cols-3 gap-2 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase">Jumlah Soalan</div>
+                        <div class="text-lg font-bold text-white font-mono">20</div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase">Betul</div>
+                        <div id="resultCorrectCount" class="text-lg font-bold text-emerald-400 font-mono">20</div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase">Peratusan</div>
+                        <div id="resultAccuracy" class="text-lg font-bold text-amber-400 font-mono">100%</div>
+                    </div>
+                </div>
+
+                <!-- Mascot Comment -->
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 text-left flex items-center gap-3">
+                    <span class="text-3xl">🪖</span>
+                    <p id="resultMascotMessage" class="text-xs text-slate-300 leading-relaxed">
+                        Syabas, Squad Leader!
+                    </p>
+                </div>
+
+                <!-- Result Actions -->
+                <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                    <button onclick="retryCurrentUnit()" class="pubg-btn-dark px-5 py-3 rounded-xl font-bold text-xs uppercase">
+                        🔄 Cuba Lagi (Soalan Dirawak)
+                    </button>
+                    <button onclick="showView('view-menu')" class="pubg-btn px-6 py-3 rounded-xl font-bold text-xs uppercase">
+                        🏠 Ke Menu Utama
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 4: CERTIFICATE OF ACHIEVEMENT ==================== -->
+        <section id="view-certificate" class="hidden space-y-6">
+            <!-- Back & Print Bar -->
+            <div class="flex justify-between items-center no-print">
+                <button onclick="showView('view-menu')" class="pubg-btn-dark px-4 py-2 rounded-xl text-xs font-bold uppercase">
+                    ⬅️ Kembali Ke Menu
+                </button>
+                <button onclick="window.print()" class="pubg-btn px-5 py-2 rounded-xl text-xs font-bold uppercase flex items-center gap-1.5 shadow-lg">
+                    🖨️ Cetak / Simpan Sijil
+                </button>
+            </div>
+
+            <!-- Certificate Printable Card -->
+            <div id="printableCertificate" class="bg-slate-950 border-8 border-amber-500/80 p-8 md:p-12 rounded-2xl relative overflow-hidden shadow-2xl text-center space-y-6 max-w-3xl mx-auto">
+                <!-- Inner Decorative Border -->
+                <div class="absolute inset-2 border-2 border-dashed border-amber-500/30 rounded-xl pointer-events-none"></div>
+
+                <!-- Certificate Header -->
+                <div class="space-y-2 relative z-10">
+                    <div class="text-amber-500 text-4xl mb-1">🎖️</div>
+                    <span class="bg-amber-500/20 text-amber-400 text-xs font-bold px-4 py-1 rounded-full border border-amber-500/40 uppercase tracking-widest">
+                        SIJIL KEJAYAAN MATEMATIK KSSR SEMAKAN TAHUN 5
+                    </span>
+                    <h2 class="text-3xl md:text-5xl font-black text-white pubg-font tracking-wider uppercase pt-2">
+                        PENAKLUK MATEMATIK TAHUN 5
+                    </h2>
+                    <p class="text-xs text-slate-400">PUBG BATTLE PASS EDITION • SIJIL RASMI</p>
+                </div>
+
+                <!-- Recipient Info -->
+                <div class="py-4 space-y-2 border-y border-amber-500/20 my-4 relative z-10">
+                    <p class="text-xs text-slate-400 uppercase tracking-widest">Sijil Ini Dengan Bangganya Dianugerahkan Kepada:</p>
+                    <h3 id="certPlayerName" class="text-2xl md:text-4xl font-extrabold text-amber-400 font-mono uppercase underline decoration-amber-500 underline-offset-8">
+                        NAMA MURID
+                    </h3>
+                    <p class="text-xs text-slate-300 max-w-lg mx-auto pt-2">
+                        Kerana telah berjaya menyempurnakan kesemua cabaran soalan Matematik Tahun 5 merangkumi 12 Unit Utama dengan pencapaian yang sungguh cemerlang.
+                    </p>
+                </div>
+
+                <!-- Stats Badges -->
+                <div class="grid grid-cols-3 gap-3 max-w-md mx-auto relative z-10">
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                        <div class="text-[10px] text-slate-400 uppercase">Jumlah Bintang</div>
+                        <div id="certTotalStars" class="text-xl font-bold text-amber-400 font-mono">0 ⭐</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                        <div class="text-[10px] text-slate-400 uppercase">Pangkat PUBG</div>
+                        <div id="certRank" class="text-xl font-bold text-emerald-400 pubg-font">REKRUT</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                        <div class="text-[10px] text-slate-400 uppercase">Tarikh</div>
+                        <div id="certDate" class="text-xs font-bold text-slate-200 mt-1">2026-07-26</div>
+                    </div>
+                </div>
+
+                <!-- Certificate Seal / Footer -->
+                <div class="pt-6 flex justify-between items-end text-left relative z-10">
+                    <div>
+                        <div class="text-[10px] text-slate-500 font-mono">ID VERIFIKASI SIJIL:</div>
+                        <div id="certUUID" class="text-xs font-mono text-amber-500/80">PUBG-M5-882910</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="w-24 border-b border-amber-500/50 mb-1"></div>
+                        <div class="text-xs font-bold text-slate-300">Kapten Math PUBG</div>
+                        <div class="text-[10px] text-slate-500">Ketua Pegawai Taktikal</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: EDIT NAME -->
+    <div id="nameModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="pubg-card rounded-2xl p-6 max-w-md w-full space-y-4 border-amber-500">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold text-amber-400 pubg-font tracking-wide">
+                    🪖 IDENTITI SQUAD LEADER
+                </h3>
+                <button onclick="closeNameModal()" class="text-slate-400 hover:text-white">✕</button>
+            </div>
+            <p class="text-xs text-slate-300">
+                Sila masukkan nama murid/pemain untuk rekod Battle Pass & Sijil Kejayaan:
+            </p>
+            <input type="text" id="inputPlayerName" placeholder="Contoh: Muhammad Ammar" class="w-full bg-slate-900 border border-amber-500/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400 font-semibold" maxlength="30">
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="savePlayerName()" class="pubg-btn px-5 py-2.5 rounded-xl text-xs font-bold uppercase w-full">
+                    Simpan Identiti 💾
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIRMATION -->
+    <div id="confirmModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="pubg-card rounded-2xl p-6 max-w-sm w-full space-y-4 border-red-500/50 text-center">
+            <div class="text-3xl">⚠️</div>
+            <h3 id="confirmModalTitle" class="text-lg font-bold text-white">Adakah anda pasti?</h3>
+            <p id="confirmModalText" class="text-xs text-slate-300">Tindakan ini tidak boleh dibatalkan.</p>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeConfirmModal(false)" class="pubg-btn-dark w-1/2 py-2 rounded-xl text-xs font-bold uppercase">Batal</button>
+                <button id="confirmModalYesBtn" class="bg-red-600 hover:bg-red-500 text-white font-bold w-1/2 py-2 rounded-xl text-xs uppercase shadow">Ya, Teruskan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 border-t border-slate-800/80 py-4 px-4 text-center text-xs text-slate-500 space-y-1 no-print">
+        <p>Aplikasi Kuiz Interaktif Matematik Tahun 5 • Format KSSR Semakan Buku Teks</p>
+        <p class="text-[10px] text-slate-600">Direka khas untuk pembelajaran interaktif digital sekolah rendah.</p>
+    </footer>
+
+    <script>
+        // WEB AUDIO SYNTHESIZER
+        let audioEnabled = true;
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    audioCtx = new AudioContext();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            if (!audioEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'correct') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const noteOsc = ctx.createOscillator();
+                        const noteGain = ctx.createGain();
+                        noteOsc.connect(noteGain);
+                        noteGain.connect(ctx.destination);
+                        
+                        noteOsc.type = 'triangle';
+                        noteOsc.frequency.setValueAtTime(freq, now + idx * 0.07);
+                        noteGain.gain.setValueAtTime(0.2, now + idx * 0.07);
+                        noteGain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.15);
+                        
+                        noteOsc.start(now + idx * 0.07);
+                        noteOsc.stop(now + idx * 0.07 + 0.15);
+                    });
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.exponentialRampToValueAtTime(110, now + 0.25);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'win') {
+                    const melody = [
+                        {f: 523.25, d: 0.15, t: 0},
+                        {f: 659.25, d: 0.15, t: 0.15},
+                        {f: 783.99, d: 0.15, t: 0.30},
+                        {f: 1046.50, d: 0.40, t: 0.45}
+                    ];
+                    melody.forEach(item => {
+                        const vOsc = ctx.createOscillator();
+                        const vGain = ctx.createGain();
+                        vOsc.connect(vGain);
+                        vOsc.connect(ctx.destination);
+                        vOsc.type = 'square';
+                        vOsc.frequency.setValueAtTime(item.f, now + item.t);
+                        vGain.gain.setValueAtTime(0.15, now + item.t);
+                        vGain.gain.exponentialRampToValueAtTime(0.001, now + item.t + item.d);
+                        vOsc.start(now + item.t);
+                        vOsc.stop(now + item.t + item.d);
+                    });
+                }
+            } catch (e) {
+                console.log("Audio synth error", e);
+            }
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const btn = document.getElementById('soundToggleBtn');
+            btn.innerText = audioEnabled ? '🔊' : '🔇';
+            if (audioEnabled) playSound('click');
+        }
+
+        // ALGORITMA SHUFFLE (FISHER-YATES)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // DATA KUIZ DENGAN 20 SOALAN PER UNIT (10 RENDAH, 5 SEDERHANA, 5 SUSAH)
+        const QUIZ_DATA = [
+            {
+                themeId: 1,
+                themeTitle: "Nombor Bulat dan Operasi",
+                themeIcon: "🔢",
+                units: [
+                    {
+                        unitId: 1,
+                        title: "Unit 1: Nombor Bulat (Kenal Nombor hingga Bundar)",
+                        questions: [
+                            // 10 ARAS RENDAH
+                            { q: "Nyatakan nilai tempat bagi digit 7 dalam nombor 674 210.", options: ["Ratus", "Ribu", "Puluh Ribu", "Ratus Ribu"], answer: 2, tax: "Rendah", exp: "Digit 7 berada di kedudukan puluh ribu." },
+                            { q: "Tuliskan 'Lapan ratus empat ribu dua ratus lima' dalam angka.", options: ["840 205", "804 205", "804 250", "840 250"], answer: 1, tax: "Rendah", exp: "Lapan ratus empat ribu = 804 000, dua ratus lima = 205. Angkanya: 804 205." },
+                            { q: "Apakah nilai digit bagi 5 dalam nombor 851 204?", options: ["500", "5 000", "50 000", "500 000"], answer: 2, tax: "Rendah", exp: "Digit 5 berada di nilai tempat puluh ribu, maka nilai digitnya ialah 50 000." },
+                            { q: "Antara nombor berikut, yang manakah nombor perdana?", options: ["27", "33", "37", "49"], answer: 2, tax: "Rendah", exp: "37 hanya boleh dibahagi dengan 1 dan dirinya sendiri." },
+                            { q: "Antara berikut, yang manakah BUKAN nombor perdana?", options: ["13", "19", "23", "25"], answer: 3, tax: "Rendah", exp: "25 boleh dibahagi dengan 1, 5, dan 25." },
+                            { q: "Sebutkan nombor 502 019 dalam perkataan.", options: ["Lima ratus dua ribu sembilan belas", "Lima ratus dua puluh ribu sembilan belas", "Lima puluh dua ribu sembilan belas", "Lima ratus dua ribu sembilan ratus"], answer: 0, tax: "Rendah", exp: "502 019 = Lima ratus dua ribu sembilan belas." },
+                            { q: "Apakah cerakinan mengikut nilai tempat bagi 312 045?", options: ["3 ratus ribu + 1 puluh ribu + 2 ribu + 0 ratus + 4 puluh + 5 sa", "300 000 + 10 000 + 2 000 + 40 + 5", "3 ratus + 1 puluh + 2 ribu + 45 sa", "31 puluh ribu + 204 puluh + 5 sa"], answer: 0, tax: "Rendah", exp: "Cerakinan nilai tempat mesti menyertakan perkataan nilai tempatnya." },
+                            { q: "Cerakinkan 704 182 mengikut nilai digit.", options: ["700 000 + 4 000 + 100 + 80 + 2", "70 000 + 4 000 + 100 + 80 + 2", "700 000 + 40 000 + 100 + 82", "7 + 0 + 4 + 1 + 8 + 2"], answer: 0, tax: "Rendah", exp: "Cerakinan nilai digit menambah nilai nombor setiap digit." },
+                            { q: "Bandingkan dua nombor: 450 120 dan 405 210. Manakah yang LEBIH BESAR?", options: ["450 120", "405 210", "Kedua-duanya sama", "Tidak boleh dibanding"], answer: 0, tax: "Rendah", exp: "450 120 lebih besar daripada 405 210 kerana nilai puluh ribunya lebih tinggi." },
+                            { q: "Susun nombor berikut dalam tertib menaik: 120 040, 102 400, 102 040, 120 400.", options: ["102 040, 102 400, 120 040, 120 400", "120 400, 120 040, 102 400, 102 040", "102 400, 102 040, 120 040, 120 400", "102 040, 120 040, 102 400, 120 400"], answer: 0, tax: "Rendah", exp: "Tertib menaik bermula dari nombor terkecil ke terbesar." },
+                            // 5 ARAS SEDERHANA
+                            { q: "Bundarkan 538 692 kepada ratus ribu terdekat.", options: ["500 000", "530 000", "540 000", "600 000"], answer: 0, tax: "Sederhana", exp: "Digit di puluh ribu ialah 3 (kurang daripada 5), maka kekal 500 000." },
+                            { q: "Bundarkan 782 450 kepada puluh ribu terdekat.", options: ["780 000", "790 000", "800 000", "782 000"], answer: 0, tax: "Sederhana", exp: "Digit di ribu ialah 2 (kurang daripada 5), dibundarkan kepada 780 000." },
+                            { q: "Antara nombor berikut, yang manakah menjadi 450 000 apabila dibundarkan kepada ribu terdekat?", options: ["449 850", "450 600", "444 900", "451 200"], answer: 0, tax: "Sederhana", exp: "449 850 mempunyai digit 8 di ratus, maka dibundarkan ke atas menjadi 450 000." },
+                            { q: "Lengkapkan pola nombor menaik sepuluh-sepuluh ribu: 210 000, 220 000, [   ], 240 000.", options: ["230 000", "225 000", "235 000", "250 000"], answer: 0, tax: "Sederhana", exp: "220 000 + 10 000 = 230 000." },
+                            { q: "Apakah pola bagi urutan nombor berikut: 850 000, 849 000, 848 000, 847 000?", options: ["Menurun seribu-seribu", "Menaik seribu-seribu", "Menurun sepuluh-sepuluh", "Menurun seratus-seratus"], answer: 0, tax: "Sederhana", exp: "Nilai nombor berkurang sebanyak 1 000 bagi setiap langkah." },
+                            // 5 ARAS SUSAH
+                            { q: "Berapakah jumlah kesemua nombor perdana di antara 10 dan 20?", options: ["60", "56", "62", "52"], answer: 0, tax: "Susah", exp: "Nombor perdana antara 10 dan 20 ialah 11, 13, 17, dan 19. Jumlah: 11 + 13 + 17 + 19 = 60." },
+                            { q: "Bentuk nombor 6-digit TERBESAR daripada digit-digit 3, 0, 8, 5, 1, 9 tanpa ulangan.", options: ["985 310", "985 130", "985 301", "895 310"], answer: 0, tax: "Susah", exp: "Susun digit dari terbesar ke terkecil: 9, 8, 5, 3, 1, 0 -> 985 310." },
+                            { q: "Cari beza antara nilai digit 8 dan nilai digit 2 dalam nombor 842 150.", options: ["798 000", "780 000", "800 000", "840 000"], answer: 0, tax: "Susah", exp: "Nilai digit 8 = 800 000, Nilai digit 2 = 2 000. Beza = 800 000 - 2 000 = 798 000." },
+                            { q: "Set nombor: {315 200, 351 020, 315 020, 351 200}. Pilih nombor TERBESAR dan bundarkan kepada ratus ribu terdekat.", options: ["400 000", "300 000", "350 000", "360 000"], answer: 0, tax: "Susah", exp: "Nombor terbesar ialah 351 200. Digit puluh ribu ialah 5, dibundarkan ke atas menjadi 400 000." },
+                            { q: "Apakah julat nombor terkecil dan terbesar yang menjadi 320 000 apabila dibundarkan kepada puluh ribu terdekat?", options: ["315 000 hingga 324 999", "310 000 hingga 330 000", "319 000 hingga 321 000", "315 500 hingga 325 000"], answer: 0, tax: "Susah", exp: "Nombor terkecil yang membundar ke 320 000 ialah 315 000, manakala terbesar ialah 324 999." }
+                        ]
+                    },
+                    {
+                        unitId: 2,
+                        title: "Unit 2: Operasi Asas (➕ ➖ ✖️ ➗)",
+                        questions: [
+                            // 10 ARAS RENDAH
+                            { q: "Hitung: 345 120 + 82 905 =", options: ["428 025", "427 025", "438 025", "428 125"], answer: 0, tax: "Rendah", exp: "345 120 + 82 905 = 428 025." },
+                            { q: "Hitung: 900 000 - 435 820 =", options: ["464 180", "474 180", "465 180", "564 180"], answer: 0, tax: "Rendah", exp: "900 000 - 435 820 = 464 180." },
+                            { q: "Selesaikan: 4 520 × 10 =", options: ["45 200", "4 520", "452 000", "452"], answer: 0, tax: "Rendah", exp: "Darab 10, tambah satu sifar di belakang = 45 200." },
+                            { q: "Berapakah baki apabila 450 820 dibahagi dengan 100?", options: ["20", "0", "2", "820"], answer: 0, tax: "Rendah", exp: "450 820 ÷ 100 = 4 508 baki 20." },
+                            { q: "Selesaikan: 120 000 + 350 000 + 40 000 =", options: ["510 000", "500 000", "520 000", "490 000"], answer: 0, tax: "Rendah", exp: "120 000 + 350 000 = 470 000. 470 000 + 40 000 = 510 000." },
+                            { q: "Hitung: 800 000 - 150 000 - 250 000 =", options: ["400 000", "450 000", "500 000", "350 000"], answer: 0, tax: "Rendah", exp: "800 000 - 150 000 = 650 000. 650 000 - 250 000 = 400 000." },
+                            { q: "Cari hasil darab: 12 405 × 6 =", options: ["74 430", "74 400", "72 430", "75 430"], answer: 0, tax: "Rendah", exp: "12 405 × 6 = 74 430." },
+                            { q: "Bahagi: 84 240 ÷ 4 =", options: ["21 060", "21 600", "21 006", "22 060"], answer: 0, tax: "Rendah", exp: "84 240 ÷ 4 = 21 060." },
+                            { q: "Hitung: 685 × 1 000 =", options: ["685 000", "68 500", "6 850 000", "685"], answer: 0, tax: "Rendah", exp: "685 × 1000 = 685 000." },
+                            { q: "Hitung: 920 000 ÷ 1 000 =", options: ["920", "9 200", "92", "92 000"], answer: 0, tax: "Rendah", exp: "Potong 3 sifar = 920." },
+                            // 5 ARAS SEDERHANA
+                            { q: "Selesaikan: 345 120 + 82 905 + 14 000 =", options: ["442 025", "441 025", "432 025", "452 025"], answer: 0, tax: "Sederhana", exp: "345 120 + 82 905 = 428 025. 428 025 + 14 000 = 442 025." },
+                            { q: "Cari hasil darab 12 405 × 16.", options: ["198 480", "198 400", "192 480", "208 480"], answer: 0, tax: "Sederhana", exp: "12 405 × 16 = 198 480." },
+                            { q: "Hitung: 450 000 ÷ 50 =", options: ["9 000", "90 000", "900", "45 000"], answer: 0, tax: "Sederhana", exp: "450 000 ÷ 50 = 9 000." },
+                            { q: "Cari beza antara 600 000 dan 245 812.", options: ["354 188", "354 288", "364 188", "344 188"], answer: 0, tax: "Sederhana", exp: "600 000 - 245 812 = 354 188." },
+                            { q: "Hitung hasil darab: 3 450 × 25 =", options: ["86 250", "85 250", "86 350", "87 250"], answer: 0, tax: "Sederhana", exp: "3 450 × 25 = 86 250." },
+                            // 5 ARAS SUSAH
+                            { q: "Selesaikan: 876 000 ÷ 24 =", options: ["36 500", "36 000", "37 500", "35 500"], answer: 0, tax: "Susah", exp: "876 000 ÷ 24 = 36 500." },
+                            { q: "Selesaikan: 452 100 + 189 500 - 234 000 =", options: ["407 600", "407 500", "417 600", "397 600"], answer: 0, tax: "Susah", exp: "452 100 + 189 500 = 641 600. 641 600 - 234 000 = 407 600." },
+                            { q: "Cari hasil darab: 15 820 × 45 =", options: ["711 900", "711 800", "701 900", "721 900"], answer: 0, tax: "Susah", exp: "15 820 × 45 = 711 900." },
+                            { q: "Hitung: 738 500 ÷ 35 =", options: ["21 100", "21 000", "22 100", "20 100"], answer: 0, tax: "Susah", exp: "738 500 ÷ 35 = 21 100." },
+                            { q: "Cari nilai petak kosong: 520 000 - [   ] = 285 400.", options: ["234 600", "235 600", "224 600", "244 600"], answer: 0, tax: "Susah", exp: "Petak kosong = 520 000 - 285 400 = 234 600." }
+                        ]
+                    },
+                    {
+                        unitId: 3,
+                        title: "Unit 3: Operasi Bergabung",
+                        questions: [
+                            // 10 ARAS RENDAH
+                            { q: "Selesaikan: 100 + 50 - 30 =", options: ["120", "110", "130", "140"], answer: 0, tax: "Rendah", exp: "100 + 50 = 150. 150 - 30 = 120." },
+                            { q: "Hitung: 20 × 4 ÷ 2 =", options: ["40", "20", "10", "80"], answer: 0, tax: "Rendah", exp: "20 × 4 = 80. 80 ÷ 2 = 40." },
+                            { q: "Selesaikan operasi dalam kurungan: (50 + 20) × 3 =", options: ["210", "110", "170", "150"], answer: 0, tax: "Rendah", exp: "Kurungan dulu: 50 + 20 = 70. 70 × 3 = 210." },
+                            { q: "Hitung mengikut keutamaan operasi: 10 + 5 × 2 =", options: ["20", "30", "25", "15"], answer: 0, tax: "Rendah", exp: "Darab dulu: 5 × 2 = 10. Kemudian 10 + 10 = 20." },
+                            { q: "Selesaikan: (100 - 40) ÷ 6 =", options: ["10", "60", "20", "5"], answer: 0, tax: "Rendah", exp: "Kurungan: 100 - 40 = 60. 60 ÷ 6 = 10." },
+                            { q: "Hitung: 120 000 + 40 000 - 50 000 =", options: ["110 000", "120 000", "130 000", "100 000"], answer: 0, tax: "Rendah", exp: "120 000 + 40 000 = 160 000. 160 000 - 50 000 = 110 000." },
+                            { q: "Selesaikan: 12 000 × 5 ÷ 3 =", options: ["20 000", "15 000", "18 000", "24 000"], answer: 0, tax: "Rendah", exp: "12 000 × 5 = 60 000. 60 000 ÷ 3 = 20 000." },
+                            { q: "Hitung: 5 × (200 + 300) =", options: ["2 500", "1 300", "2 000", "1 500"], answer: 0, tax: "Rendah", exp: "Kurungan: 200 + 300 = 500. 5 × 500 = 2 500." },
+                            { q: "Hitung: (800 - 200) ÷ 10 =", options: ["60", "780", "80", "78"], answer: 0, tax: "Rendah", exp: "Kurungan: 800 - 200 = 600. 600 ÷ 10 = 60." },
+                            { q: "Selesaikan: 50 + 40 ÷ 5 =", options: ["58", "18", "50", "90"], answer: 0, tax: "Rendah", exp: "Bahagi dulu: 40 ÷ 5 = 8. Kemudian 50 + 8 = 58." },
+                            // 5 ARAS SEDERHANA
+                            { q: "Hitung operasi bergabung: 240 000 + 150 000 ÷ 5 =", options: ["270 000", "78 000", "390 000", "300 000"], answer: 0, tax: "Sederhana", exp: "Bahagi dulu: 150 000 ÷ 5 = 30 000. 240 000 + 30 000 = 270 000." },
+                            { q: "Selesaikan: (500 000 - 180 000) × 3 =", options: ["960 000", "860 000", "1 060 000", "320 000"], answer: 0, tax: "Sederhana", exp: "Kurungan: 500 000 - 180 000 = 320 000. Darab 3 = 960 000." },
+                            { q: "Hitung: 15 × (20 400 - 18 200) =", options: ["33 000", "30 000", "22 000", "330 000"], answer: 0, tax: "Sederhana", exp: "Kurungan: 20 400 - 18 200 = 2 200. 15 × 2 200 = 33 000." },
+                            { q: "Hitung: 850 000 ÷ 10 - 25 000 =", options: ["60 000", "825 000", "65 000", "70 000"], answer: 0, tax: "Sederhana", exp: "Bahagi dulu: 850 000 ÷ 10 = 85 000. 85 000 - 25 000 = 60 000." },
+                            { q: "Selesaikan: (120 000 + 80 000) ÷ 25 =", options: ["8 000", "800", "80 000", "4 000"], answer: 0, tax: "Sederhana", exp: "Kurungan: 120 000 + 80 000 = 200 000. 200 000 ÷ 25 = 8 000." },
+                            // 5 ARAS SUSAH
+                            { q: "Hitung: 450 000 + 120 000 × 4 ÷ 6 =", options: ["530 000", "380 000", "500 000", "580 000"], answer: 0, tax: "Susah", exp: "120 000 × 4 = 480 000. 480 000 ÷ 6 = 80 000. 450 000 + 80 000 = 530 000." },
+                            { q: "Hitung: (840 000 ÷ 12) + (15 × 2 000) =", options: ["100 000", "90 000", "110 000", "80 000"], answer: 0, tax: "Susah", exp: "840 000 ÷ 12 = 70 000. 15 × 2 000 = 30 000. 70 000 + 30 000 = 100 000." },
+                            { q: "Hitung: 900 000 - (125 000 × 4 + 50 000) =", options: ["350 000", "450 000", "300 000", "400 000"], answer: 0, tax: "Susah", exp: "Kurungan: (500 000 + 50 000) = 550 000. 900 000 - 550 000 = 350 000." },
+                            { q: "Selesaikan: (350 000 + 250 000) ÷ (50 - 20) =", options: ["20 000", "30 000", "12 000", "15 000"], answer: 0, tax: "Susah", exp: "Kurungan 1 = 600 000. Kurungan 2 = 30. 600 000 ÷ 30 = 20 000." },
+                            { q: "Hitung: 18 × 15 000 ÷ (100 - 70) =", options: ["9 000", "90 000", "270 000", "8 000"], answer: 0, tax: "Susah", exp: "Kurungan = 30. 18 × 15 000 = 270 000. 270 000 ÷ 30 = 9 000." }
+                        ]
+                    },
+                    {
+                        unitId: 4,
+                        title: "Unit 4: Operasi Bergabung Melibatkan Anu",
+                        questions: [
+                            // 10 ARAS RENDAH
+                            { q: "Cari nilai y jika y + 10 = 25.", options: ["15", "35", "250", "2.5"], answer: 0, tax: "Rendah", exp: "y = 25 - 10 = 15." },
+                            { q: "Cari nilai k jika 50 - k = 20.", options: ["30", "70", "300", "2.5"], answer: 0, tax: "Rendah", exp: "k = 50 - 20 = 30." },
+                            { q: "Cari nilai m jika m × 4 = 20.", options: ["5", "80", "16", "24"], answer: 0, tax: "Rendah", exp: "m = 20 ÷ 4 = 5." },
+                            { q: "Cari nilai n jika n ÷ 5 = 6.", options: ["30", "1.2", "11", "1"], answer: 0, tax: "Rendah", exp: "n = 6 × 5 = 30." },
+                            { q: "Nyatakan nilai p dalam p + 100 = 350.", options: ["250", "450", "3500", "3.5"], answer: 0, tax: "Rendah", exp: "p = 350 - 100 = 250." },
+                            { q: "Cari nilai q jika 500 - q = 150.", options: ["350", "650", "250", "400"], answer: 0, tax: "Rendah", exp: "q = 500 - 150 = 350." },
+                            { q: "Hitung nilai x jika 3 × x = 300.", options: ["100", "900", "303", "297"], answer: 0, tax: "Rendah", exp: "x = 300 ÷ 3 = 100." },
+                            { q: "Hitung nilai y jika y ÷ 10 = 45.", options: ["450", "4.5", "55", "35"], answer: 0, tax: "Rendah", exp: "y = 45 × 10 = 450." },
+                            { q: "Kenal pasti anu: 'Sebilangan murid menambah 150 naskhah buku ke dalam perpustakaan.'", options: ["Sebilangan murid", "150 naskhah", "Buku", "Perpustakaan"], answer: 0, tax: "Rendah", exp: "Anu ialah kuantiti yang tidak diketahui iaitu 'sebilangan murid'." },
+                            { q: "Kenal pasti anu: 'Ibu membeli k biji telur untuk membuat kek.'", options: ["Bilangan telur (k)", "Ibu", "Kek", "Toko"], answer: 0, tax: "Rendah", exp: "Anu ialah pemboleh ubah k yang mewakili bilangan telur." },
+                            // 5 ARAS SEDERHANA
+                            { q: "Cari nilai p jika p + 12 000 = 45 000.", options: ["33 000", "57 000", "32 000", "43 000"], answer: 0, tax: "Sederhana", exp: "p = 45 000 - 12 000 = 33 000." },
+                            { q: "Cari nilai h jika 80 000 - h = 32 500.", options: ["47 500", "112 500", "52 500", "42 500"], answer: 0, tax: "Sederhana", exp: "h = 80 000 - 32 500 = 47 500." },
+                            { q: "Cari nilai w jika w × 15 = 45 000.", options: ["3 000", "675 000", "30 000", "4 500"], answer: 0, tax: "Sederhana", exp: "w = 45 000 ÷ 15 = 3 000." },
+                            { q: "Cari nilai g jika g ÷ 8 = 12 500.", options: ["100 000", "1 562.5", "96 000", "102 000"], answer: 0, tax: "Sederhana", exp: "g = 12 500 × 8 = 100 000." },
+                            { q: "Cari nilai a jika (a + 5 000) × 2 = 20 000.", options: ["5 000", "10 000", "15 000", "2 500"], answer: 0, tax: "Sederhana", exp: "a + 5 000 = 20 000 ÷ 2 = 10 000. a = 10 000 - 5 000 = 5 000." },
+                            // 5 ARAS SUSAH
+                            { q: "Cari nilai x jika (150 000 - x) ÷ 5 = 20 000.", options: ["50 000", "100 000", "25 000", "75 000"], answer: 0, tax: "Susah", exp: "150 000 - x = 20 000 × 5 = 100 000. x = 150 000 - 100 000 = 50 000." },
+                            { q: "Cari nilai y jika 3 × y + 25 000 = 100 000.", options: ["25 000", "75 000", "30 000", "20 000"], answer: 0, tax: "Susah", exp: "3y = 100 000 - 25 000 = 75 000. y = 75 000 ÷ 3 = 25 000." },
+                            { q: "Cari nilai m jika (m ÷ 4) - 15 000 = 35 000.", options: ["200 000", "80 000", "140 000", "160 000"], answer: 0, tax: "Susah", exp: "m ÷ 4 = 35 000 + 15 000 = 50 000. m = 50 000 × 4 = 200 000." },
+                            { q: "Cari nilai k jika 250 000 - (k × 10) = 50 000.", options: ["20 000", "200 000", "30 000", "15 000"], answer: 0, tax: "Susah", exp: "k × 10 = 250 000 - 50 000 = 200 000. k = 200 000 ÷ 10 = 20 000." },
+                            { q: "Cari nilai p jika (p + 80 000) ÷ 12 = 10 000.", options: ["40 000", "120 000", "200 000", "60 000"], answer: 0, tax: "Susah", exp: "p + 80 000 = 10 000 × 12 = 120 000. p = 120 000 - 80 000 = 40 000." }
+                        ]
+                    },
+                    {
+                        unitId: 5,
+                        title: "Unit 5: Penyelesaian Masalah",
+                        questions: [
+                            // 10 ARAS RENDAH
+                            { q: "Kedai A mempunyai 120 000 roti. 45 000 roti dijual. Berapakah baki roti?", options: ["75 000", "65 000", "165 000", "85 000"], answer: 0, tax: "Rendah", exp: "120 000 - 45 000 = 75 000." },
+                            { q: "Kilang X membuat 250 000 pen, Kilang Y membuat 130 000 pen. Berapakah jumlah pen?", options: ["380 000", "370 000", "120 000", "390 000"], answer: 0, tax: "Rendah", exp: "250 000 + 130 000 = 380 000." },
+                            { q: "Kedai membungkus 50 kotak pensel. Setiap kotak mengandungi 100 pensel. Berapakah jumlah pensel?", options: ["5 000", "500", "50 000", "150"], answer: 0, tax: "Rendah", exp: "50 × 100 = 5 000." },
+                            { q: "60 000 biji biskut diagihkan kepada 10 buah sekolah. Berapa biji diterima 1 sekolah?", options: ["6 000", "600", "60 000", "600 000"], answer: 0, tax: "Rendah", exp: "60 000 ÷ 10 = 6 000." },
+                            { q: "Ali ada simpanan RM 150 000 dan Abu ada RM 230 000. Berapakah jumlah simpanan mereka?", options: ["RM 380 000", "RM 370 000", "RM 80 000", "RM 400 000"], answer: 0, tax: "Rendah", exp: "150 000 + 230 000 = RM 380 000." },
+                            { q: "Sekolah A ada 1 500 murid, Sekolah B ada 1 200 murid. Berapakah beza bilangan murid?", options: ["300", "2 700", "200", "400"], answer: 0, tax: "Rendah", exp: "1 500 - 1 200 = 300." },
+                            { q: "Dewan ada 20 baris kerusi. Setiap baris ada 50 kerusi. Berapa jumlah kerusi?", options: ["1 000", "70", "100", "10 000"], answer: 0, tax: "Rendah", exp: "20 × 50 = 1 000." },
+                            { q: "Ibu membeli 300 guli dan dibahagi sama banyak kepada 6 orang anak. Berapa seorang dapat?", options: ["50", "60", "40", "30"], answer: 0, tax: "Rendah", exp: "300 ÷ 6 = 50." },
+                            { q: "Perpustakaan A ada 45 000 buku, lalu menerima sumbangan 12 000 buku lagi. Berapa jumlah buku?", options: ["57 000", "33 000", "55 000", "67 000"], answer: 0, tax: "Rendah", exp: "45 000 + 12 000 = 57 000." },
+                            { q: "Kedai ada 800 kerusi. 150 kerusi telah dijual. Berapakah kerusi yang belum dijual?", options: ["650", "950", "750", "550"], answer: 0, tax: "Rendah", exp: "800 - 150 = 650." },
+                            // 5 ARAS SEDERHANA
+                            { q: "Sebuah kilang menghasilkan 450 000 biji guli. Guli dibungkus secara sama banyak ke dalam 50 kotak. Berapa biji guli dalam 1 kotak?", options: ["9 000", "90 000", "900", "45 000"], answer: 0, tax: "Sederhana", exp: "450 000 ÷ 50 = 9 000 biji guli." },
+                            { q: "Sebuah syarikat mengagihkan 600 000 helai pelitup muka kepada 12 buah daerah. Berapakah helai pelitup muka yang diterima oleh 3 buah daerah?", options: ["150 000", "50 000", "200 000", "180 000"], answer: 0, tax: "Sederhana", exp: "Satu daerah = 600 000 ÷ 12 = 50 000. 3 daerah = 50 000 × 3 = 150 000." },
+                            { q: "Sebuah sekolah ada 1 200 murid. 550 orang ialah murid lelaki. Jika setiap murid perempuan menerima 4 buah buku latihan, berapakah jumlah buku latihan yang diagihkan?", options: ["2 600", "2 400", "2 800", "2 200"], answer: 0, tax: "Sederhana", exp: "Murid perempuan = 1 200 - 550 = 650. Jumlah buku = 650 × 4 = 2 600." },
+                            { q: "Sebuah ladang ada 250 000 pokok. Pokok kelapa sawit ialah 145 000, manakala selebihnya ialah pokok getah. Berapakah beza antara pokok kelapa sawit dan pokok getah?", options: ["40 000", "105 000", "30 000", "50 000"], answer: 0, tax: "Sederhana", exp: "Pokok getah = 250 000 - 145 000 = 105 000. Beza = 145 000 - 105 000 = 40 000." },
+                            { q: "Sebuah kedai buku menerima 150 kotak pen. Setiap kotak ada 48 pen. Jika 200 pen rosak, berapa pen yang elok?", options: ["7 000", "7 200", "6 800", "7 400"], answer: 0, tax: "Sederhana", exp: "Jumlah pen = 150 × 48 = 7 200. Pen elok = 7 200 - 200 = 7 000." },
+                            // 5 ARAS SUSAH
+                            { q: "Sebuah kilang mengeluarkan 240 000 botol jus seminggu. 50 000 botol dieksport. Selebihnya diagihkan kepada 10 buah pasar raya secara sama banyak. Berapakah botol yang diterima oleh 4 buah pasar raya?", options: ["76 000", "19 000", "72 000", "80 000"], answer: 0, tax: "Susah", exp: "Baki jus = 240 000 - 50 000 = 190 000. 1 pasar raya = 19 000. 4 pasar raya = 19 000 × 4 = 76 000." },
+                            { q: "Bapa Encik Ali ada RM 500 000. Beliau mendermakan RM 50 000. Baki wang dibahagikan kepada 5 orang anak secara sama banyak. Jika Ali menyimpan 1/2 daripada wangnya, berapakah wang simpanannya?", options: ["RM 45 000", "RM 90 000", "RM 50 000", "RM 40 000"], answer: 0, tax: "Susah", exp: "Baki = RM 450 000. Bahagi 5 anak = RM 90 000. Simpanan Ali = RM 90 000 ÷ 2 = RM 45 000." },
+                            { q: "Sebuah bandar ada 850 000 penduduk. Orang dewasa 520 000 orang, selebihnya kanak-kanak. Jika kanak-kanak lelaki 20 000 orang lebih daripada kanak-kanak perempuan, berapakah kanak-kanak perempuan?", options: ["155 000", "175 000", "330 000", "165 000"], answer: 0, tax: "Susah", exp: "Jumlah kanak-kanak = 330 000. (330 000 - 20 000) ÷ 2 = 310 000 ÷ 2 = 155 000 orang." },
+                            { q: "Lori membawa 120 kotak biskut (50 paket sekotak). Jika 5 buah lori membawa muatan sama dan diagihkan kepada 100 buah kedai secara sama banyak, berapa paket biskut diterima setiap kedai?", options: ["300", "30", "3 000", "150"], answer: 0, tax: "Susah", exp: "1 lori = 6 000 paket. 5 lori = 30 000 paket. Bahagi 100 kedai = 300 paket." },
+                            { q: "Perpustakaan ada 350 000 buku BM. Buku BI adalah 45 000 naskhah kurang daripada BM. Buku Sains 2 kali ganda buku BI. Berapakah jumlah buku Sains?", options: ["610 000", "305 000", "700 000", "650 000"], answer: 0, tax: "Susah", exp: "Buku BI = 350 000 - 45 000 = 305 000. Buku Sains = 305 000 × 2 = 610 000." }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        let playerName = localStorage.getItem('pubg_math_player_name') || 'Rekrut PUBG';
+        let userProgress = JSON.parse(localStorage.getItem('pubg_math_progress')) || {}; 
+
+        let currentUnitObj = null;
+        let currentQuestionIdx = 0;
+        let currentScore = 0;
+        let isAnswered = false;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initApp();
+        });
+
+        function initApp() {
+            updateHeaderProfile();
+            renderThemesMenu();
+            updateMascotGreeting();
+        }
+
+        function updateHeaderProfile() {
+            document.getElementById('headerPlayerName').innerText = playerName;
+            let totalStars = 0;
+            Object.values(userProgress).forEach(s => totalStars += s);
+            document.getElementById('headerTotalStars').innerText = `${totalStars} / 36 ⭐`;
+        }
+
+        function updateMascotGreeting() {
+            const greetingEl = document.getElementById('mascotGreeting');
+            greetingEl.innerText = `SIAP TERTIB, SQUAD LEADER ${playerName.toUpperCase()}!`;
+        }
+
+        function showView(viewId) {
+            playSound('click');
+            document.getElementById('view-menu').classList.add('hidden');
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-result').classList.add('hidden');
+            document.getElementById('view-certificate').classList.add('hidden');
+
+            document.getElementById(viewId).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderThemesMenu() {
+            const container = document.getElementById('themesListContainer');
+            container.innerHTML = '';
+
+            QUIZ_DATA.forEach(theme => {
+                const themeCard = document.createElement('div');
+                themeCard.className = 'pubg-card rounded-2xl p-5 space-y-4 border-slate-800 hover:border-amber-500/50 transition';
+
+                let unitsHtml = '';
+                theme.units.forEach(u => {
+                    const stars = userProgress[u.unitId] || 0;
+                    let starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+
+                    unitsHtml += `
+                        <div onclick="startQuizUnit(${u.unitId})" class="bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/60 hover:border-amber-500 p-3.5 rounded-xl cursor-pointer transition flex items-center justify-between group">
+                            <div class="space-y-0.5">
+                                <h5 class="text-sm font-bold text-slate-100 group-hover:text-amber-400 transition">${u.title}</h5>
+                                <div class="text-[11px] text-slate-400 flex items-center gap-2">
+                                    <span>20 Soalan MCQ</span>
+                                    <span>•</span>
+                                    <span class="text-amber-400 font-bold">${starStr}</span>
+                                </div>
+                            </div>
+                            <span class="pubg-btn px-3 py-1.5 rounded-lg text-xs font-bold uppercase shadow">
+                                Mula ▶
+                            </span>
+                        </div>
+                    `;
+                });
+
+                themeCard.innerHTML = `
+                    <div class="flex items-center gap-3 border-b border-slate-800/80 pb-3">
+                        <span class="text-3xl">${theme.themeIcon}</span>
+                        <div>
+                            <span class="text-[10px] font-bold text-amber-500 uppercase tracking-widest">TEMA ${theme.themeId}</span>
+                            <h4 class="text-lg font-bold text-white pubg-font tracking-wide">${theme.themeTitle}</h4>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        ${unitsHtml}
+                    </div>
+                `;
+
+                container.appendChild(themeCard);
+            });
+        }
+
+        // MULA KUIZ UNIT DENGAN RESHUFFLE SOALAN & JAWAPAN
+        function startQuizUnit(unitId) {
+            let foundUnit = null;
+            QUIZ_DATA.forEach(t => {
+                t.units.forEach(u => {
+                    if (u.unitId === unitId) foundUnit = u;
+                });
+            });
+
+            if (!foundUnit) return;
+
+            // Salin dan Rawak (Shuffle) Soalan & Pilihan Jawapan
+            let shuffledQuestions = JSON.parse(JSON.stringify(foundUnit.questions));
+            shuffleArray(shuffledQuestions);
+
+            shuffledQuestions.forEach(q => {
+                const correctAnswerText = q.options[q.answer];
+                shuffleArray(q.options);
+                q.answer = q.options.indexOf(correctAnswerText);
+            });
+
+            currentUnitObj = {
+                unitId: foundUnit.unitId,
+                title: foundUnit.title,
+                questions: shuffledQuestions
+            };
+
+            currentQuestionIdx = 0;
+            currentScore = 0;
+            isAnswered = false;
+
+            document.getElementById('quizUnitBadge').innerText = foundUnit.title.split(':')[0].toUpperCase();
+            showView('view-quiz');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            isAnswered = false;
+            document.getElementById('mascotFeedbackBox').classList.add('hidden');
+
+            const qData = currentUnitObj.questions[currentQuestionIdx];
+            const totalQ = currentUnitObj.questions.length;
+
+            // Update Progress HUD
+            const percent = Math.round(((currentQuestionIdx) / totalQ) * 100);
+            document.getElementById('quizProgressText').innerText = `Soalan ${currentQuestionIdx + 1} daripada ${totalQ}`;
+            document.getElementById('quizProgressPercent').innerText = `${percent}%`;
+            document.getElementById('quizProgressBar').style.width = `${((currentQuestionIdx + 1) / totalQ) * 100}%`;
+            document.getElementById('quizScoreHUD').innerText = `Skor: ${currentScore} / ${totalQ}`;
+
+            // Taxonomy Badge
+            const taxBadge = document.getElementById('questionTaxonomyBadge');
+            taxBadge.innerText = `ARAS: ${qData.tax.toUpperCase()}`;
+            if (qData.tax === 'Rendah') taxBadge.className = "text-[11px] font-black uppercase px-2.5 py-1 rounded bg-emerald-950 border border-emerald-700 text-emerald-400";
+            else if (qData.tax === 'Sederhana') taxBadge.className = "text-[11px] font-black uppercase px-2.5 py-1 rounded bg-amber-950 border border-amber-700 text-amber-400";
+            else taxBadge.className = "text-[11px] font-black uppercase px-2.5 py-1 rounded bg-red-950 border border-red-700 text-red-400";
+
+            // Question Text
+            document.getElementById('quizQuestionText').innerText = qData.q;
+
+            // Options
+            const optsContainer = document.getElementById('quizOptionsContainer');
+            optsContainer.innerHTML = '';
+
+            const prefixes = ['A', 'B', 'C', 'D'];
+            qData.options.forEach((optText, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full p-4 rounded-xl bg-slate-900 border border-slate-700 hover:border-amber-500 hover:bg-slate-800 text-left flex items-start gap-3 transition group relative overflow-hidden';
+                btn.onclick = () => selectAnswer(i);
+
+                btn.innerHTML = `
+                    <span class="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700 text-amber-400 font-bold flex items-center justify-center shrink-0 group-hover:bg-amber-500 group-hover:text-black transition">
+                        ${prefixes[i]}
+                    </span>
+                    <span class="text-sm font-semibold text-slate-200 mt-0.5">${optText}</span>
+                `;
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(optionIdx) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const qData = currentUnitObj.questions[currentQuestionIdx];
+            const isCorrect = (optionIdx === qData.answer);
+
+            if (isCorrect) {
+                currentScore++;
+                playSound('correct');
+            } else {
+                playSound('wrong');
+            }
+
+            // Highlight options
+            const optsContainer = document.getElementById('quizOptionsContainer');
+            const buttons = optsContainer.querySelectorAll('button');
+
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === qData.answer) {
+                    btn.className = 'w-full p-4 rounded-xl bg-emerald-950/80 border-2 border-emerald-500 text-left flex items-start gap-3 transition';
+                } else if (idx === optionIdx && !isCorrect) {
+                    btn.className = 'w-full p-4 rounded-xl bg-red-950/80 border-2 border-red-500 text-left flex items-start gap-3 transition';
+                } else {
+                    btn.className = 'w-full p-4 rounded-xl bg-slate-950/40 border border-slate-800 text-left flex items-start gap-3 opacity-50';
+                }
+            });
+
+            // Show Feedback Box
+            const feedbackBox = document.getElementById('mascotFeedbackBox');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackStatusIcon = document.getElementById('feedbackStatusIcon');
+            const feedbackExp = document.getElementById('feedbackExplanation');
+
+            if (isCorrect) {
+                feedbackBox.className = 'pubg-card rounded-2xl p-5 border-l-4 border-l-emerald-500 space-y-3 transition-all duration-300';
+                feedbackTitle.className = 'font-bold text-base pubg-font tracking-wide text-emerald-400';
+                feedbackTitle.innerText = `TEPAT SEKALI, SQUAD LEADER ${playerName.toUpperCase()}!`;
+                feedbackStatusIcon.innerText = '✅';
+            } else {
+                feedbackBox.className = 'pubg-card rounded-2xl p-5 border-l-4 border-l-red-500 space-y-3 transition-all duration-300';
+                feedbackTitle.className = 'font-bold text-base pubg-font tracking-wide text-red-400';
+                feedbackTitle.innerText = `ALAMAK, SASARAN TERSIMPANG!`;
+                feedbackStatusIcon.innerText = '❌';
+            }
+
+            feedbackExp.innerHTML = `<strong>Ulasan Taktikal Kapten Math:</strong><br>${qData.exp}`;
+            feedbackBox.classList.remove('hidden');
+
+            document.getElementById('quizScoreHUD').innerText = `Skor: ${currentScore} / ${currentUnitObj.questions.length}`;
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            currentQuestionIdx++;
+
+            if (currentQuestionIdx < currentUnitObj.questions.length) {
+                renderQuestion();
+            } else {
+                finishQuizUnit();
+            }
+        }
+
+        function finishQuizUnit() {
+            playSound('win');
+            const totalQ = currentUnitObj.questions.length;
+            const percentage = Math.round((currentScore / totalQ) * 100);
+
+            // Pengiraan Bintang (Berdasarkan 20 Soalan)
+            let stars = 0;
+            if (currentScore >= 18) stars = 3;
+            else if (currentScore >= 14) stars = 2;
+            else if (currentScore >= 10) stars = 1;
+
+            // Simpan Kemajuan
+            const prevStars = userProgress[currentUnitObj.unitId] || 0;
+            if (stars > prevStars) {
+                userProgress[currentUnitObj.unitId] = stars;
+                localStorage.setItem('pubg_math_progress', JSON.stringify(userProgress));
+                updateHeaderProfile();
+                renderThemesMenu();
+            }
+
+            // Papar Keputusan
+            const resultTitle = document.getElementById('resultTitle');
+            const resultSubtitle = document.getElementById('resultSubtitle');
+            const resultStarsDisplay = document.getElementById('resultStarsDisplay');
+            const resultCorrectCount = document.getElementById('resultCorrectCount');
+            const resultAccuracy = document.getElementById('resultAccuracy');
+            const resultMascotMessage = document.getElementById('resultMascotMessage');
+
+            resultCorrectCount.innerText = currentScore;
+            resultAccuracy.innerText = `${percentage}%`;
+
+            if (stars === 3) {
+                resultTitle.innerText = "WINNER WINNER CHICKEN DINNER!";
+                resultSubtitle.innerText = "Pencapaian Cemerlang Gred Conqueror!";
+                resultStarsDisplay.innerText = "⭐ ⭐ ⭐";
+                resultMascotMessage.innerText = `Hebat sungguh, ${playerName}! Kamu berjaya menguasai 20 soalan unit ini dengan cemerlang 3 Bintang! Kekalkan prestasi terbaik ini!`;
+            } else if (stars === 2) {
+                resultTitle.innerText = "MISI DITERUSKAN!";
+                resultSubtitle.innerText = "Pencapaian Baik Gred Crown!";
+                resultStarsDisplay.innerText = "⭐ ⭐ ☆";
+                resultMascotMessage.innerText = `Syabas ${playerName}! Kamu dapat 2 Bintang. Cuba lagi sekali untuk dapatkan markah cemerlang 3 Bintang!`;
+            } else if (stars === 1) {
+                resultTitle.innerText = "MISI SELESAI!";
+                resultSubtitle.innerText = "Pencapaian Sederhana!";
+                resultStarsDisplay.innerText = "⭐ ☆ ☆";
+                resultMascotMessage.innerText = `Bagus untuk percubaan ini, ${playerName}. Teruskan berlatih ulasan taktikal untuk dapatkan lebih banyak bintang!`;
+            } else {
+                resultTitle.innerText = "TERKECULI DALAM BATTLE!";
+                resultSubtitle.innerText = "Perlu Ulang Misi!";
+                resultStarsDisplay.innerText = "☆ ☆ ☆";
+                resultMascotMessage.innerText = `Jangan berputus asa, ${playerName}! Buka ulasan soalan dan cuba lagi unit ini untuk buka Bintang pertama kamu.`;
+            }
+
+            showView('view-result');
+        }
+
+        function retryCurrentUnit() {
+            if (currentUnitObj) {
+                startQuizUnit(currentUnitObj.unitId);
+            }
+        }
+
+        function showCertificateView() {
+            let totalStars = 0;
+            Object.values(userProgress).forEach(s => totalStars += s);
+
+            document.getElementById('certPlayerName').innerText = playerName;
+            document.getElementById('certTotalStars').innerText = `${totalStars} / 36 ⭐`;
+            
+            // Pangkat PUBG
+            let rank = "REKRUT";
+            if (totalStars >= 30) rank = "CONQUEROR 👑";
+            else if (totalStars >= 20) rank = "ACE 🦅";
+            else if (totalStars >= 12) rank = "CROWN 💎";
+            else if (totalStars >= 6) rank = "DIAMOND 🥇";
+
+            document.getElementById('certRank').innerText = rank;
+
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('certDate').innerText = today;
+
+            showView('view-certificate');
+        }
+
+        function openEditNameModal() {
+            playSound('click');
+            document.getElementById('inputPlayerName').value = playerName;
+            document.getElementById('nameModal').classList.remove('hidden');
+        }
+
+        function closeNameModal() {
+            document.getElementById('nameModal').classList.add('hidden');
+        }
+
+        function savePlayerName() {
+            playSound('click');
+            const input = document.getElementById('inputPlayerName').value.trim();
+            if (input.length > 0) {
+                playerName = input;
+                localStorage.setItem('pubg_math_player_name', playerName);
+                updateHeaderProfile();
+                updateMascotGreeting();
+            }
+            closeNameModal();
+        }
+
+        function confirmResetProgress() {
+            openConfirmModal("Reset Semua Kemajuan?", "Adakah anda pasti mahu memadamkan semua bintang ⭐ dan rekod kuiz?", () => {
+                localStorage.removeItem('pubg_math_progress');
+                userProgress = {};
+                updateHeaderProfile();
+                renderThemesMenu();
+            });
+        }
+
+        function confirmExitQuiz() {
+            openConfirmModal("Keluar Misi Kuiz?", "Kemajuan soalan semasa unit ini akan dibatalkan.", () => {
+                showView('view-menu');
+            });
+        }
+
+        function openConfirmModal(title, text, onYes) {
+            playSound('click');
+            document.getElementById('confirmModalTitle').innerText = title;
+            document.getElementById('confirmModalText').innerText = text;
+            const yesBtn = document.getElementById('confirmModalYesBtn');
+            yesBtn.onclick = () => {
+                playSound('click');
+                closeConfirmModal(true);
+                onYes();
+            };
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal(confirmed) {
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

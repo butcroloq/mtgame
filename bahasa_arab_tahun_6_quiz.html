@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="ms" class="h-full bg-slate-100">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuiz Interaktif Bahasa Arab Tahun 6 (KSSR Semakan)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Amiri (Arabic Calligraphy), Tajawal & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            arabic: {
+              gold: '#D4AF37',
+              golddark: '#AA820A',
+              emerald: '#0F5132',
+              emeraldlight: '#198754',
+              sand: '#FDFBF7',
+              cream: '#FAF4EB',
+              royal: '#1E3A8A',
+              crimson: '#8B0000'
+            }
+          },
+          fontFamily: {
+            arabic: ['Amiri', 'Tajawal', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+            tajawal: ['Tajawal', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .arabic-pattern {
+      background-color: #FAF4EB;
+      background-image: radial-gradient(#D4AF37 0.75px, transparent 0.75px), radial-gradient(#D4AF37 0.75px, #FAF4EB 0.75px);
+      background-size: 30px 30px;
+      background-position: 0 0,15px 15px;
+      background-opacity: 0.15;
+    }
+    
+    .gold-gradient {
+      background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+    }
+
+    .emerald-gradient {
+      background: linear-gradient(135deg, #0F5132 0%, #198754 100%);
+    }
+
+    .mascot-bounce {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(1deg); }
+    }
+
+    .star-pop {
+      animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Print styling specifically for Certificate */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #certificateModal, #certificateModal * {
+        visibility: visible;
+      }
+      #certificateModal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: white !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .cert-card {
+        border: 12px double #D4AF37 !important;
+        box-shadow: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body class="h-full font-sans text-slate-800 antialiased arabic-pattern flex flex-col min-h-screen">
+
+  <!-- Top Navigation Bar -->
+  <header class="bg-arabic-emerald text-white shadow-lg border-b-4 border-arabic-gold sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- Title & Branding -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="app.requestShowMenu()">
+        <div class="w-10 h-10 rounded-full bg-arabic-gold flex items-center justify-center text-slate-900 font-bold text-xl shadow-md border-2 border-amber-100">
+          🌙
+        </div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight tracking-wide font-tajawal text-amber-200">B.ARAB TAHUN 6</h1>
+          <p class="text-xs text-emerald-200 flex items-center gap-1">
+            <span>KSSR Semakan</span>
+            <span class="text-amber-300">•</span>
+            <span id="headerSubtitle">Kuiz Interaktif</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Controls & Profile Badge -->
+      <div class="flex items-center space-x-2 sm:space-x-4">
+        <!-- Stars Counter -->
+        <div class="bg-emerald-900/80 border border-amber-400/40 rounded-full px-3 py-1 flex items-center gap-1.5 shadow-inner">
+          <span class="text-amber-400 text-lg leading-none">⭐</span>
+          <span id="starCounter" class="font-extrabold text-amber-300 text-sm">0</span>
+        </div>
+
+        <!-- Language Switcher Button -->
+        <button onclick="app.toggleLanguage()" id="langBtn" class="bg-emerald-800 hover:bg-emerald-700 border border-emerald-600 px-2.5 py-1 rounded-lg text-xs font-semibold tracking-wider transition duration-150 flex items-center gap-1">
+          🌐 <span id="langText">BM</span>
+        </button>
+
+        <!-- Sound Toggle -->
+        <button onclick="app.toggleSound()" id="soundBtn" class="bg-emerald-800 hover:bg-emerald-700 border border-emerald-600 p-1.5 rounded-lg text-sm transition duration-150">
+          🔊
+        </button>
+
+        <!-- Student Name Badge -->
+        <button onclick="app.openNameModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-3 py-1 rounded-full font-bold text-xs shadow transition flex items-center gap-1.5 border border-amber-200">
+          👤 <span id="navStudentName" class="max-w-[90px] sm:max-w-[140px] truncate">Murid</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <main class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
+
+    <!-- VIEW 1: STUDENT NAME WELCOME SETUP (Modal or Initial Card) -->
+    <section id="welcomeSection" class="hidden max-w-lg mx-auto w-full bg-white rounded-3xl shadow-2xl border-4 border-arabic-gold overflow-hidden transition-all duration-300">
+      <div class="bg-arabic-emerald p-6 text-center text-white relative">
+        <div class="w-24 h-24 mx-auto mb-2 rounded-full border-4 border-arabic-gold bg-amber-50 p-2 shadow-lg mascot-bounce">
+          <!-- Mascot SVG (Ustaz Ameer with turban & agal) -->
+          <svg id="welcomeMascotSvg" class="w-full h-full" viewBox="0 0 120 120" fill="none">
+            <!-- Turban / Keffiyeh -->
+            <path d="M20,50 Q60,10 100,50 Q110,80 100,95 Q60,105 20,95 Q10,80 20,50 Z" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+            <path d="M25,45 C35,20 85,20 95,45 C95,45 60,35 25,45 Z" fill="#FFFFFF"/>
+            <!-- Agal (Black Ring) -->
+            <ellipse cx="60" cy="38" rx="38" ry="8" fill="#1E293B" stroke="#0F172A" stroke-width="3"/>
+            <ellipse cx="60" cy="42" rx="36" ry="6" fill="#334155"/>
+            <!-- Face -->
+            <circle cx="60" cy="65" r="28" fill="#FDBA74"/>
+            <!-- Beard -->
+            <path d="M38,68 Q60,100 82,68 Q80,88 60,94 Q40,88 38,68 Z" fill="#334155"/>
+            <!-- Eyes -->
+            <circle cx="50" cy="62" r="3" fill="#0F172A"/>
+            <circle cx="70" cy="62" r="3" fill="#0F172A"/>
+            <!-- Smile -->
+            <path d="M54,72 Q60,77 66,72" stroke="#0F172A" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <!-- Glasses -->
+            <circle cx="50" cy="62" r="7" stroke="#D4AF37" stroke-width="2" fill="none"/>
+            <circle cx="70" cy="62" r="7" stroke="#D4AF37" stroke-width="2" fill="none"/>
+            <line x1="57" y1="62" x2="63" y2="62" stroke="#D4AF37" stroke-width="2"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold font-arabic text-amber-300">أَهْلًا وَسَهْلًا!</h2>
+        <p class="text-sm text-emerald-100 mt-1 font-medium" id="welcomeTitle">Selamat Datang ke Misi Bahasa Arab Tahun 6!</p>
+      </div>
+
+      <div class="p-6 space-y-5 bg-arabic-sand">
+        <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-start gap-3">
+          <span class="text-2xl">👳‍♂️</span>
+          <p class="text-xs sm:text-sm text-amber-900 font-medium leading-relaxed" id="welcomeSpeech">
+            "Saya **Ustaz Ameer**, pembimbing Bahasa Arab kamu! Sila masukkan nama kamu dahulu untuk memulakan cabaran pengembaraan ilmu ini."
+          </p>
+        </div>
+
+        <div>
+          <label id="lblNameInput" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Nama Murid / Student Name:</label>
+          <input type="text" id="inputStudentName" placeholder="Contoh: Ahmad Zaki" class="w-full px-4 py-3 rounded-xl border-2 border-emerald-600 focus:outline-none focus:ring-2 focus:ring-amber-400 font-semibold text-slate-800 shadow-sm" />
+          <p id="nameErrorMsg" class="text-xs text-red-600 font-bold mt-1 hidden">⚠️ Sila masukkan nama murid dahulu.</p>
+        </div>
+
+        <button onclick="app.saveStudentName()" class="w-full py-3.5 bg-arabic-emerald hover:bg-emerald-700 text-amber-300 font-bold rounded-xl text-base shadow-lg hover:shadow-xl transition transform active:scale-95 border-2 border-arabic-gold flex items-center justify-center gap-2">
+          <span>🚀</span> <span id="btnStartGame">Simpan & Mula Pengembaraan</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- VIEW 2: MAIN MENU - THEMES & UNITS SELECTOR -->
+    <section id="menuSection" class="space-y-6">
+      <!-- Welcome Header Banner -->
+      <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-xl border-2 border-arabic-gold/40 flex flex-col md:flex-row items-center gap-5 relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl pointer-events-none font-arabic">🕌</div>
+        
+        <!-- Animated Mascot Avatar -->
+        <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-b from-amber-100 to-amber-200 border-4 border-arabic-gold flex-shrink-0 flex items-center justify-center p-1.5 shadow-lg mascot-bounce">
+          <svg class="w-full h-full" viewBox="0 0 120 120" fill="none">
+            <path d="M20,50 Q60,10 100,50 Q110,80 100,95 Q60,105 20,95 Q10,80 20,50 Z" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+            <ellipse cx="60" cy="38" rx="38" ry="8" fill="#1E293B"/>
+            <circle cx="60" cy="65" r="28" fill="#FDBA74"/>
+            <path d="M38,68 Q60,100 82,68 Q80,88 60,94 Q40,88 38,68 Z" fill="#334155"/>
+            <circle cx="50" cy="62" r="3" fill="#0F172A"/><circle cx="70" cy="62" r="3" fill="#0F172A"/>
+            <path d="M54,72 Q60,77 66,72" stroke="#0F172A" stroke-width="2" fill="none"/>
+            <circle cx="50" cy="62" r="7" stroke="#D4AF37" stroke-width="2" fill="none"/>
+            <circle cx="70" cy="62" r="7" stroke="#D4AF37" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
+
+        <div class="flex-1 text-center md:text-left space-y-1">
+          <div class="inline-block px-3 py-0.5 bg-amber-100 text-amber-800 rounded-full text-xs font-bold tracking-wide border border-amber-300">
+            <span id="greetingBadge">Ahlan wa Sahlan!</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-800">
+            <span id="greetingTitle">Selamat Datang,</span> <span id="displayStudentName" class="text-arabic-emerald font-arabic">Murid</span>! 👋
+          </h2>
+          <p id="menuMascotSpeech" class="text-xs sm:text-sm text-slate-600 font-medium max-w-xl">
+            Pilih unit tajuk di bawah. Setiap unit mempunyai 3 SET soalan berbeza (15 soalan/set). Kumpul ⭐ Bintang dan dapatkan Sijil Kejayaan kamu!
+          </p>
+        </div>
+      </div>
+
+      <!-- Theme Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="themesGrid">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </section>
+
+    <!-- VIEW 3: QUIZ QUESTION SCREEN -->
+    <section id="quizSection" class="hidden space-y-4 max-w-3xl mx-auto w-full">
+      <!-- Header Quiz Info Bar -->
+      <div class="bg-white rounded-2xl p-4 shadow-md border-2 border-emerald-600 flex items-center justify-between gap-2">
+        <button onclick="app.requestShowMenu()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1 transition">
+          ⬅️ <span id="btnBackToMenu">Menu Utama</span>
+        </button>
+
+        <div class="text-center flex-1">
+          <span id="quizUnitBadge" class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+            Unit 1 • Set 1
+          </span>
+          <h3 id="quizUnitTitle" class="text-sm sm:text-base font-bold text-slate-800 truncate font-arabic mt-0.5">
+            Tajuk
+          </h3>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-300 px-3 py-1 rounded-xl text-right">
+          <span class="text-[10px] text-amber-700 uppercase tracking-wider block font-bold" id="lblScore">Skor</span>
+          <span id="currentScoreDisplay" class="font-black text-amber-600 text-base">0/15</span>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="bg-slate-200 h-3 rounded-full overflow-hidden shadow-inner border border-slate-300">
+        <div id="quizProgressBar" class="bg-gradient-to-r from-emerald-500 to-amber-400 h-full w-0 transition-all duration-300"></div>
+      </div>
+
+      <!-- Question Card -->
+      <div class="bg-white rounded-3xl p-5 sm:p-7 shadow-xl border-2 border-arabic-gold relative">
+        <div class="flex items-center justify-between mb-4 border-b pb-3">
+          <span id="questionNumBadge" class="bg-arabic-emerald text-amber-300 font-extrabold text-xs px-3 py-1 rounded-full shadow">
+            Soalan 1 / 15
+          </span>
+          <span id="questionArasBadge" class="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">
+            Aras: Mudah
+          </span>
+        </div>
+
+        <!-- Arabic Main Question -->
+        <div class="text-center my-4 space-y-2">
+          <h2 id="arabicQuestionText" class="text-2xl sm:text-3xl font-bold font-arabic text-slate-900 leading-relaxed tracking-wide">
+            ...
+          </h2>
+          <p id="translationQuestionText" class="text-xs sm:text-sm text-slate-600 font-medium italic">
+            ...
+          </p>
+        </div>
+
+        <!-- Options Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6" id="optionsContainer">
+          <!-- Options rendered dynamically -->
+        </div>
+
+        <!-- Mascot Feedback Bubble (Visible after answer) -->
+        <div id="mascotFeedbackBox" class="hidden mt-6 bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 flex items-start gap-3 shadow-md transition-all">
+          <div class="w-12 h-12 rounded-full bg-arabic-gold flex-shrink-0 flex items-center justify-center p-1 border-2 border-amber-600">
+            <svg class="w-full h-full" viewBox="0 0 120 120" fill="none">
+              <path d="M20,50 Q60,10 100,50 Q110,80 100,95 Q60,105 20,95 Q10,80 20,50 Z" fill="#F8FAFC"/>
+              <ellipse cx="60" cy="38" rx="38" ry="8" fill="#1E293B"/>
+              <circle cx="60" cy="65" r="28" fill="#FDBA74"/>
+              <circle cx="50" cy="62" r="3" fill="#0F172A"/><circle cx="70" cy="62" r="3" fill="#0F172A"/>
+            </svg>
+          </div>
+          <div class="space-y-1 flex-1">
+            <p id="mascotFeedbackTitle" class="font-bold text-sm text-amber-900 flex items-center gap-1">
+              <span>💡</span> <span>Maklum Balas Ustaz Ameer:</span>
+            </p>
+            <p id="mascotFeedbackText" class="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+              ...
+            </p>
+          </div>
+        </div>
+
+        <!-- Next Question Button -->
+        <div class="mt-6 text-right">
+          <button id="btnNextQuestion" onclick="app.nextQuestion()" class="hidden w-full sm:w-auto px-6 py-3 bg-arabic-emerald hover:bg-emerald-700 text-amber-300 font-extrabold rounded-xl shadow-lg transition transform active:scale-95 items-center justify-center gap-2">
+            <span id="lblNextBtn">Soalan Seterusnya</span> <span>➡️</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: QUIZ COMPLETION / RESULT SECTION -->
+    <section id="resultSection" class="hidden max-w-xl mx-auto w-full bg-white rounded-3xl shadow-2xl border-4 border-arabic-gold p-6 sm:p-8 text-center space-y-6">
+      <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-b from-amber-200 to-amber-400 border-4 border-arabic-gold p-2 shadow-xl mascot-bounce flex items-center justify-center">
+        <span class="text-5xl">🏆</span>
+      </div>
+
+      <div class="space-y-2">
+        <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold tracking-wider uppercase border border-amber-300">
+          Misi Selesai!
+        </span>
+        <!-- Mandated specific text format prompt -->
+        <h2 id="resultCongratulationHeading" class="text-xl sm:text-2xl font-black text-slate-800 leading-snug">
+          TAHNIAH <span id="resStudentName" class="text-arabic-emerald font-arabic underline">MURID</span>, misi kamu telah selesai.
+        </h2>
+        <p class="text-xs sm:text-sm font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl">
+          KLIK SIJIL utk dihantar kpd guru kamu. 📜
+        </p>
+      </div>
+
+      <!-- Score Summary Box -->
+      <div class="bg-arabic-sand border-2 border-amber-300 rounded-2xl p-5 space-y-4 shadow-inner">
+        <div class="grid grid-cols-3 gap-2 text-center divide-x divide-amber-200">
+          <div>
+            <span class="text-[10px] text-slate-500 uppercase font-bold block" id="lblResScore">Markah</span>
+            <span id="resFinalScore" class="text-xl font-black text-emerald-700">15/15</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-500 uppercase font-bold block" id="lblResAcc">Peratusan</span>
+            <span id="resPercentage" class="text-xl font-black text-amber-600">100%</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-slate-500 uppercase font-bold block" id="lblResStars">Bintang</span>
+            <span id="resStarsEarned" class="text-xl font-black text-amber-500 flex items-center justify-center gap-1">
+              ⭐ +3
+            </span>
+          </div>
+        </div>
+
+        <div id="gradeBadgeText" class="text-sm font-extrabold font-arabic text-arabic-emerald bg-white py-1.5 rounded-xl border border-amber-200 shadow-sm">
+          ممتاز (Cemerlang)
+        </div>
+      </div>
+
+      <!-- Action Buttons Grid -->
+      <div class="space-y-3">
+        <!-- Main Certificate Modal Trigger -->
+        <button onclick="app.openCertificate()" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-extrabold rounded-2xl shadow-xl transition transform active:scale-95 border-2 border-amber-200 flex items-center justify-center gap-2 text-base">
+          📜 <span id="btnViewCert">KLIK SIJIL (Lihat & Cetak)</span>
+        </button>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <!-- WhatsApp Share -->
+          <button onclick="app.shareWhatsApp()" class="py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-1.5">
+            💬 <span id="btnShareWA">Hantar WhatsApp</span>
+          </button>
+
+          <!-- Email Share -->
+          <button onclick="app.shareEmail()" class="py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-1.5">
+            ✉️ <span id="btnShareEmail">Hantar e-Mel</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5 pt-2">
+          <button onclick="app.retryCurrentUnit()" class="py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition flex items-center justify-center gap-1">
+            🔄 <span id="btnRetry">Cuba Lagi</span>
+          </button>
+          <button onclick="app.showMenu()" class="py-2.5 bg-arabic-emerald hover:bg-emerald-800 text-amber-300 font-bold rounded-xl text-xs transition flex items-center justify-center gap-1">
+            🏠 <span id="btnReturnMenu">Menu Utama</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: INTERACTIVE SIJIL KEJAYAAN / CERTIFICATE -->
+  <div id="certificateModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-2 sm:p-4 relative shadow-2xl">
+      <!-- Close Button (hidden during print) -->
+      <button onclick="app.closeCertificate()" class="no-print absolute top-3 right-3 w-9 h-9 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-full font-bold text-lg flex items-center justify-center z-20">
+        ✕
+      </button>
+
+      <!-- CERTIFICATE INNER FRAME -->
+      <div class="cert-card bg-arabic-sand border-[10px] border-double border-arabic-gold rounded-2xl p-6 sm:p-8 text-center space-y-4 relative overflow-hidden">
+        
+        <!-- Watermark / Background Ornament -->
+        <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+          <span class="text-[180px] font-arabic">ﰀ</span>
+        </div>
+
+        <!-- Certificate Header -->
+        <div class="space-y-1">
+          <p class="text-xs font-bold text-amber-700 uppercase tracking-widest font-sans">KSSR SEMAKAN • BAHASA ARAB TAHUN 6</p>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-arabic-emerald font-arabic tracking-wide">
+            شَهَادَةُ التَّقْدِيرِ وَالنَّجَاحِ
+          </h2>
+          <p class="text-lg sm:text-xl font-bold text-amber-600 font-serif italic">Sijil Pencapaian & Kejayaan</p>
+        </div>
+
+        <div class="w-24 h-1 bg-gradient-to-r from-transparent via-arabic-gold to-transparent mx-auto"></div>
+
+        <!-- Certificate Body -->
+        <div class="space-y-3 py-2">
+          <p class="text-xs sm:text-sm text-slate-600 font-medium">Dengan ini disahkan bahawa / This is to certify that:</p>
+          
+          <div class="py-2 border-b-2 border-amber-300 max-w-md mx-auto">
+            <h3 id="certStudentName" class="text-2xl sm:text-3xl font-black text-slate-900 font-arabic tracking-wider">
+              [ NAMA MURID ]
+            </h3>
+          </div>
+
+          <p class="text-xs sm:text-sm text-slate-700 max-w-lg mx-auto leading-relaxed font-medium">
+            Telah berjaya menyempurnakan <strong>Misi Kuiz Bahasa Arab Tahun 6</strong> bagi tajuk:
+          </p>
+
+          <div class="bg-amber-100/80 border border-amber-300 rounded-xl p-2.5 max-w-md mx-auto">
+            <p id="certUnitTitle" class="font-extrabold text-arabic-emerald text-sm sm:text-base font-arabic">
+              [ TAJUK UNIT ]
+            </p>
+          </div>
+
+          <!-- Score & Grade Badge -->
+          <div class="flex items-center justify-center gap-6 pt-2">
+            <div>
+              <span class="text-[10px] text-slate-500 uppercase font-bold block">Skor Dicapai</span>
+              <span id="certScore" class="text-lg font-black text-emerald-700">15 / 15</span>
+            </div>
+            <div class="w-px h-8 bg-amber-300"></div>
+            <div>
+              <span class="text-[10px] text-slate-500 uppercase font-bold block">Keputusan</span>
+              <span id="certGrade" class="text-lg font-black text-amber-600 font-arabic">ممتاز</span>
+  <!-- MODAL: SET SELECTION MODAL -->
+  <div id="setSelectModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 relative shadow-2xl border-4 border-arabic-gold space-y-5">
+      <button onclick="app.closeSetModal()" class="absolute top-4 right-4 w-8 h-8 bg-slate-100 hover:bg-slate-200 rounded-full font-bold text-slate-600 flex items-center justify-center">✕</button>
+
+      <div class="text-center space-y-1">
+        <span id="modalUnitTag" class="text-xs font-extrabold px-3 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300">Unit 1</span>
+        <h3 id="modalUnitTitle" class="text-xl font-bold font-arabic text-arabic-emerald pt-1">عنوان الوحدا</h3>
+        <p class="text-xs text-slate-500 font-medium">Sila pilih Set Soalan yang ingin diduduki (15 Soalan/Set):</p>
+      </div>
+
+      <div class="space-y-3" id="setButtonsContainer">
+        <!-- Rendered by JS: Set 1, Set 2, Set 3 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRM EXIT QUIZ MODAL -->
+  <div id="confirmExitModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl border-2 border-amber-400">
+      <div class="text-4xl">⚠️</div>
+      <h3 class="text-lg font-bold text-slate-800">Kembali ke Menu Utama?</h3>
+      <p class="text-xs text-slate-600 font-medium">Kemajuan soalan semasa anda tidak akan disimpan.</p>
+      <div class="flex items-center justify-center gap-3 pt-2">
+        <button onclick="app.closeExitModal()" class="flex-1 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs">
+          Batal
+        </button>
+        <button onclick="app.forceGoToMenu()" class="flex-1 py-2.5 bg-arabic-emerald hover:bg-emerald-800 text-amber-300 font-bold rounded-xl text-xs shadow">
+          Ya, Menu Utama
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CHANGE NAME MODAL -->
+  <div id="changeNameModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl border-2 border-arabic-gold">
+      <h3 class="text-base font-bold text-slate-800 text-center">Kemaskini Nama Murid</h3>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 mb-1">Nama Baru:</label>
+        <input type="text" id="modalInputName" class="w-full px-3 py-2 border-2 border-emerald-600 rounded-xl font-bold text-slate-800 focus:outline-none" />
+      </div>
+      <div class="flex gap-2">
+        <button onclick="app.closeNameModal()" class="flex-1 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs">Batal</button>
+        <button onclick="app.saveModalName()" class="flex-1 py-2 bg-arabic-emerald text-amber-300 font-bold rounded-xl text-xs shadow">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Web Audio API Synthesizer for retro/friendly sound effects
+    // Expanded Question Bank with 3 SETS PER UNIT (15 questions per set = 180 questions total)
+    const QUESTION_BANK = {
+      // UNIT 1: KEBERSIHAN DIRI & PERALATAN (3 SETS)
+      unit1_set1: [
+        { qAr: "مَا هَذِهِ؟ (Berus gigi)", qBm: "Apakah ini? (Berus gigi)", qEn: "What is this? (Toothbrush)", options: ["فُرْشَاةُ الأَسْنَانِ", "مَجُونُ الأَسْنَانِ", "صَابُونٌ", "مِشْطٌ"], correct: 0, aras: "Mudah", exp: "فُرْشَاةُ الأَسْنَانِ bermaksud berus gigi." },
+        { qAr: "مَا هَذَا؟ (Ubat gigi)", qBm: "Apakah ini? (Ubat gigi)", qEn: "What is this? (Toothpaste)", options: ["صَابُونٌ", "مَجُونُ الأَسْنَانِ", "دَلْوٌ", "مِغْسَلَةٌ"], correct: 1, aras: "Mudah", exp: "مَجُونُ الأَسْنَانِ bermaksud ubat gigi." },
+        { qAr: "أَنَا أَغْسِلُ يَدِي بِـ ...", qBm: "Saya mencuci tangan saya dengan ...", qEn: "I wash my hand with ...", options: ["الْمِشْطِ", "الصَّابُونِ", "الْمِقْلَمَةِ", "الْمِرْآةِ"], correct: 1, aras: "Mudah", exp: "الصَّابُونِ bermaksud sabun." },
+        { qAr: "مَا مَعْنَى 'مِشْطٌ'؟", qBm: "Apakah maksud perkataan 'مِشْطٌ'?", qEn: "What is 'مِشْطٌ'?", options: ["Tuala", "Sikat", "Baldi", "Cermin"], correct: 1, aras: "Mudah", exp: "مِشْطٌ bermaksud sikat rambut." },
+        { qAr: "أَنَا أَقُصُّ أَظَافِرِي بِـ ...", qBm: "Saya memotong kuku saya dengan ...", qEn: "I trim my nails with ...", options: ["مِقْلَمَةِ الأَظَافِرِ", "الْمِنْشَفَةِ", "الشَّامْبُوه", "الْمِغْسَلَةِ"], correct: 0, aras: "Sederhana", exp: "مِقْلَمَةُ الأَظَافِرِ bermaksud pemotong kuku." },
+        { qAr: "مَا هَذِهِ؟ (Tuala)", qBm: "Apakah alat ini? (Tuala)", qEn: "What is this? (Towel)", options: ["مِنْشَفَةٌ", "دَلْوٌ", "مِغْسَلَةٌ", "صَابُونٌ"], correct: 0, aras: "Mudah", exp: "مِنْشَفَةٌ bermaksud tuala mandi / tuala muka." },
+        { qAr: "أَنَا أَنْظُرُ وَجْهِي فِي ...", qBm: "Saya melihat muka saya di ...", qEn: "I look at my face in the ...", options: ["الْمِرْآةِ", "الدَّلْوِ", "الصَّابُونِ", "الْمِشْطِ"], correct: 0, aras: "Sederhana", exp: "الْمِرْآةِ bermaksud cermin." },
+        { qAr: "Pilih kata tunjuk yang betul: ... مِغْسَلَةٌ", qBm: "Isi tempat kosong:", qEn: "Fill in the blank:", options: ["هَذِهِ", "هَذَا", "هُوَ", "أَنْتَ"], correct: 0, aras: "Sederhana", exp: "Perkataan مِغْسَلَةٌ ada Ta Marbuthah (ة), gunakan هَذِهِ." },
+        { qAr: "Pilih kata tunjuk yang betul: ... صَابُونٌ", qBm: "Isi tempat kosong:", qEn: "Fill in the blank:", options: ["هَذَا", "هَذِهِ", "هِيَ", "أَنْتِ"], correct: 0, aras: "Sederhana", exp: "Perkataan صَابُونٌ adalah Muzakkar, gunakan هَذَا." },
+        { qAr: "أَنَا أُنَظِّفُ ... بِفُرْشَاةِ الأَسْنَانِ.", qBm: "Saya membersihkan ... dengan berus gigi.", qEn: "I clean my ... with a toothbrush.", options: ["أَسْنَانِي", "شَعْرِي", "أَظَافِرِي", "وَجْهِي"], correct: 0, aras: "Sederhana", exp: "أَسْنَانِي bermaksud gigi saya." },
+        { qAr: "أَنَا أَغْسِلُ شَعْرِي بِـ ...", qBm: "Saya mencuci rambut saya dengan ...", qEn: "I wash my hair with ...", options: ["الشَّامْبُوه", "مَجُونِ الأَسْنَانِ", "مِقْلَمَةِ الأَظَافِرِ", "الْمِرْآةِ"], correct: 0, aras: "Mudah", exp: "الشَّامْبُوه bermaksud syampu rambut." },
+        { qAr: "Susunan tajuk Unit 1 yang betul:", qBm: "Susun tajuk Unit 1:", qEn: "Arrange Unit 1 title:", options: ["حَيَاتُنَا أَجْمَلُ بِالنَّظَافَةِ", "بِالنَّظَافَةِ حَيَاتُنَا أَجْمَلُ", "أَجْمَلُ حَيَاتُنَا بِالنَّظَافَةِ", "حَيَاتُنَا بِالنَّظَافَةِ أَجْمَلُ"], correct: 0, aras: "Tinggi", exp: "Tajuk Unit 1: حَيَاتُنَا أَجْمَلُ بِالنَّظَافَةِ." },
+        { qAr: "الْمَاءُ فِي ... (Baldi)", qBm: "Air itu di dalam ... (Baldi)", qEn: "Water in the ... (Bucket)", options: ["الدَّلْوِ", "الْمِرْآةِ", "الْمِشْطِ", "فُرْشَاةِ الأَسْنَانِ"], correct: 0, aras: "Sederhana", exp: "الدَّلْوِ bermaksud baldi." },
+        { qAr: "Peralatan merapikan rambut:", qBm: "Alat merapikan rambut:", qEn: "Hair grooming tool:", options: ["مِشْطٌ", "مِقْلَمَةُ الأَظَافِرِ", "مَجُونُ الأَسْنَانِ", "مِغْسَلَةٌ"], correct: 0, aras: "Sederhana", exp: "مِشْطٌ (sikat) digunakan merapikan rambut." },
+        { qAr: "Maksud 'Saya memotong':", qBm: "Kata kerja 'Saya memotong':", qEn: "Verb for 'I trim/cut':", options: ["أَقُصُّ", "أَغْسِلُ", "أُنَظِّفُ", "أَمْشُطُ"], correct: 0, aras: "Tinggi", exp: "أَقُصُّ bermaksud 'Saya memotong'." }
+      ],
+
+      unit1_set2: [
+        { qAr: "هَذِهِ ... (Sinki)", qBm: "Apakah nama perkataan ini? (Sinki)", qEn: "What is this? (Sink)", options: ["مِغْسَلَةٌ", "مِرْآةٌ", "مِنْشَفَةٌ", "فُرْشَاةٌ"], correct: 0, aras: "Mudah", exp: "مِغْسَلَةٌ bermaksud sinki / tempat basuh tangan." },
+        { qAr: "أَنَا أَمْشُطُ شَعْرِي بِـ ...", qBm: "Saya menyikat rambut saya dengan ...", qEn: "I comb my hair with ...", options: ["الْمِشْطِ", "الصَّابُونِ", "الدَّلْوِ", "الْمِغْسَلَةِ"], correct: 0, aras: "Mudah", exp: "الْمِشْطِ bermaksud sikat." },
+        { qAr: "فاطمة تُجَفِّفُ وَجْهَهَا بِـ ... (Tuala)", qBm: "Fatimah mengeringkan mukanya dengan ...", qEn: "Fatimah dries her face with ...", options: ["الْمِنْشَفَةِ", "الْمِرْآةِ", "الشَّامْبُوه", "مَجُونِ الأَسْنَانِ"], correct: 0, aras: "Sederhana", exp: "الْمِنْشَفَةِ bermaksud tuala." },
+        { qAr: "Pilih kata ganti nama yang betul: ... أُغَسِّلُ وَجْهِي.", qBm: "Isi tempat kosong:", qEn: "Fill in the pronoun:", options: ["أَنَا", "أَنْتَ", "هُوَ", "هِيَ"], correct: 0, aras: "Mudah", exp: "Kata kerja bermula dengan Hamzah (أُغَسِّلُ) berpasangan dengan أَنَا." },
+        { qAr: "أَيْن الصَّابُونُ؟ - الصَّابُونُ عَلَى ... (Sinki)", qBm: "Sabun di atas ... (Sinki)", qEn: "Soap is on the ... (Sink)", options: ["الْمِغْسَلَةِ", "الْمِرْآةِ", "الدَّلْوِ", "الْمِنْشَفَةِ"], correct: 0, aras: "Sederhana", exp: "الْمِغْسَلَةِ bermaksud sinki." },
+        { qAr: "Pilih perkataan Muannas (perempuan):", qBm: "Manakah perkataan Muannas?", qEn: "Which word is feminine?", options: ["مِنْشَفَةٌ", "صَابُونٌ", "مِشْطٌ", "دَلْوٌ"], correct: 0, aras: "Sederhana", exp: "مِنْشَفَةٌ berakhiran Ta Marbuthah (ة)." },
+        { qAr: "Pilih perkataan Muzakkar (lelaki):", qBm: "Manakah perkataan Muzakkar?", qEn: "Which word is masculine?", options: ["صَابُونٌ", "مِغْسَلَةٌ", "مِرْآةٌ", "مِقْلَمَةٌ"], correct: 0, aras: "Sederhana", exp: "صَابُونٌ tiada Ta Marbuthah di hujungnya." },
+        { qAr: "أَحْمَدُ يُنَظِّفُ ... بِالْمَجُونِ وَالْفُرْشَاةِ.", qBm: "Ahmad membersihkan ...", qEn: "Ahmad cleans his ...", options: ["أَسْنَانَهُ", "أَظَافِرَهُ", "شَعْرَهُ", "يَدَيْهِ"], correct: 0, aras: "Tinggi", exp: "أَسْنَانَهُ bermaksud gigi beliau." },
+        { qAr: "مَا مَعْنَى 'النَّظَافَةُ مِنَ الإِيمَانِ'؟", qBm: "Apakah maksud ungkapan ini?", qEn: "What is the meaning?", options: ["Kebersihan itu sebahagian daripada iman", "Masa itu emas", "Ilmu penyuluh hidup", "Perpaduan asas kejayaan"], correct: 0, aras: "Mudah", exp: "Kebersihan sebahagian daripada iman." },
+        { qAr: "تُنَظِّفُ عَاكِفَةُ غُرْفَتَهَا. Kata kerja 'تُنَظِّفُ' merujuk kepada:", qBm: "Kata kerja 'تُنَظِّفُ' untuk:", qEn: "The verb 'تُنَظِّفُ' refers to:", options: ["Dia perempuan (هِيَ)", "Dia lelaki (هُوَ)", "Saya (أَنَا)", "Kamu lelaki (أَنْتَ)"], correct: 0, aras: "Tinggi", exp: "Huruf Ta (تـ) di awal kata kerja mudhari' menunjukkan هِيَ (Perempuan)." },
+        { qAr: "الْمِرْآةُ ... (Cermin itu bersih)", qBm: "Cermin itu bersih:", qEn: "The mirror is clean:", options: ["نَظِيفَةٌ", "نَظِيفٌ", "جَمِيلٌ", "كَبِيرٌ"], correct: 0, aras: "Sederhana", exp: "الْمِرْآةُ adalah Muannas, maka sifatnya نَظِيفَةٌ." },
+        { qAr: "الصَّابُونُ ... (Sabun itu wangi)", qBm: "Sabun itu wangi:", qEn: "The soap is fragrant:", options: ["طَيِّبٌ", "طَيِّبَةٌ", "نَظِيفَةٌ", "جَمِيلَةٌ"], correct: 0, aras: "Sederhana", exp: "الصَّابُونُ adalah Muzakkar, maka sifatnya طَيِّبٌ." },
+        { qAr: "مَاذَا تَفْعَلُ بِالْمِقْلَمَةِ؟ - ... أَظَافِرِي.", qBm: "Apakah yang anda buat dengan pemotong kuku?", qEn: "What do you do with the nail clipper?", options: ["أَقُصُّ", "أَمْشُطُ", "أَغْسِلُ", "أَنْظُرُ"], correct: 0, aras: "Sederhana", exp: "أَقُصُّ (Saya memotong)." },
+        { qAr: "Pilih ayat yang BETUL mengikut tatabahasa:", qBm: "Pilih ayat yang betul:", qEn: "Choose grammatically correct sentence:", options: ["هَذِهِ مِنْشَفَةٌ نَظِيفَةٌ", "هَذَا مِنْشَفَةٌ نَظِيفٌ", "هَذِهِ مِنْشَفَةٌ نَظِيفٌ", "هَذَا مِنْشَفَةٌ نَظِيفَةٌ"], correct: 0, aras: "Tinggi", exp: "Semua kata bersifat Muannas: هَذِهِ + مِنْشَفَةٌ + نَظِيفَةٌ." },
+        { qAr: "Kata kerja untuk 'Saya mencuci':", qBm: "Apakah 'Saya mencuci'?", qEn: "Arabic for 'I wash':", options: ["أَغْسِلُ", "أَقُصُّ", "أَمْشُطُ", "أُنَظِّفُ"], correct: 0, aras: "Mudah", exp: "أَغْسِلُ bermaksud 'Saya mencuci'." }
+      ],
+
+      unit1_set3: [
+        { qAr: "أَيْن تُوضَعُ فُرْشَاةُ الأَسْنَانِ؟ - فِي ...", qBm: "Di manakah berus gigi diletakkan?", qEn: "Where is the toothbrush kept?", options: ["الْكُوبِ", "الْمِرْآةِ", "الدَّلْوِ", "الْمِشْطِ"], correct: 0, aras: "Sederhana", exp: "الْكُوبِ bermaksud cawan / bekas." },
+        { qAr: "Pilih perkataan berlawanan: نَظِيفٌ (Bersih) X ...", qBm: "Lawan bagi perkataan Bersih (نَظِيفٌ):", qEn: "Opposite of clean (نَظِيفٌ):", options: ["وَسِخٌ", "جَمِيلٌ", "كَبِيرٌ", "جَدِيدٌ"], correct: 0, aras: "Sederhana", exp: "وَسِخٌ bermaksud kotor." },
+        { qAr: "عَائِشَةُ ... شَعْرَهَا بِالشَّامْبُوه.", qBm: "Aishah ... rambutnya dengan syampu.", qEn: "Aishah ... her hair with shampoo.", options: ["تَغْسِلُ", "يَغْسِلُ", "أَغْسِلُ", "تَقُصُّ"], correct: 0, aras: "Sederhana", exp: "Aishah (Perempuan) guna تَغْسِلُ." },
+        { qAr: "عُمَرُ ... أَظَافِرَهُ كُلَّ أُسْبُوعٍ.", qBm: "Umar ... kukunya setiap minggu.", qEn: "Umar ... his nails every week.", options: ["يَقُصُّ", "تَقُصُّ", "أَقُصُّ", "تَقُصِّينَ"], correct: 0, aras: "Sederhana", exp: "Umar (Lelaki) guna يَقُصُّ." },
+        { qAr: "Pilih kata tunjuk untuk: ... دَلْوٌ كَبِيرٌ", qBm: "Isi tempat kosong:", qEn: "Fill in the blank:", options: ["هَذَا", "هَذِهِ", "هِيَ", "تِلْكَ"], correct: 0, aras: "Mudah", exp: "دَلْوٌ adalah Muzakkar, guna هَذَا." },
+        { qAr: "Pilih kata tunjuk untuk: ... مِرْآةٌ جَمِيلَةٌ", qBm: "Isi tempat kosong:", qEn: "Fill in the blank:", options: ["هَذِهِ", "هَذَا", "هُوَ", "ذَلِكَ"], correct: 0, aras: "Mudah", exp: "مِرْآةٌ adalah Muannas, guna هَذِهِ." },
+        { qAr: "Pilih jamak (kata banyak) bagi 'سِنٌّ' (gigi):", qBm: "Jamak bagi gigi (سِنٌّ):", qEn: "Plural for tooth (سِنٌّ):", options: ["أَسْنَانٌ", "أَظَافِرُ", "أَيْدٍ", "وُجُوهٌ"], correct: 0, aras: "Tinggi", exp: "Jamak bagi سِنٌّ ialah أَسْنَانٌ." },
+        { qAr: "Pilih jamak bagi 'ظُفْرٌ' (kuku):", qBm: "Jamak bagi kuku (ظُفْرٌ):", qEn: "Plural for nail (ظُفْرٌ):", options: ["أَظَافِرُ", "أَسْنَانٌ", "شُعُورٌ", "أَعْيُنٌ"], correct: 0, aras: "Tinggi", exp: "Jamak bagi ظُفْرٌ ialah أَظَافِرُ." },
+        { qAr: "أَنْتَ ... وَجْهَكَ بِالْمَاءِ وَالصَّابُونِ.", qBm: "Kamu (lelaki) mencuci mukamu:", qEn: "You (male) wash your face:", options: ["تَغْسِلُ", "تَغْسِلِينَ", "يَغْسِلُ", "أَغْسِلُ"], correct: 0, aras: "Sederhana", exp: "Bagi أَنْتَ (lelaki), kata kerja ialah تَغْسِلُ." },
+        { qAr: "أَنْتِ ... وَجْهَكِ بِالْمَاءِ وَالصَّابُونِ.", qBm: "Kamu (perempuan) mencuci mukamu:", qEn: "You (female) wash your face:", options: ["تَغْسِلِينَ", "تَغْسِلُ", "يَغْسِلُ", "أَغْسِلُ"], correct: 0, aras: "Tinggi", exp: "Bagi أَنْتِ (perempuan), kata kerja ialah تَغْسِلِينَ." },
+        { qAr: "مَا هَذِهِ؟ (Sikat rambut)", qBm: "Apakah ini? (Sikat)", qEn: "What is this? (Comb)", options: ["هَذَا مِشْطٌ", "هَذِهِ مِشْطٌ", "هَذَا مِغْسَلَةٌ", "هَذِهِ صَابُونٌ"], correct: 0, aras: "Mudah", exp: "مِشْطٌ adalah Muzakkar, maka ayatnya: هَذَا مِشْطٌ." },
+        { qAr: "Manakah perkataan yang mempunyai harakat Syaddah (ّ)?", qBm: "Perkataan ada Syaddah:", qEn: "Word with Shaddah:", options: ["الشَّامْبُوه", "الصَّابُون", "الْمِشْط", "الدَّلْو"], correct: 0, aras: "Mudah", exp: "الشَّامْبُوه ada syaddah pada huruf الشين." },
+        { qAr: "أَنَا أُنَظِّفُ جِسْمِي كُلَّ يَوْمٍ. Maksud 'جِسْمِي':", qBm: "Maksud 'جِسْمِي':", qEn: "Meaning of 'جِسْمِي':", options: ["Badan saya", "Rambut saya", "Gigi saya", "Kuku saya"], correct: 0, aras: "Mudah", exp: "جِسْمِي bermaksud badan saya." },
+        { qAr: "Isi tempat kosong: هَذَا مَجُونُ الأَسْنَانِ ... (Bermanfaat)", qBm: "Lengkapkan ayat:", qEn: "Complete sentence:", options: ["مُفِيدٌ", "مُفِيدَةٌ", "كَبِيرَةٌ", "جَمِيلَةٌ"], correct: 0, aras: "Sederhana", exp: "مَجُونُ adalah Muzakkar, gunakan مُفِيدٌ." },
+        { qAr: "Susun perkataan: (أَظَافِرِي - بِـ - أَقُصُّ - الْمِقْلَمَةِ)", qBm: "Susun ayat:", qEn: "Arrange words:", options: ["أَقُصُّ أَظَافِرِي بِالْمِقْلَمَةِ", "بِالْمِقْلَمَةِ أَقُصُّ أَظَافِرِي", "أَظَافِرِي أَقُصُّ بِالْمِقْلَمَةِ", "أَقُصُّ بِالْمِقْلَمَةِ أَظَافِرِي"], correct: 0, aras: "Tinggi", exp: "Susunan tepat: أَقُصُّ أَظَافِرِي بِالْمِقْلَمَةِ." }
+      ],
+
+      // UNIT 2: PEKERJAAN & CITA-CITA - الشباب أمل الأمة (3 SETS)
+      unit2_set1: [
+        { qAr: "مَنْ هَذَا؟ (Akauntan Lelaki)", qBm: "Siapakah ini? (Akauntan Lelaki)", qEn: "Who is this? (Male Accountant)", options: ["مُحَاسِبٌ", "مُحَامٍ", "طَبِيبٌ", "مُهَنْدِسٌ"], correct: 0, aras: "Mudah", exp: "مُحَاسِبٌ bermaksud Akauntan lelaki." },
+        { qAr: "مَنْ هَذِهِ؟ (Peguam Wanita)", qBm: "Siapakah ini? (Peguam Wanita)", qEn: "Who is this? (Female Lawyer)", options: ["مُحَامِيَةٌ", "مُحَاسِبَةٌ", "طَبِيبَةٌ", "شُرْطِيَّةٌ"], correct: 0, aras: "Mudah", exp: "مُحَامِيَةٌ bermaksud Peguam wanita." },
+        { qAr: "أَنَا أُحَاسِبُ الأَمْوَالَ فِي الشَّرِكَةِ، أَنَا ...", qBm: "Saya mengira wang di syarikat, saya seorang ...", qEn: "I manage finance in the company, I am an ...", options: ["مُحَاسِبٌ", "مُحَامٍ", "طَيَّارٌ", "صَحَفِيٌّ"], correct: 0, aras: "Sederhana", exp: "مُحَاسِبٌ bermaksud Akauntan (Accountant)." },
+        { qAr: "يُدَافِعُ ... عَنِ الْمَظْلُومِينَ فِي الْمَحْكَمَةِ.", qBm: "Siapakah yang membela orang dizalimi di mahkamah?", qEn: "Who defends clients in court?", options: ["الْمُحَامِي", "الْمُحَاسِبُ", "الطَّبِيبُ", "الْمُهَنْدِسُ"], correct: 0, aras: "Sederhana", exp: "الْمُحَامِي bermaksud peguam lelaki." },
+        { qAr: "Tukarkan 'مُحَاسِبٌ' (Muzakkar) kepada Muannas (perempuan):", qBm: "Bentuk Muannas bagi Akauntan:", qEn: "Feminine form of Accountant:", options: ["مُحَاسِبَةٌ", "مُحَاسِبَانِ", "مُحَاسِبُونَ", "أَحْسَابٌ"], correct: 0, aras: "Mudah", exp: "Tambah Ta Marbuthah menjadi مُحَاسِبَةٌ." },
+        { qAr: "Tukarkan 'مُحَامٍ' (Muzakkar) kepada Muannas (perempuan):", qBm: "Bentuk Muannas bagi Peguam:", qEn: "Feminine form of Lawyer:", options: ["مُحَامِيَةٌ", "مُحَامُونَ", "مُحَامِيَانِ", "مُحَامِيَاتٌ"], correct: 0, aras: "Sederhana", exp: "Bentuk perempuan bagi peguam ialah مُحَامِيَةٌ." },
+        { qAr: "مَنْ هَذَا؟ (Doktor lelaki)", qBm: "Siapakah ini? (Doktor lelaki)", qEn: "Who is this? (Male Doctor)", options: ["طَبِيبٌ", "مُهَنْدِسٌ", "شُرْطِيٌّ", "مُعَلِّمٌ"], correct: 0, aras: "Mudah", exp: "طَبِيبٌ bermaksud doktor lelaki." },
+        { qAr: "مَا عَمَلُ هَذِهِ الْمَرْأَةِ؟ (Polis wanita)", qBm: "Apakah pekerjaan ini? (Polis wanita)", qEn: "Female police officer:", options: ["شُرْطِيَّةٌ", "طَبِيبَةٌ", "طَيَّارَةٌ", "مُحَامِيَةٌ"], correct: 0, aras: "Mudah", exp: "شُرْطِيَّةٌ bermaksud polis wanita." },
+        { qAr: "أَنَا أَبْنِي المَبَانِيَ، أَنَا ... (Jurutera)", qBm: "Saya membina bangunan, saya ...", qEn: "I build buildings, I am an ...", options: ["مُهَنْدِسٌ", "طَبِيبٌ", "صَحَفِيٌّ", "طَبَّاخٌ"], correct: 0, aras: "Sederhana", exp: "مُهَنْدِسٌ bermaksud jurutera." },
+        { qAr: "يَعْمَلُ الْمُحَاسِبُ فِي ...", qBm: "Akauntan bekerja di ...", qEn: "The accountant works in the ...", options: ["الشَّرِكَةِ / الْبَنْكِ", "الْمُسْتَشْفَى", "الْمَطَارِ", "الْمَدْرَسَةِ"], correct: 0, aras: "Sederhana", exp: "Akauntan bekerja di Syarikat (الشَّرِكَة) atau Bank (الْبَنْك)." },
+        { qAr: "تَعْمَلُ الْمُحَامِيَةُ فِي ...", qBm: "Peguam wanita bekerja di ...", qEn: "Female lawyer works in the ...", options: ["الْمَحْكَمَةِ", "الْمَطَارِ", "الْمُسْتَشْفَى", "الْمَطْعَمِ"], correct: 0, aras: "Sederhana", exp: "الْمَحْكَمَةِ bermaksud mahkamah." },
+        { qAr: "Pilih kata kerja yang BETUL: ... الْمُحَاسِبَةُ الحِسَابَاتِ.", qBm: "Pilih kata kerja untuk Akauntan Perempuan:", qEn: "Select correct verb for female accountant:", options: ["تُحَاسِبُ", "يُحَاسِبُ", "أُحَاسِبُ", "حَاسِبْ"], correct: 0, aras: "Tinggi", exp: "Untuk perempuan (الْمُحَاسِبَةُ), kata kerja bermula huruf Ta (تُحَاسِبُ)." },
+        { qAr: "Pilih kata kerja yang BETUL: ... الْمُحَامِي عَنِ الْمُتَّهَمِ.", qBm: "Pilih kata kerja untuk Peguam Lelaki:", qEn: "Select correct verb for male lawyer:", options: ["يُدَافِعُ", "تُدَافِعُ", "أُدَافِعُ", "دَافِعِي"], correct: 0, aras: "Tinggi", exp: "Untuk lelaki (الْمُحَامِي), kata kerja bermula huruf Ya (يُدَافِعُ)." },
+        { qAr: "مَا مَعْنَى 'الشَّبَابُ أَمَلُ الأُمَّةِ'؟", qBm: "Apakah maksud tajuk 'الشباب أمل الأمة'?", qEn: "What is the meaning of 'الشباب أمل الأمة'?", options: ["Pemuda harapan bangsa", "Masa depan yang cerah", "Kebersihan amalan mulia", "Pekerjaan yang murni"], correct: 0, aras: "Mudah", exp: "الشباب أمل الأمة bermaksud Pemuda harapan bangsa." },
+        { qAr: "Padanan pekerjaan & tempat kerja yang BETUL:", qBm: "Padanan yang betul:", qEn: "Correct pair:", options: ["مُحَامٍ - الْمَحْكَمَةُ", "طَبِيبٌ - الْمَدْرَسَةُ", "مُعَلِّمٌ - الْمُسْتَشْفَى", "شُرْطِيٌّ - الْمَطَارُ"], correct: 0, aras: "Sederhana", exp: "مُحَامٍ (Peguam) di الْمَحْكَمَةُ (Mahkamah)." }
+      ],
+
+      unit2_set2: [
+        { qAr: "هَذَا أَبِي، هُوَ ... فِي الْبَنْكِ. (Akauntan)", qBm: "Ini ayah saya, dia ... di bank. (Akauntan)", qEn: "This is my father, he is an accountant:", options: ["مُحَاسِبٌ", "مُحَاسِبَةٌ", "مُحَامِيَةٌ", "طَبِيبَةٌ"], correct: 0, aras: "Mudah", exp: "Ayah (Lelaki) gunakan مُحَاسِبٌ (Muzakkar)." },
+        { qAr: "هَذِهِ أُمِّي، هِيَ ... فِي الْمَحْكَمَةِ. (Peguam)", qBm: "Ini ibu saya, dia ... di mahkamah. (Peguam)", qEn: "This is my mother, she is a lawyer:", options: ["مُحَامِيَةٌ", "مُحَامٍ", "مُحَاسِبٌ", "طَبِيبٌ"], correct: 0, aras: "Mudah", exp: "Ibu (Perempuan) gunakan مُحَامِيَةٌ (Muannas)." },
+        { qAr: "يُدَرِّسُ ... الطُّلاَّبَ فِي الْمَدْرَسَةِ.", qBm: "Siapa mengajar murid di sekolah?", qEn: "Who teaches students in school?", options: ["الْمُعَلِّمُ", "الطَّيَّارُ", "الْمُحَامِي", "الصَّيْدَلِيُّ"], correct: 0, aras: "Mudah", exp: "الْمُعَلِّمُ bermaksud guru lelaki." },
+        { qAr: "تَطْبُخُ ... الطَّعَامَ فِي المَطْعَمِ.", qBm: "Siapa memasak di restoran?", qEn: "Who cooks in the restaurant?", options: ["الطَّبَّاخَةُ", "الصَّحَفِيَّةُ", "المُهَنْدِسَةُ", "الشُّرْطِيَّةُ"], correct: 0, aras: "Mudah", exp: "الطَّبَّاخَةُ bermaksud tukang masak wanita." },
+        { qAr: "تُعِدُّ ... الأَدْوِيَةَ فِي الصَّيْدَلِيَّةِ.", qBm: "Siapa menyediakan ubat di farmasi?", qEn: "Who prepares medicine in pharmacy?", options: ["الصَّيْدَلِيَّةُ", "الصَّحَفِيَّةُ", "الْمُعَلِّمَةُ", "الطَيَّارَةُ"], correct: 0, aras: "Sederhana", exp: "الصَّيْدَلِيَّةُ bermaksud ahli farmasi wanita." },
+        { qAr: "يَكْتُبُ ... الأَخْبَارَ فِي الْجَرِيدَةِ.", qBm: "Siapa menulis berita di akhbar?", qEn: "Who writes news in newspaper?", options: ["الصَّحَفِيُّ", "الشُّرْطِيُّ", "الطَّبِيبُ", "الْمُهَنْدِسُ"], correct: 0, aras: "Sederhana", exp: "الصَّحَفِيُّ bermaksud wartawan lelaki." },
+        { qAr: "مَا أَمَلُكِ يَا فَاطِمَةُ؟ - أَمَلِي أَنْ أَكُونَ ... (Peguam Wanita)", qBm: "Apakah cita-citamu Fatimah? (Peguam)", qEn: "What is your ambition Fatimah? (Lawyer)", options: ["مُحَامِيَةً", "مُحَامِيًا", "مُحَاسِبًا", "طَبِيبًا"], correct: 0, aras: "Tinggi", exp: "Fatimah (perempuan) menjawab: مُحَامِيَةً." },
+        { qAr: "مَا أَمَلُكَ يَا عُمَرُ؟ - أَمَلِي أَنْ أَكُونَ ... (Akauntan Lelaki)", qBm: "Apakah cita-citamu Umar? (Akauntan)", qEn: "What is your ambition Umar? (Accountant)", options: ["مُحَاسِبًا", "مُحَاسِبَةً", "مُحَامِيَةً", "طَبِيبَةً"], correct: 0, aras: "Tinggi", exp: "Umar (lelaki) menjawab: مُحَاسِبًا." },
+        { qAr: "Pilih ayat tatabahasa Muzakkar yang BETUL:", qBm: "Pilih ayat Muzakkar yang betul:", qEn: "Select correct masculine sentence:", options: ["أَحْمَدُ مُحَاسِبٌ نَشِيطٌ", "أَحْمَدُ مُحَاسِبَةٌ نَشِيطَةٌ", "أَحْمَدُ مُحَاسِبٌ نَشِيطَةٌ", "أَحْمَدُ مُحَاسِبَةٌ نَشِيطٌ"], correct: 0, aras: "Tinggi", exp: "Semua kata bersifat Muzakkar: أَحْمَدُ + مُحَاسِبٌ + نَشِيطٌ." },
+        { qAr: "Pilih ayat tatabahasa Muannas yang BETUL:", qBm: "Pilih ayat Muannas yang betul:", qEn: "Select correct feminine sentence:", options: ["عَائِشَةُ مُحَامِيَةٌ مَاهِرَةٌ", "عَائِشَةُ مُحَامٍ مَاهِرٌ", "عَائِشَةُ مُحَامِيَةٌ مَاهِرٌ", "عَائِشَةُ مُحَامٍ مَاهِرَةٌ"], correct: 0, aras: "Tinggi", exp: "Semua kata bersifat Muannas: عَائِشَةُ + مُحَامِيَةٌ + مَاهِرَةٌ." },
+        { qAr: "تَطِيرُ ... بِالطَّائِرَةِ فِي السَّمَاءِ.", qBm: "Siapa memandu kapal terbang? (Wanita)", qEn: "Who flies the airplane? (Female)", options: ["الطَّيَّارَةُ", "الْمُعَلِّمَةُ", "الطَّبِيبَةُ", "الْمُحَاسِبَةُ"], correct: 0, aras: "Sederhana", exp: "الطَّيَّارَةُ bermaksud jurupandu udara wanita (pilot)." },
+        { qAr: "يَحْمِي ... الأَمْنَ فِي الْبِلَادِ.", qBm: "Siapa menjaga keselamatan?", qEn: "Who maintains security?", options: ["الشُّرْطِيُّ", "الطَّبَّاخُ", "الْمُعَلِّمُ", "الصَّيْدَلِيُّ"], correct: 0, aras: "Mudah", exp: "الشُّرْطِيُّ bermaksud anggota polis." },
+        { qAr: "Pilih soalan yang betul untuk bertanyakan cita-cita:", qBm: "Soalan tanya cita-cita:", qEn: "Question about ambition:", options: ["مَا أَمَلُكَ فِي الْمُسْتَقْبَلِ؟", "أَيْن تَعْمَلُ؟", "مَنْ أَنْتَ؟", "كَيْفَ حَالُكَ؟"], correct: 0, aras: "Sederhana", exp: "مَا أَمَلُكَ فِي الْمُسْتَقْبَلِ؟ (Apakah cita-citamu di masa hadapan?)." },
+        { qAr: "Kata kerja 'تَعْمَلُ' digunakan untuk:", qBm: "Kata kerja 'تَعْمَلُ' untuk:", qEn: "Verb 'تَعْمَلُ' is used for:", options: ["Dia perempuan (هِيَ) / Kamu lelaki (أَنْتَ)", "Saya (أَنَا)", "Dia lelaki (هُوَ)", "Mereka (هُمْ)"], correct: 0, aras: "Tinggi", exp: "تَعْمَلُ untuk هِيَ atau أَنْتَ." },
+        { qAr: "Kata kerja 'يَعْمَلُ' digunakan untuk:", qBm: "Kata kerja 'يَعْمَلُ' untuk:", qEn: "Verb 'يَعْمَلُ' is used for:", options: ["Dia lelaki (هُوَ)", "Dia perempuan (هِيَ)", "Saya (أَنَا)", "Kamu perempuan (أَنْتِ)"], correct: 0, aras: "Sederhana", exp: "Huruf Ya di awal kata kerja mudhari' menunjukkan هُوَ (Dia Lelaki)." }
+      ],
+
+      unit2_set3: [
+        { qAr: "الْمُحَاسِبَةُ ... فِي عَمَلِهَا. (Akauntan wanita itu rajin)", qBm: "Lengkapkan ayat:", qEn: "Complete the sentence:", options: ["مُجْتَهِدَةٌ", "مُجْتَهِدٌ", "مَاهِرٌ", "كَبِيرٌ"], correct: 0, aras: "Sederhana", exp: "الْمُحَاسِبَةُ adalah Muannas, kata sifatnya مُجْتَهِدَةٌ." },
+        { qAr: "الْمُحَامِي ... فِي المَحْكَمَةِ. (Peguam lelaki itu mahir)", qBm: "Lengkapkan ayat:", qEn: "Complete sentence:", options: ["مَاهِرٌ", "مَاهِرَةٌ", "مُجْتَهِدَةٌ", "كَبِيرَةٌ"], correct: 0, aras: "Sederhana", exp: "الْمُحَامِي adalah Muzakkar, kata sifatnya مَاهِرٌ." },
+        { qAr: "Tukarkan ayat ini kepada Muannas: 'هُوَ طَبِيبٌ مَاهِرٌ'", qBm: "Tukarkan ke bentuk Muannas:", qEn: "Convert to feminine:", options: ["هِيَ طَبِيبَةٌ مَاهِرَةٌ", "هِيَ طَبِيبٌ مَاهِرَةٌ", "هُوَ طَبِيبَةٌ مَاهِرَةٌ", "هِيَ طَبِيبَةٌ مَاهِرٌ"], correct: 0, aras: "Tinggi", exp: "Tukar ganti nama & sifat: هِيَ طَبِيبَةٌ مَاهِرَةٌ." },
+        { qAr: "Tukarkan ayat ini kepada Muzakkar: 'هِيَ مُحَاسِبَةٌ نَشِيطَةٌ'", qBm: "Tukarkan ke bentuk Muzakkar:", qEn: "Convert to masculine:", options: ["هُوَ مُحَاسِبٌ نَشِيطٌ", "هُوَ مُحَاسِبَةٌ نَشِيطٌ", "هِيَ مُحَاسِبٌ نَشِيطٌ", "هُوَ مُحَاسِبٌ نَشِيطَةٌ"], correct: 0, aras: "Tinggi", exp: "Tukar ke Muzakkar: هُوَ مُحَاسِبٌ نَشِيطٌ." },
+        { qAr: "أَيْن يَعْمَلُ الطَّبِيبُ؟ - فِي ...", qBm: "Di mana doktor bekerja?", qEn: "Where does doctor work?", options: ["الْمُسْتَشْفَى", "الْمَطَارِ", "الْمَطْعَمِ", "الْمَحْكَمَةِ"], correct: 0, aras: "Mudah", exp: "الْمُسْتَشْفَى bermaksud hospital." },
+        { qAr: "أَيْن تَعْمَلُ الْمُعَلِّمَةُ؟ - فِي ...", qBm: "Di mana guru wanita bekerja?", qEn: "Where does female teacher work?", options: ["الْمَدْرَسَةِ", "الْمَطَارِ", "الصَّيْدَلِيَّةِ", "الْمَكْتَبَةِ"], correct: 0, aras: "Mudah", exp: "الْمَدْرَسَةِ bermaksud sekolah." },
+        { qAr: "Pilih perkataan kata kerja yang bermaksud 'Dia (Lelaki) mengira':", qBm: "Kata kerja 'Dia mengira':", qEn: "Verb 'He calculates':", options: ["يُحَاسِبُ", "تُحَاسِبُ", "أُحَاسِبُ", "حَاسِبْ"], correct: 0, aras: "Sederhana", exp: "يُحَاسِبُ bermaksud dia lelaki mengira / mengurus akaun." },
+        { qAr: "Pilih kata kerja bermaksud 'Dia (Perempuan) membela':", qBm: "Kata kerja 'Dia membela':", qEn: "Verb 'She defends':", options: ["تُدَافِعُ", "يُدَافِعُ", "أُدَافِعُ", "دَافِعْ"], correct: 0, aras: "Sederhana", exp: "تُدَافِعُ bermaksud dia perempuan membela." },
+        { qAr: "Isi tempat kosong: هَذَا ... (Jurutera lelaki)", qBm: "Isi tempat kosong:", qEn: "Fill in the blank:", options: ["مُهَنْدِسٌ", "مُهَنْدِسَةٌ", "طَبِيبَةٌ", "مُحَاسِبَةٌ"], correct: 0, aras: "Mudah", exp: "هَذَا berpasangan dengan Muzakkar: مُهَنْدِسٌ." },
+        { qAr: "Isi tempat kosong: هَذِهِ ... (Wartawan wanita)", qBm: "Isi tempat kosong:", qEn: "Fill in the blank:", options: ["صَحَفِيَّةٌ", "صَحَفِيُّ", "مُحَاسِبٌ", "مُحَامٍ"], correct: 0, aras: "Mudah", exp: "هَذِهِ berpasangan dengan Muannas: صَحَفِيَّةٌ." },
+        { qAr: "Manakah pasangan Muzakkar & Muannas yang BETUL?", qBm: "Padanan Muzakkar & Muannas betul:", qEn: "Correct male & female pair:", options: ["مُحَاسِبٌ - مُحَاسِبَةٌ", "مُحَامٍ - مُحَاسِبَةٌ", "طَبِيبٌ - مُهَنْدِسَةٌ", "شُرْطِيٌّ - طَيَّارَةٌ"], correct: 0, aras: "Sederhana", exp: "مُحَاسِبٌ (L) dan مُحَاسِبَةٌ (P) adalah pasangannya." },
+        { qAr: "Manakah pasangan Muzakkar & Muannas bagi Peguam yang BETUL?", qBm: "Padanan Peguam L & P:", qEn: "Correct Lawyer pair:", options: ["مُحَامٍ - مُحَامِيَةٌ", "مُحَاسِبٌ - مُحَامِيَةٌ", "مُحَامٍ - مُحَاسِبَةٌ", "مُحَامِيَةٌ - مُحَاسِبٌ"], correct: 0, aras: "Sederhana", exp: "مُحَامٍ (L) dan مُحَامِيَةٌ (P)." },
+        { qAr: "Jamak bagi 'طَبِيبٌ' (doktor-doktor):", qBm: "Jamak bagi doktor (طَبِيبٌ):", qEn: "Plural for doctor:", options: ["أَطِبَّاءُ", "طَبِيبُونَ", "طَبِيبَاتٌ", "أَطْبَاخٌ"], correct: 0, aras: "Tinggi", exp: "Jamak bagi طَبِيبٌ ialah أَطِبَّاءُ." },
+        { qAr: "Jamak bagi 'مُعَلِّمَةٌ' (guru-guru wanita):", qBm: "Jamak bagi guru wanita:", qEn: "Plural for female teacher:", options: ["مُعَلِّمَاتٌ", "مُعَلِّمُونَ", "أَعْلاَمٌ", "مُعَلِّمَيْنِ"], correct: 0, aras: "Sederhana", exp: "Jamak Muannas Salim ditambah Alif dan Ta: مُعَلِّمَاتٌ." },
+        { qAr: "Susun ayat: (فِي - يَعْمَلُ - الْمُحَاسِبُ - الشَّرِكَةِ)", qBm: "Susun perkataan:", qEn: "Arrange sentence:", options: ["يَعْمَلُ الْمُحَاسِبُ فِي الشَّرِكَةِ", "فِي الشَّرِكَةِ يَعْمَلُ الْمُحَاسِبُ", "الْمُحَاسِبُ فِي يَعْمَلُ الشَّرِكَةِ", "الشَّرِكَةِ يَعْمَلُ فِي الْمُحَاسِبُ"], correct: 0, aras: "Tinggi", exp: "Susunan betul: يَعْمَلُ الْمُحَاسِبُ فِي الشَّرِكَةِ." }
+      ],
+
+      // UNIT 3: PENGANGKUTAN & PELANCONGAN (3 SETS)
+      unit3_set1: [
+        { qAr: "مَا هَذِهِ؟ (Kapal Terbang)", qBm: "Apakah ini? (Kapal Terbang)", qEn: "Airplane:", options: ["طَائِرَةٌ", "حَافِلَةٌ", "قِطَارٌ", "سَفِينَةٌ"], correct: 0, aras: "Mudah", exp: "طَائِرَةٌ bermaksud kapal terbang." },
+        { qAr: "مَا هَذَا؟ (Kereta api)", qBm: "Apakah ini? (Kereta api)", qEn: "Train:", options: ["قِطَارٌ", "قَارِبٌ", "دَرَّاجَةٌ", "حَافِلَةٌ"], correct: 0, aras: "Mudah", exp: "قِطَارٌ bermaksud kereta api." },
+        { qAr: "أُسَافِرُ إِلَى كَلاَنْتَان بِـ ... (Kereta api elektrik)", qBm: "Saya ke Kelantan naik ...", qEn: "Travel by electric train:", options: ["الْقِطَارِ الْكَهْرَبَائِيِّ", "الدَّرَّاجَةِ النَّارِيَّةِ", "الْقَارِبِ", "السَّفِينَةِ"], correct: 0, aras: "Sederhana", exp: "الْقِطَارِ الْكَهْرَبَائِيِّ bermaksud kereta api elektrik." },
+        { qAr: "أَرْكَبُ ... إِلَى الْمَدْرَسَةِ. (Bas)", qBm: "Saya naik ... ke sekolah.", qEn: "Ride ... to school:", options: ["الْحَافِلَةَ", "الطَّائِرَةَ", "السَّفِينَةَ", "الْقَارِبَ"], correct: 0, aras: "Mudah", exp: "الْحَافِلَةَ bermaksud bas." },
+        { qAr: "تَسِيرُ ... فِي الْبَحْرِ. (Kapal Laut)", qBm: "Kenderaan di laut:", qEn: "Sea vessel:", options: ["السَّفِينَةُ", "الْحَافِلَةُ", "الْقِطَارُ", "الدَّرَّاجَةُ"], correct: 0, aras: "Sederhana", exp: "السَّفِينَةُ bermaksud kapal laut." },
+        { qAr: "مَا مَعْنَى 'دَرَّاجَةٌ نَارِيَّةٌ'؟", qBm: "Maksud 'دَرَّاجَةٌ نَارِيَّةٌ':", qEn: "Meaning:", options: ["Motosikal", "Basikal", "Sampan", "Kereta"], correct: 0, aras: "Mudah", exp: "دَرَّاجَةٌ نَارِيَّةٌ bermaksud motosikal." },
+        { qAr: "Pilih soalan bagi jawapan: 'أُسَافِرُ بِالْحَافِلَةِ'", qBm: "Soalan yang sesuai:", qEn: "Correct question:", options: ["بِمَاذَا تُسَافِرُ؟", "مَاذَا تَرْكَبُ؟", "أَيْن تُسَافِرُ؟", "مَنْ يُسَافِرُ؟"], correct: 0, aras: "Tinggi", exp: "بِمَاذَا تُسَافِرُ؟ (Dengan apa kamu melancong?)." },
+        { qAr: "مَاذَا تَرْكَبِينَ يَا عَائِشَةُ؟ - أَنَا أَرْكَبُ ... (Motosikal)", qBm: "Jawapan Fatimah (Motosikal):", qEn: "Fatimah's answer (Motorcycle):", options: ["الدَّرَّاجَةَ النَّارِيَّةَ", "السَّفِينَةَ", "الْقِطَارَ", "الطَّائِرَةَ"], correct: 0, aras: "Sederhana", exp: "الدَّرَّاجَةَ النَّارِيَّةَ bermaksud motosikal." },
+        { qAr: "يَعْبُرُ الصَّيَّادُ النَّهْرَ بِـ ... (Sampan)", qBm: "Sampan di sungai:", qEn: "Boat on river:", options: ["الْقَارِبِ", "الطَّائِرَةِ", "الْحَافِلَةِ", "الْقِطَارِ"], correct: 0, aras: "Sederhana", exp: "الْقَارِبِ bermaksud sampan/bot." },
+        { qAr: "Huruf Jar bermaksud 'dengan/menaiki': أُسَافِرُ ... الطَّائِرَةِ", qBm: "Pilih Huruf Jar:", qEn: "Select preposition:", options: ["بِـ", "إِلَى", "فِي", "عَلَى"], correct: 0, aras: "Sederhana", exp: "Huruf Jar 'بِـ' bermaksud 'dengan / menaiki'." },
+        { qAr: "مَا مَعْنَى 'رِحْلَةً سَعِيدَةً'؟", qBm: "Maksud ucapan 'رِحْلَةً سَعِيدَةً':", qEn: "Meaning:", options: ["Selamat Berjalan / Happy Journey", "Selamat Pagi", "Selamat Datang", "Terima Kasih"], correct: 0, aras: "Mudah", exp: "Ucapan Selamat Berkelana." },
+        { qAr: "تَطِيرُ ... فِي السَّمَاءِ.", qBm: "Terbang di langit:", qEn: "Flies in sky:", options: ["الطَّائِرَةُ", "السَّفِينَةُ", "الْحَافِلَةُ", "الدَّرَّاجَةُ"], correct: 0, aras: "Mudah", exp: "الطَّائِرَةُ (kapal terbang)." },
+        { qAr: "Pilih kata kerja untuk perempuan (أَنْتِ): ... بِمَاذَا؟", qBm: "Kata kerja untuk أَنْتِ:", qEn: "Verb for أَنْتِ:", options: ["تُسَافِرِينَ", "تُسَافِرُ", "يُسَافِرُ", "أُسَافِرُ"], correct: 0, aras: "Tinggi", exp: "Bagi أَنْتِ, kata kerja ialah تُسَافِرِينَ." },
+        { qAr: "Kenderaan bergerak atas landasan (السِّكَّةُ):", qBm: "Kenderaan atas landasan:", qEn: "Vehicle on track:", options: ["الْقِطَارُ", "الْحَافِلَةُ", "السَّفِينَةُ", "الطَّائِرَةُ"], correct: 0, aras: "Sederhana", exp: "الْقِطَارُ (kereta api)." },
+        { qAr: "Susun ayat: (إِلَى - أُسَافِرُ - بِالطَّائِرَةِ - قَدَحَ)", qBm: "Susun ayat:", qEn: "Arrange sentence:", options: ["أُسَافِرُ بِالطَّائِرَةِ إِلَى قَدَحَ", "إِلَى قَدَحَ بِالطَّائِرَةِ أُسَافِرُ", "بِالطَّائِرَةِ إِلَى أُسَافِرُ قَدَحَ", "قَدَحَ أُسَافِرُ إِلَى بِالطَّائِرَةِ"], correct: 0, aras: "Tinggi", exp: "أُسَافِرُ بِالطَّائِرَةِ إِلَى قَدَحَ." }
+      ],
+
+      unit3_set2: [
+        { qAr: "مَا هَذِهِ؟ (Basikal biasa)", qBm: "Apakah ini? (Basikal)", qEn: "What is this? (Bicycle)", options: ["دَرَّاجَةٌ", "دَرَّاجَةٌ نَارِيَّةٌ", "حَافِلَةٌ", "سَيَّارَةٌ"], correct: 0, aras: "Mudah", exp: "دَرَّاجَةٌ bermaksud basikal." },
+        { qAr: "مَا هَذِهِ؟ (Kereta)", qBm: "Apakah ini? (Kereta)", qEn: "What is this? (Car)", options: ["سَيَّارَةٌ", "حَافِلَةٌ", "طَائِرَةٌ", "سَفِينَةٌ"], correct: 0, aras: "Mudah", exp: "سَيَّارَةٌ bermaksud kereta." },
+        { qAr: "أَيْنَ المَطَارُ؟ - المَطَارُ مَكَانُ هُبُوطِ ...", qBm: "Lapangan terbang tempat mendarat ...", qEn: "Airport is where ... lands:", options: ["الطَّائِرَةِ", "السَّفِينَةِ", "الْقِطَارِ", "الْحَافِلَةِ"], correct: 0, aras: "Sederhana", exp: "الطَّائِرَةِ (kapal terbang)." },
+        { qAr: "أَيْنَ الْمِينَاءُ؟ - الْمِينَاءُ مَكَانُ رُسُوِّ ...", qBm: "Pelabuhan tempat berlabuh ...", qEn: "Port is where ... anchors:", options: ["السَّفِينَةِ", "الطَّائِرَةِ", "الْقِطَارِ", "الْحَافِلَةِ"], correct: 0, aras: "Sederhana", exp: "السَّفِينَةِ (kapal laut)." },
+        { qAr: "أَيْنَ المَحَطَّةُ؟ - المَحَطَّةُ مَكَانُ وُقُوفِ ...", qBm: "Stesen tempat berhenti ...", qEn: "Station is for ...", options: ["الْقِطَارِ / الْحَافِلَةِ", "السَّفِينَةِ", "الطَّائِرَةِ", "الْقَارِبِ"], correct: 0, aras: "Sederhana", exp: "المَحَطَّةُ bermaksud stesen bas/kereta api." },
+        { qAr: "Pilih kata tunjuk untuk: ... سَيَّارَةٌ جَمِيلَةٌ", qBm: "Isi tempat kosong:", qEn: "Fill in the blank:", options: ["هَذِهِ", "هَذَا", "هُوَ", "ذَلِكَ"], correct: 0, aras: "Mudah", exp: "سَيَّارَةٌ adalah Muannas, guna هَذِهِ." },
+        { qAr: "Pilih kata tunjuk untuk: ... قِطَارٌ سَرِيعٌ", qBm: "Isi tempat kosong:", qEn: "Fill in the blank:", options: ["هَذَا", "هَذِهِ", "هِيَ", "تِلْكَ"], correct: 0, aras: "Mudah", exp: "قِطَارٌ adalah Muzakkar, guna هَذَا." },
+        { qAr: "أَنَا ... إِلَى مَكَّةَ لِلْعُمْرَةِ.", qBm: "Saya melancong / pergi ke Makkah:", qEn: "I travel to Makkah:", options: ["أُسَافِرُ", "يُسَافِرُ", "تُسَافِرُ", "تُسَافِرِينَ"], correct: 0, aras: "Mudah", exp: "Kata ganti أَنَا guna أُسَافِرُ." },
+        { qAr: "عُمَرُ ... إِلَى صَبَاح بِالطَّائِرَةِ.", qBm: "Umar melancong ke Sabah:", qEn: "Umar travels to Sabah:", options: ["يُسَافِرُ", "تُسَافِرُ", "أُسَافِرُ", "تُسَافِرِينَ"], correct: 0, aras: "Sederhana", exp: "Umar (Lelaki) guna يُسَافِرُ." },
+        { qAr: "فَاطِمَةُ ... إِلَى لَنِكَاِوِي بِالسَّفِينَةِ.", qBm: "Fatimah melancong ke Langkawi:", qEn: "Fatimah travels to Langkawi:", options: ["تُسَافِرُ", "يُسَافِرُ", "أُسَافِرُ", "يُسَافِرُونَ"], correct: 0, aras: "Sederhana", exp: "Fatimah (Perempuan) guna تُسَافِرُ." },
+        { qAr: "Maksud kata sifat 'سَرِيعٌ':", qBm: "Maksud 'سَرِيعٌ':", qEn: "Meaning of 'سَرِيعٌ':", options: ["Laju / Cepat", "Lambat", "Besar", "Kecil"], correct: 0, aras: "Mudah", exp: "سَرِيعٌ bermaksud laju." },
+        { qAr: "Maksud kata sifat 'بَطِيءٌ':", qBm: "Maksud 'بَطِيءٌ':", qEn: "Meaning of 'بَطِيءٌ':", options: ["Perlahan / Lambat", "Laju", "Tinggi", "Dekat"], correct: 0, aras: "Mudah", exp: "بَطِيءٌ bermaksud perlahan." },
+        { qAr: "الْقِطَارُ الْكَهْرَبَائِيُّ ... (Kereta api elektrik itu laju)", qBm: "Lengkapkan ayat:", qEn: "Complete sentence:", options: ["سَرِيعٌ", "سَرِيعَةٌ", "بَطِيئَةٌ", "كَبِيرَةٌ"], correct: 0, aras: "Sederhana", exp: "الْقِطَارُ adalah Muzakkar, guna سَرِيعٌ." },
+        { qAr: "الطَّائِرَةُ ... (Kapal terbang itu besar)", qBm: "Lengkapkan ayat:", qEn: "Complete sentence:", options: ["كَبِيرَةٌ", "كَبِيرٌ", "صَغِيرٌ", "سَرِيعٌ"], correct: 0, aras: "Sederhana", exp: "الطَّائِرَةُ adalah Muannas, guna كَبِيرَةٌ." },
+        { qAr: "Susun perkataan: (بِالْحَافِلَةِ - أَرْكَبُ - إِلَى - الْمَدْرَسَةِ)", qBm: "Susun ayat:", qEn: "Arrange sentence:", options: ["أَرْكَبُ الْحَافِلَةَ إِلَى الْمَدْرَسَةِ", "إِلَى الْمَدْرَسَةِ أَرْكَبُ الْحَافِلَةَ", "الْحَافِلَةَ أَرْكَبُ إِلَى الْمَدْرَسَةِ", "أَرْكَبُ إِلَى الْمَدْرَسَةِ الْحَافِلَةَ"], correct: 0, aras: "Tinggi", exp: "أَرْكَبُ الْحَافِلَةَ إِلَى الْمَدْرَسَةِ." }
+      ],
+
+      unit3_set3: [
+        { qAr: "Pilih jamak bagi 'سَيَّارَةٌ' (kereta-kereta):", qBm: "Jamak kereta:", qEn: "Plural for car:", options: ["سَيَّارَاتٌ", "سَيَّارُونَ", "أَسْيَارٌ", "سَيَايِيرُ"], correct: 0, aras: "Sederhana", exp: "Jamak Muannas Salim: سَيَّارَاتٌ." },
+        { qAr: "Pilih jamak bagi 'طَائِرَةٌ' (kapal-kapal terbang):", qBm: "Jamak kapal terbang:", qEn: "Plural for airplane:", options: ["طَائِرَاتٌ", "طَيَّارُونَ", "أَطْيَارٌ", "طُيُورٌ"], correct: 0, aras: "Sederhana", exp: "طَائِرَاتٌ bermaksud kapal-kapal terbang." },
+        { qAr: "Pilih Huruf Jar yang betul: ذَهَبْتُ ... الْمَطَارِ.", qBm: "Isi tempat kosong:", qEn: "Fill in preposition:", options: ["إِلَى", "فِي", "عَلَى", "عَنْ"], correct: 0, aras: "Mudah", exp: "إِلَى bermaksud 'ke'." },
+        { qAr: "Pilih Huruf Jar yang betul: السَّفِينَةُ ... الْبَحْرِ.", qBm: "Isi tempat kosong:", qEn: "Fill in preposition:", options: ["فِي", "إِلَى", "عَلَى", "مِنْ"], correct: 0, aras: "Mudah", exp: "فِي bermaksud 'di dalam'." },
+        { qAr: "Pilih perkataan yang berlawanan: قَرِيبٌ (Dekat) X ...", qBm: "Lawan perkataan Dekat (قَرِيبٌ):", qEn: "Opposite of near (قَرِيبٌ):", options: ["بَعِيدٌ", "سَرِيعٌ", "كَبِيرٌ", "جَدِيدٌ"], correct: 0, aras: "Sederhana", exp: "بَعِيدٌ bermaksud jauh." },
+        { qAr: "Pilih kata sifat bagi: الدَّرَّاجَةُ النَّارِيَّةُ ... (Laju)", qBm: "Lengkapkan sifat:", qEn: "Complete adjective:", options: ["سَرِيعَةٌ", "سَرِيعٌ", "بَطِيءٌ", "كَبِيرٌ"], correct: 0, aras: "Sederhana", exp: "الدَّرَّاجَةُ adalah Muannas, guna سَرِيعَةٌ." },
+        { qAr: "أَيْنَ تُحِبُّ أَنْ تُسَافِرَ؟ - أُحِبُّ أَنْ أُسَافِرَ إِلَى ...", qBm: "Saya suka melancong ke ...", qEn: "I like to travel to ...", options: ["الْمَدِينَةِ الْمُنَوَّرَةِ", "الْمَطْعَمِ", "الْمَكْتَبَةِ", "الْمُسْتَشْفَى"], correct: 0, aras: "Mudah", exp: "الْمَدِينَةِ الْمُنَوَّرَةِ (Kota Madinah)." },
+        { qAr: "مَا هُوَ أَسْرَعُ وَسِيلَةِ النَّقْلِ؟", qBm: "Apakah pengangkutan paling laju?", qEn: "Fastest transport mode?", options: ["الطَّائِرَةُ", "الْحَافِلَةُ", "الدَّرَّاجَةُ", "الْقَارِبُ"], correct: 0, aras: "Sederhana", exp: "الطَّائِرَةُ (kapal terbang)." },
+        { qAr: "أَنْتَ ... بِالْقِطَارِ. (Muzakkar)", qBm: "Kamu (L) menaiki kereta api:", qEn: "You (M) ride the train:", options: ["تَرْكَبُ", "تَرْكَبِينَ", "يَرْكَبُ", "أَرْكَبُ"], correct: 0, aras: "Sederhana", exp: "Bagi أَنْتَ, guna تَرْكَبُ." },
+        { qAr: "أَنْتِ ... بِالْحَافِلَةِ. (Muannas)", qBm: "Kamu (P) menaiki bas:", qEn: "You (F) ride the bus:", options: ["تَرْكَبِينَ", "تَرْكَبُ", "يَرْكَبُ", "أَرْكَبُ"], correct: 0, aras: "Tinggi", exp: "Bagi أَنْتِ, guna تَرْكَبِينَ." },
+        { qAr: "Maksud ucapan: 'مَعَ السَّلاَمَةِ'", qBm: "Maksud 'مَعَ السَّلاَمَةِ':", qEn: "Meaning:", options: ["Selamat jalan / Semoga selamat", "Selamat pagi", "Selamat malam", "Terima kasih"], correct: 0, aras: "Mudah", exp: "Ucapan perpisahan Selamat Jalan." },
+        { qAr: "Maksud jawapan: 'فِي أَمَانِ اللهِ'", qBm: "Maksud 'فِي أَمَانِ اللهِ':", qEn: "Meaning:", options: ["Dalam perlindungan Allah", "Sama-sama", "Selamat datang", "Alhamdulillah"], correct: 0, aras: "Mudah", exp: "Dalam pemeliharaan/perlindungan Allah." },
+        { qAr: "Pilih ayat yang BETUL mengikut tatabahasa:", qBm: "Pilih ayat betul:", qEn: "Correct grammar:", options: ["هَذَا قِطَارٌ سَرِيعٌ", "هَذِهِ قِطَارٌ سَرِيعَةٌ", "هَذَا قِطَارٌ سَرِيعَةٌ", "هَذِهِ قِطَارٌ سَرِيعٌ"], correct: 0, aras: "Tinggi", exp: "Muzakkar keseluruhannya: هَذَا قِطَارٌ سَرِيعٌ." },
+        { qAr: "Pilih perkataan berakhiran 'ة' (Ta Marbuthah):", qBm: "Perkataan berakhiran 'ة':", qEn: "Word with Ta Marbuthah:", options: ["حَافِلَةٌ", "قِطَارٌ", "قَارِبٌ", "مَطَارٌ"], correct: 0, aras: "Mudah", exp: "حَافِلَةٌ berakhiran ة." },
+        { qAr: "Susun ayat: (سَعِيدَةً - أَتَمَنَّى - لَكَ - رِحْلَةً)", qBm: "Susun perkataan:", qEn: "Arrange sentence:", options: ["أَتَمَنَّى لَكَ رِحْلَةً سَعِيدَةً", "رِحْلَةً سَعِيدَةً أَتَمَنَّى لَكَ", "لَكَ أَتَمَنَّى رِحْلَةً سَعِيدَةً", "سَعِيدَةً رِحْلَةً أَتَمَنَّى لَكَ"], correct: 0, aras: "Tinggi", exp: "أَتَمَنَّى لَكَ رِحْلَةً سَعِيدَةً (Saya ucapkan selamat berkelana)." }
+      ],
+
+      // UNIT 4: UNIT BERUNIFORM & KELAB (3 SETS)
+      unit4_set1: [
+        { qAr: "مَا هَذِهِ الْفِرْقَةُ؟ (Pengakap)", qBm: "Unit beruniform Pengakap:", qEn: "Scouts group:", options: ["الْكَشَّافَةُ", "الْمُرْشِدَةُ", "الْفِرْقَةُ الْعَسْكَرِيَّةُ", "الْهِلاَلُ الأَحْمَرُ"], correct: 0, aras: "Mudah", exp: "الْكَشَّافَةُ bermaksud Pengakap." },
+        { qAr: "مَا هَذِهِ الْجَمْعِيَّةُ؟ (Bulan Sabit Merah)", qBm: "Bulan Sabit Merah:", qEn: "Red Crescent:", options: ["جَمْعِيَّةُ الْهِلاَلِ الأَحْمَرِ", "الْكَشَّافَةُ", "نَادِي الشَّطْرَنْجِ", "الْمُرْشِدَةُ"], correct: 0, aras: "Mudah", exp: "جَمْعِيَّةُ الْهِلاَلِ الأَحْمَرِ bermaksud Bulan Sabit Merah." },
+        { qAr: "أَنَا أَلْعَبُ الشَّطْرَنْجَ فِي ...", qBm: "Saya main catur di ...", qEn: "Play chess in ...", options: ["نَادِي الشَّطْرَنْجِ", "فِرْقَةِ الْكَشَّافَةِ", "جَمْعِيَّةِ الْهِلاَلِ الأَحْمَرِ", "الْمُرْشِدَةِ"], correct: 0, aras: "Mudah", exp: "نَادِي الشَّطْرَنْجِ bermaksud Kelab Catur." },
+        { qAr: "مَا مَعْنَى 'الْمُرْشِدَةُ'؟", qBm: "Maksud 'الْمُرْشِدَةُ':", qEn: "Meaning:", options: ["Pandu Puteri / Girl Guides", "Pengakap", "Kadet Remaja", "Bulan Sabit Merah"], correct: 0, aras: "Mudah", exp: "الْمُرْشِدَةُ bermaksud Pandu Puteri." },
+        { qAr: "أَنَا أَشْتَرِكُ فِي ... (Kadet Tentera/Kadet Sekolah)", qBm: "Saya sertai Kadet:", qEn: "Join Cadets:", options: ["الْفِرْقَةِ الْعَسْكَرِيَّةِ", "نَادِي اللُّغَةِ العَرَبِيَّةِ", "نَادِي الشَّطْرَنْجِ", "الْمُرْشِدَةِ"], correct: 0, aras: "Sederhana", exp: "الْفِرْقَةُ الْعَسْكَرِيَّةُ bermaksud Kadet Tentera/Sekolah." },
+        { qAr: "Kata kerja untuk 'Saya menyertai':", qBm: "Apakah 'Saya menyertai'?", qEn: "Verb for 'I join':", options: ["أَشْتَرِكُ", "تَشْتَرِكُ", "يَشْتَرِكُ", "تَشْتَرِكِينَ"], correct: 0, aras: "Sederhana", exp: "Kata ganti أَنَا guna أَشْتَرِكُ." },
+        { qAr: "أَنَا أَتَعَلَّمُ اللُّغَةَ العَرَبِيَّةَ فِي ...", qBm: "Saya belajar Bahasa Arab di ...", qEn: "Learn Arabic in ...", options: ["نَادِي اللُّغَةِ العَرَبِيَّةِ", "نَادِي الشَّطْرَنْجِ", "فِرْقَةِ الْكَشَّافَةِ", "الْهِلاَلِ الأَحْمَرِ"], correct: 0, aras: "Mudah", exp: "نَادِي اللُّغَةِ العَرَبِيَّةِ (Kelab Bahasa Arab)." },
+        { qAr: "Soalan menyertai kelab untuk murid PEREMPUAN:", qBm: "Soalan untuk perempuan:", qEn: "Question for female:", options: ["فِي أَيِّ فِرْقَةٍ تَشْتَرِكِينَ؟", "فِي أَيِّ فِرْقَةٍ تَشْتَرِكُ؟", "فِي أَيِّ فِرْقَةٍ يَشْتَرِكُ؟", "فِي أَيِّ فِرْقَةٍ أَشْتَرِكُ؟"], correct: 0, aras: "Tinggi", exp: "Bagi perempuan (أَنْتِ), guna تَشْتَرِكِينَ." },
+        { qAr: "Maksud tajuk Unit 4 'فِي أَيِّ فِرْقَةٍ تَشْتَرِكُ؟':", qBm: "Maksud tajuk Unit 4:", qEn: "Unit 4 title meaning:", options: ["Pasukan manakah yang kamu menyertai?", "Apakah cita-cita kamu?", "Bagaimana kamu melancong?", "Apakah peralatan kebersihan?"], correct: 0, aras: "Mudah", exp: "Pasukan manakah yang kamu menyertai?" },
+        { qAr: "Padanan aktiviti & kelab yang BETUL:", qBm: "Padanan betul:", qEn: "Correct pair:", options: ["الإِسْعَافَاتُ الأَوَّلِيَّةُ - جَمْعِيَّةُ الْهِلاَلِ الأَحْمَرِ", "لَعِبُ الشَّطْرَنْجِ - الْكَشَّافَةُ", "التَّخْيِيمُ - نَادِي اللُّغَةِ العَرَبِيَّةِ", "الرِّيَاضَةُ - الْمُرْشِدَةُ"], correct: 0, aras: "Tinggi", exp: "Pertolongan cemas dalam Bulan Sabit Merah." },
+        { qAr: "Perkataan mengandungi huruf 'ش':", qBm: "Perkataan ada huruf 'ش':", qEn: "Word with letter 'ش':", options: ["الْكَشَّافَةُ", "الْقِطَارُ", "السَّفِينَةُ", "الصَّابُونُ"], correct: 0, aras: "Mudah", exp: "الْكَشَّافَةُ mengandungi huruf الشِّين (ش)." },
+        { qAr: "أَحْمَدُ فِي الْكَشَّافَةِ. هُوَ ... فِي الْمَخَيَّمِ.", qBm: "Ahmad berkhemah di tapak perkhemahan:", qEn: "Ahmad camps at campsite:", options: ["يُخَيِّمُ", "يَطْبُخُ", "يَسْبَحُ", "يَطِيرُ"], correct: 0, aras: "Sederhana", exp: "يُخَيِّمُ bermaksud berkhemah." },
+        { qAr: "Susun ayat: (فِي - أَشْتَرِكُ - الْكَشَّافَةِ - فِرْقَةِ)", qBm: "Susun ayat:", qEn: "Arrange sentence:", options: ["أَشْتَرِكُ فِي فِرْقَةِ الْكَشَّافَةِ", "فِي أَشْتَرِكُ فِرْقَةِ الْكَشَّافَةِ", "الْكَشَّافَةِ فِرْقَةِ فِي أَشْتَرِكُ", "فِرْقَةِ الْكَشَّافَةِ أَشْتَرِكُ فِي"], correct: 0, aras: "Tinggi", exp: "أَشْتَرِكُ فِي فِرْقَةِ الْكَشَّافَةِ." },
+        { qAr: "Unit beruniform khusus untuk perempuan sahaja:", qBm: "Khas murid perempuan:", qEn: "Exclusively for girls:", options: ["الْمُرْشِدَةُ", "الْكَشَّافَةُ", "الْفِرْقَةُ الْعَسْكَرِيَّةُ", "نَادِي الشَّطْرَنْجِ"], correct: 0, aras: "Sederhana", exp: "الْمُرْشِدَةُ (Pandu Puteri)." },
+        { qAr: "Maksud iktibar 'الاتِّحَادُ أَسَاسُ النَّجَاحِ':", qBm: "Maksud ungkapan:", qEn: "Meaning:", options: ["Perpaduan / Kerjasama asas kejayaan", "Kebersihan membawa kesihatan", "Masa itu emas", "Ilmu itu cahaya"], correct: 0, aras: "Sederhana", exp: "Perpaduan asas kejayaan." }
+      ],
+
+      unit4_set2: [
+        { qAr: "مَا هَذَا النَّادِي؟ (Kelab Komputer / ICT)", qBm: "Kelab Komputer / ICT:", qEn: "Computer Club:", options: ["نَادِي الْكَمْبُيُوتَر", "نَادِي الشَّطْرَنْجِ", "نَادِي الرِّيَاضَةِ", "نَادِي اللُّغَةِ"], correct: 0, aras: "Mudah", exp: "نَادِي الْكَمْبُيُوتَر (Kelab Komputer)." },
+        { qAr: "مَا هَذَا النَّادِي؟ (Kelab Sukan & Permainan)", qBm: "Kelab Sukan:", qEn: "Sports Club:", options: ["نَادِي الرِّيَاضَةِ", "نَادِي الشَّطْرَنْجِ", "فِرْقَةُ الْكَشَّافَةِ", "الْمُرْشِدَةُ"], correct: 0, aras: "Mudah", exp: "نَادِي الرِّيَاضَةِ (Kelab Sukan)." },
+        { qAr: "أَنَا أُمَارِسُ الرِّيَاضَةَ فِي ...", qBm: "Saya bersukan di ...", qEn: "I practice sports in ...", options: ["نَادِي الرِّيَاضَةِ", "نَادِي الشَّطْرَنْجِ", "الْهِلاَلِ الأَحْمَرِ", "الْمُرْشِدَةِ"], correct: 0, aras: "Mudah", exp: "نَادِي الرِّيَاضَةِ." },
+        { qAr: "عُمَرُ ... فِي نَادِي الشَّطْرَنْجِ. (Lelaki menyertai)", qBm: "Umar menyertai kelab catur:", qEn: "Umar joins chess club:", options: ["يَشْتَرِكُ", "تَشْتَرِكُ", "أَشْتَرِكُ", "تَشْتَرِكِينَ"], correct: 0, aras: "Sederhana", exp: "Umar (Lelaki) guna يَشْتَرِكُ." },
+        { qAr: "عَائِشَةُ ... فِي فِرْقَةِ الْمُرْشِدَةِ. (Perempuan menyertai)", qBm: "Aishah menyertai Pandu Puteri:", qEn: "Aishah joins Girl Guides:", options: ["تَشْتَرِكُ", "يَشْتَرِكُ", "أَشْتَرِكُ", "يَشْتَرِكُونَ"], correct: 0, aras: "Sederhana", exp: "Aishah (Perempuan) guna تَشْتَرِكُ." },
+        { qAr: "Pilih soalan menyertai kelab untuk murid LELAKI:", qBm: "Soalan untuk murid lelaki:", qEn: "Question for male student:", options: ["فِي أَيِّ فِرْقَةٍ تَشْتَرِكُ؟", "فِي أَيِّ فِرْقَةٍ تَشْتَرِكِينَ؟", "فِي أَيِّ فِرْقَةٍ يَشْتَرِكُ؟", "فِي أَيِّ فِرْقَةٍ أَشْتَرِكُ؟"], correct: 0, aras: "Sederhana", exp: "Bagi lelaki (أَنْتَ), guna تَشْتَرِكُ." },
+        { qAr: "Maksud 'التَّخْيِيمُ':", qBm: "Maksud 'التَّخْيِيمُ':", qEn: "Meaning of 'التَّخْيِيمُ':", options: ["Perkhemahan", "Pertolongan Cemas", "Kawat Kaki", "Sukan"], correct: 0, aras: "Sederhana", exp: "التَّخْيِيمُ bermaksud perkhemahan." },
+        { qAr: "Maksud 'الإِسْعَافَاتُ الأَوَّلِيَّةُ':", qBm: "Maksud 'الإِسْعَافَاتُ الأَوَّلِيَّةُ':", qEn: "Meaning:", options: ["Pertolongan Cemas", "Perkhemahan", "Kawat Kaki", "Perjuangan"], correct: 0, aras: "Sederhana", exp: "Pertolongan cemas (First Aid)." },
+        { qAr: "Maksud 'التَّدْرِيبَاتُ الْعَسْكَرِيَّةُ':", qBm: "Maksud 'التَّدْرِيبَاتُ الْعَسْكَرِيَّةُ':", qEn: "Meaning:", options: ["Latihan Kawat / Ketenteraan", "Latihan Memasak", "Permainan Catur", "Sukan Air"], correct: 0, aras: "Sederhana", exp: "Latihan ketenteraan / kawat." },
+        { qAr: "Pilih kata tunjuk untuk: ... نَادِي الشَّطْرَنْجِ", qBm: "Isi tempat kosong:", qEn: "Fill in demonstrative:", options: ["هَذَا", "هَذِهِ", "هِيَ", "تِلْكَ"], correct: 0, aras: "Mudah", exp: "نَادِي adalah Muzakkar, guna هَذَا." },
+        { qAr: "Pilih kata tunjuk untuk: ... جَمْعِيَّةُ الْهِلاَلِ الأَحْمَرِ", qBm: "Isi tempat kosong:", qEn: "Fill in demonstrative:", options: ["هَذِهِ", "هَذَا", "هُوَ", "ذَلِكَ"], correct: 0, aras: "Mudah", exp: "جَمْعِيَّةُ adalah Muannas, guna هَذِهِ." },
+        { qAr: "أَنَا أُحِبُّ ... فِي نَادِي اللُّغَةِ العَرَبِيَّةِ.", qBm: "Saya suka ... dalam Kelab Bahasa Arab:", qEn: "I like ... in Arabic Club:", options: ["القِرَاءَةَ وَالكِتَابَةَ", "اللَّعِبَ بِالكُرَةِ", "التَّخْيِيمَ", "السِّبَاحَةَ"], correct: 0, aras: "Sederhana", exp: "القِرَاءَةَ وَالكِتَابَةَ (Membaca dan menulis)." },
+        { qAr: "Pilih ayat yang BETUL mengikut tatabahasa:", qBm: "Pilih ayat betul:", qEn: "Select correct sentence:", options: ["أَنَا طَالِبٌ نَشِيطٌ فِي الْكَشَّافَةِ", "أَنَا طَالِبٌ نَشِيطَةٌ فِي الْكَشَّافَةِ", "أَنَا طَالِبَةٌ نَشِيطٌ فِي الْكَشَّافَةِ", "أَنَا طَالِبٌ نَشِيطٌ فِي الْمُرْشِدَةِ"], correct: 0, aras: "Tinggi", exp: "أَنَا طَالِبٌ نَشِيطٌ فِي الْكَشَّافَةِ (Murid lelaki yang aktif dalam Pengakap)." },
+        { qAr: "Kata kerja untuk 'Kami menyertai':", qBm: "Kata kerja 'Kami menyertai':", qEn: "Verb for 'We join':", options: ["نَشْتَرِكُ", "أَشْتَرِكُ", "يَشْتَرِكُ", "تَشْتَرِكُ"], correct: 0, aras: "Tinggi", exp: "Bagi نَحْنُ (Kami), guna نَشْتَرِكُ." },
+        { qAr: "Susun perkataan: (فِي - نَشْتَرِكُ - نَادِي - الرِّيَاضَةِ)", qBm: "Susun perkataan:", qEn: "Arrange sentence:", options: ["نَشْتَرِكُ فِي نَادِي الرِّيَاضَةِ", "فِي نَشْتَرِكُ نَادِي الرِّيَاضَةِ", "نَادِي الرِّيَاضَةِ فِي نَشْتَرِكُ", "الرِّيَاضَةِ نَادِي فِي نَشْتَرِكُ"], correct: 0, aras: "Tinggi", exp: "نَشْتَرِكُ فِي نَادِي الرِّيَاضَةِ." }
+      ],
+
+      unit4_set3: [
+        { qAr: "مَا هُوَ النَّادِي الَّذِي يُنَمِّي الذَّكَاءَ؟", qBm: "Kelab yang mengasah kecerdasan minda:", qEn: "Mind sharpener club:", options: ["نَادِي الشَّطْرَنْجِ", "نَادِي الرِّيَاضَةِ", "الْفِرْقَةُ الْعَسْكَرِيَّةُ", "الْكَشَّافَةُ"], correct: 0, aras: "Sederhana", exp: "نَادِي الشَّطْرَنْجِ (Kelab Catur)." },
+        { qAr: "Pilih jamak bagi 'نَادٍ' (kelab-kelab):", qBm: "Jamak bagi kelab (نَادٍ):", qEn: "Plural for club:", options: ["أَنْدِيَةٌ", "نَادِيُونَ", "أَنَادِي", "نُدُوَاتٌ"], correct: 0, aras: "Tinggi", exp: "Jamak bagi نَادٍ ialah أَنْدِيَةٌ." },
+        { qAr: "Pilih jamak bagi 'فِرْقَةٌ' (pasukan-pasukan):", qBm: "Jamak bagi pasukan (فِرْقَةٌ):", qEn: "Plural for team/group:", options: ["فِرَقٌ", "فِرْقَاتٌ", "أَفْرَاقٌ", "فَرِيقُونَ"], correct: 0, aras: "Tinggi", exp: "Jamak bagi فِرْقَةٌ ialah فِرَقٌ." },
+        { qAr: "أَحْمَدُ وَعُمَرُ ... فِي الْكَشَّافَةِ. (Dua orang)", qBm: "Ahmad & Umar (Dua orang) menyertai:", qEn: "Ahmad & Umar (Dual) join:", options: ["يَشْتَرِكَانِ", "يَشْتَرِكُ", "تَشْتَرِكُ", "يَشْتَرِكُونَ"], correct: 0, aras: "Tinggi", exp: "Untuk Musanna (dua orang lelaki), guna يَشْتَرِكَانِ." },
+        { qAr: "الطُّلاَّبُ ... فِي الأَنْدِيَةِ. (Ramai lelaki)", qBm: "Murid-murid ramai menyertai:", qEn: "Plural male students join:", options: ["يَشْتَرِكُونَ", "يَشْتَرِكُ", "تَشْتَرِكُ", "أَشْتَرِكُ"], correct: 0, aras: "Tinggi", exp: "Untuk Jamak Muzakkar, guna يَشْتَرِكُونَ." },
+        { qAr: "Pilih perkataan berlawanan: النَّجَاحُ (Kejayaan) X ...", qBm: "Lawan bagi Kejayaan (النَّجَاحُ):", qEn: "Opposite of success:", options: ["الْفَشَلُ", "الاتِّحَادُ", "الْعَمَلُ", "الْفَوْزُ"], correct: 0, aras: "Sederhana", exp: "الْفَشَلُ bermaksud kegagalan." },
+        { qAr: "مَا هِيَ الْجَمْعِيَّةُ الَّتِي تُسَاعِدُ الْمَرْضَى وَالْمُصَابِينَ؟", qBm: "Persatuan membantu orang sakit/cedera:", qEn: "Society helping injured people:", options: ["جَمْعِيَّةُ الْهِلاَلِ الأَحْمَرِ", "نَادِي الشَّطْرَنْجِ", "الْكَشَّافَةُ", "نَادِي اللُّغَةِ"], correct: 0, aras: "Sederhana", exp: "جَمْعِيَّةُ الْهِلاَلِ الأَحْمَرِ (Bulan Sabit Merah)." },
+        { qAr: "أَيْنَ نَتَعَلَّمُ الإِسْعَافَاتِ الأَوَّلِيَّةَ؟ - فِي ...", qBm: "Di mana belajar pertolongan cemas?", qEn: "Where to learn first aid?", options: ["جَمْعِيَّةِ الْهِلاَلِ الأَحْمَرِ", "نَادِي الشَّطْرَنْجِ", "نَادِي الرِّيَاضَةِ", "نَادِي الْكَمْبُيُوتَر"], correct: 0, aras: "Sederhana", exp: "Bulan Sabit Merah." },
+        { qAr: "Pilih ayat yang BETUL mengikut tatabahasa:", qBm: "Pilih ayat betul:", qEn: "Correct grammar:", options: ["هَذِهِ فِرْقَةٌ مُمْتَازَةٌ", "هَذَا فِرْقَةٌ مُمْتَازٌ", "هَذِهِ فِرْقَةٌ مُمْتَازٌ", "هَذَا فِرْقَةٌ مُمْتَازَةٌ"], correct: 0, aras: "Tinggi", exp: "Muannas keseluruhannya: هَذِهِ فِرْقَةٌ مُمْتَازَةٌ." },
+        { qAr: "أَنْتَ تُحِبُّ ... (Kamu lelaki suka bersukan)", qBm: "Kamu (L) suka bersukan:", qEn: "You (M) like sports:", options: ["الرِّيَاضَةَ", "القِرَاءَةَ", "النَّوْمَ", "الأَكْلَ"], correct: 0, aras: "Mudah", exp: "الرِّيَاضَةَ bermaksud sukan." },
+        { qAr: "أَنْتِ تُحِبِّينَ ... (Kamu perempuan suka membaca)", qBm: "Kamu (P) suka membaca:", qEn: "You (F) like reading:", options: ["القِرَاءَةَ", "السِّبَاحَةَ", "الْجَرْيَ", "النَّوْمَ"], correct: 0, aras: "Mudah", exp: "القِرَاءَةَ bermaksud membaca." },
+        { qAr: "Maksud kata sifat 'مُمْتَازٌ':", qBm: "Maksud 'مُمْتَازٌ':", qEn: "Meaning of 'مُمْتَازٌ':", options: ["Cemerlang / Sangat Baik", "Lemah", "Biasa", "Sederhana"], correct: 0, aras: "Mudah", exp: "مُمْتَازٌ bermaksud Cemerlang (Excellent)." },
+        { qAr: "Pilih Huruf Jar yang betul: أَشْتَرِكُ ... نَادِي اللُّغَةِ.", qBm: "Isi tempat kosong:", qEn: "Fill in preposition:", options: ["فِي", "إِلَى", "عَلَى", "مِنْ"], correct: 0, aras: "Mudah", exp: "فِي bermaksud 'dalam'." },
+        { qAr: "Maksud slogan: 'الْعَقْلُ السَّلِيمُ فِي الْجِسْمِ السَّلِيمِ'", qBm: "Maksud ungkapan hikmah ini:", qEn: "Meaning of proverb:", options: ["Akal yang sihat pada badan yang sihat", "Masa itu emas", "Kebersihan sebahagian iman", "Kerjasama asas kejayaan"], correct: 0, aras: "Sederhana", exp: "Akal sihat pada badan yang sihat." },
+        { qAr: "Susun perkataan: (أَسَاسُ - الاتِّحَادُ - النَّجَاحِ)", qBm: "Susun perkataan:", qEn: "Arrange words:", options: ["الاتِّحَادُ أَسَاسُ النَّجَاحِ", "أَسَاسُ الاتِّحَادُ النَّجَاحِ", "النَّجَاحِ أَسَاسُ الاتِّحَادُ", "الاتِّحَادُ النَّجَاحِ أَسَاسُ"], correct: 0, aras: "Tinggi", exp: "الاتِّحَادُ أَسَاسُ النَّجَاحِ." }
+      ]
+    };
+
+    const THEMES = [
+      {
+        id: 'unit1',
+        unitNo: 1,
+        titleAr: "حَيَاتُنَا أَجْمَلُ بِالنَّظَافَةِ",
+        titleBm: "Unit 1: Kebersihan Diri & Peralatan",
+        titleEn: "Unit 1: Personal Hygiene & Items",
+        icon: "🧼",
+        color: "from-emerald-600 to-teal-700",
+        descBm: "Kuasai kosakata peralatan kebersihan diri: berus gigi, ubat gigi, sabun, sikat, tuala dan tatabahasa.",
+        descEn: "Master personal hygiene vocabulary: toothbrush, toothpaste, soap, towel, and grammar."
+      },
+      {
+        id: 'unit2',
+        unitNo: 2,
+        titleAr: "الْأَعْمَالُ وَالْمِهَنُ",
+        titleBm: "Unit 2: Pekerjaan & Cita-cita",
+        titleEn: "Unit 2: Occupations & Professions",
+        icon: "👨‍⚕️",
+        color: "from-blue-600 to-indigo-700",
+        descBm: "Pelajari kerjaya seperti doktor, polis, jurutera, guru, peguam serta tempat kerja.",
+        descEn: "Learn professions like doctor, police, engineer, teacher, lawyer, and workplaces."
+      },
+      {
+        id: 'unit3',
+        unitNo: 3,
+        titleAr: "رِحْلَةً سَعِيدَةً",
+        titleBm: "Unit 3: Pengangkutan & Pelancongan",
+        titleEn: "Unit 3: Transportation & Travel",
+        icon: "✈️",
+        color: "from-amber-600 to-orange-700",
+        descBm: "Kenali jenis kenderaan: bas, kapal terbang, kereta api elektrik, kapal laut dan dialog melancong.",
+        descEn: "Identify transport types: bus, airplane, electric train, ship, and travel dialogs."
+      },
+      {
+        id: 'unit4',
+        unitNo: 4,
+        titleAr: "فِي أَيِّ فِرْقَةٍ تَشْتَرِكُ؟",
+        titleBm: "Unit 4: Unit Beruniform & Kelab",
+        titleEn: "Unit 4: Uniform Bodies & Clubs",
+        icon: "🏕️",
+        color: "from-green-700 to-emerald-800",
+        descBm: "Kuasai unit beruniform: Pengakap, Bulan Sabit Merah, Pandu Puteri, Kadet & Kelab Catur.",
+        descEn: "Master uniform bodies: Scouts, Red Crescent, Girl Guides, Cadets & Chess Club."
+      }
+    ];
+
+    const DICTIONARY = {
+      BM: {
+        subtitle: "Kuiz Interaktif Bahasa Arab",
+        welcomeTitle: "Selamat Datang ke Misi Bahasa Arab Tahun 6!",
+        welcomeSpeech: "Saya **Ustaz Ameer**, pembimbing Bahasa Arab kamu! Sila masukkan nama kamu dahulu untuk memulakan cabaran pengembaraan ilmu ini.",
+        lblName: "Nama Murid / Student Name:",
+        btnStart: "Simpan & Mula Pengembaraan",
+        greetingBadge: "Ahlan wa Sahlan!",
+        greetingTitle: "Selamat Datang,",
+        menuSpeech: "Pilih unit tajuk di bawah. Setiap unit mengandungi 15 soalan objektif pelbagai aras. Kumpul ⭐ Bintang dan dapatkan Sijil Kejayaan kamu!",
+        btnStartUnit: "Mula Kuiz Unit Ini",
+        btnBackToMenu: "Menu Utama",
+        lblScore: "Skor",
+        lblNextBtn: "Soalan Seterusnya",
+        btnViewCert: "KLIK SIJIL (Lihat & Cetak)",
+        btnShareWA: "Hantar WhatsApp Guru",
+        btnShareEmail: "Hantar e-Mel",
+        btnRetry: "Cuba Lagi",
+        btnReturnMenu: "Menu Utama",
+        lblResScore: "Markah",
+        lblResAcc: "Peratusan",
+        lblResStars: "Bintang",
+        feedbackCorrect: "Mumtaz! Jawapan kamu TEPAT SEKALI! 🎉",
+        feedbackWrong: "Ma'al asaf! Jawapan kurang tepat. Jangan putus asa, mari cuba fahami penjelasan ini: 💡"
+      },
+      EN: {
+        subtitle: "Interactive P6 Arabic Quiz",
+        welcomeTitle: "Welcome to Year 6 Arabic Quiz Mission!",
+        welcomeSpeech: "I am **Ustaz Ameer**, your Arabic guide! Please enter your name to begin this fun learning adventure.",
+        lblName: "Student Name:",
+        btnStart: "Save & Start Adventure",
+        greetingBadge: "Ahlan wa Sahlan!",
+        greetingTitle: "Welcome,",
+        menuSpeech: "Select a topic unit below. Each unit contains 15 multi-level objective questions. Collect ⭐ Stars and earn your Certificate of Achievement!",
+        btnStartUnit: "Start Quiz Unit",
+        btnBackToMenu: "Main Menu",
+        lblScore: "Score",
+        lblNextBtn: "Next Question",
+        btnViewCert: "CLICK CERTIFICATE (View & Print)",
+        btnShareWA: "Send to Teacher via WhatsApp",
+        btnShareEmail: "Send via Email",
+        btnRetry: "Try Again",
+        btnReturnMenu: "Main Menu",
+        lblResScore: "Score",
+        lblResAcc: "Accuracy",
+        lblResStars: "Stars",
+        feedbackCorrect: "Mumtaz! Your answer is EXCELLENT! 🎉",
+        feedbackWrong: "Oops! Not quite correct. Don't worry, let's learn from this explanation: 💡"
+      }
+    };
+
+    class QuizApp {
+      constructor() {
+        this.state = {
+          studentName: localStorage.getItem('ba6_student_name') || '',
+          language: localStorage.getItem('ba6_lang') || 'BM',
+          soundEnabled: localStorage.getItem('ba6_sound') !== 'false',
+          stars: parseInt(localStorage.getItem('ba6_stars') || '0', 10),
+          unitProgress: JSON.parse(localStorage.getItem('ba6_progress') || '{}'),
+          
+          currentUnitId: null,
+          currentSetId: null,
+          currentQuestionIndex: 0,
+          currentScore: 0,
+          answered: false
+        };
+
+        this.init();
+      }
+
+      init() {
+        this.updateHeaderUI();
+        this.renderThemesMenu();
+
+        if (!this.state.studentName) {
+          this.showSection('welcomeSection');
+        } else {
+          this.showMenu();
+        }
+      }
+
+      saveStudentName() {
+        const input = document.getElementById('inputStudentName');
+        const err = document.getElementById('nameErrorMsg');
+        const nameInput = input.value.trim();
+
+        if (!nameInput) {
+          err.classList.remove('hidden');
+          return;
+        }
+
+        err.classList.add('hidden');
+        this.state.studentName = nameInput;
+        localStorage.setItem('ba6_student_name', nameInput);
+        this.updateHeaderUI();
+        this.showMenu();
+      }
+
+      openNameModal() {
+        document.getElementById('modalInputName').value = this.state.studentName;
+        document.getElementById('changeNameModal').classList.remove('hidden');
+      }
+
+      closeNameModal() {
+        document.getElementById('changeNameModal').classList.add('hidden');
+      }
+
+      saveModalName() {
+        const val = document.getElementById('modalInputName').value.trim();
+        if (val) {
+          this.state.studentName = val;
+          localStorage.setItem('ba6_student_name', val);
+          this.updateHeaderUI();
+          this.renderThemesMenu();
+        }
+        this.closeNameModal();
+      }
+
+      init() {
+        this.updateHeaderUI();
+        this.renderThemesMenu();
+
+        if (!this.state.studentName) {
+          this.showSection('welcomeSection');
+        } else {
+          this.showMenu();
+        }
+      }
+
+      saveStudentName() {
+        const nameInput = document.getElementById('inputStudentName').value.trim();
+        if (!nameInput) {
+          alert('Sila masukkan nama murid dahulu.');
+          return;
+        }
+        this.state.studentName = nameInput;
+        localStorage.setItem('ba6_student_name', nameInput);
+        this.updateHeaderUI();
+        this.showMenu();
+      }
+
+      promptNameChange() {
+        const current = this.state.studentName;
+        const newName = prompt('Kemaskini Nama Murid / Update Student Name:', current);
+        if (newName && newName.trim()) {
+          this.state.studentName = newName.trim();
+          localStorage.setItem('ba6_student_name', this.state.studentName);
+          this.updateHeaderUI();
+          this.renderThemesMenu();
+        }
+      }
+
+      toggleLanguage() {
+        this.state.language = this.state.language === 'BM' ? 'EN' : 'BM';
+        localStorage.setItem('ba6_lang', this.state.language);
+        this.updateHeaderUI();
+        this.renderThemesMenu();
+
+        // Refresh current quiz question text language if in quiz view
+        if (this.state.currentUnitId && !document.getElementById('quizSection').classList.contains('hidden')) {
+          this.renderCurrentQuestion();
+        }
+      }
+
+      toggleSound() {
+        this.state.soundEnabled = !this.state.soundEnabled;
+        localStorage.setItem('ba6_sound', this.state.soundEnabled);
+        document.getElementById('soundBtn').innerText = this.state.soundEnabled ? '🔊' : '🔇';
+      }
+
+      updateHeaderUI() {
+        const dict = DICTIONARY[this.state.language];
+        document.getElementById('headerSubtitle').innerText = dict.subtitle;
+        document.getElementById('navStudentName').innerText = this.state.studentName || 'Murid';
+        document.getElementById('displayStudentName').innerText = this.state.studentName || 'Murid';
+        document.getElementById('starCounter').innerText = this.state.stars;
+        document.getElementById('langText').innerText = this.state.language;
+        document.getElementById('soundBtn').innerText = this.state.soundEnabled ? '🔊' : '🔇';
+
+        // Update welcome setup labels
+        document.getElementById('welcomeTitle').innerText = dict.welcomeTitle;
+        document.getElementById('lblNameInput').innerText = dict.lblName;
+        document.getElementById('btnStartGame').innerText = dict.btnStart;
+        document.getElementById('greetingBadge').innerText = dict.greetingBadge;
+        document.getElementById('greetingTitle').innerText = dict.greetingTitle;
+        document.getElementById('menuMascotSpeech').innerText = dict.menuSpeech;
+
+        // Quiz buttons
+        document.getElementById('btnBackToMenu').innerText = dict.btnBackToMenu;
+        document.getElementById('lblScore').innerText = dict.lblScore;
+        document.getElementById('lblNextBtn').innerText = dict.lblNextBtn;
+        document.getElementById('btnViewCert').innerText = dict.btnViewCert;
+        document.getElementById('btnShareWA').innerText = dict.btnShareWA;
+        document.getElementById('btnShareEmail').innerText = dict.btnShareEmail;
+        document.getElementById('btnRetry').innerText = dict.btnRetry;
+        document.getElementById('btnReturnMenu').innerText = dict.btnReturnMenu;
+        document.getElementById('lblResScore').innerText = dict.lblResScore;
+        document.getElementById('lblResAcc').innerText = dict.lblResAcc;
+        document.getElementById('lblResStars').innerText = dict.lblResStars;
+      }
+
+      showSection(sectionId) {
+        ['welcomeSection', 'menuSection', 'quizSection', 'resultSection'].forEach(id => {
+          document.getElementById(id).classList.add('hidden');
+        });
+        document.getElementById(sectionId).classList.remove('hidden');
+      }
+
+      showMenu() {
+        this.showSection('menuSection');
+        this.renderThemesMenu();
+      }
+
+      renderThemesMenu() {
+        const container = document.getElementById('themesGrid');
+        container.innerHTML = '';
+
+        const isBm = this.state.language === 'BM';
+
+        THEMES.forEach(theme => {
+          let totalStars = 0;
+          let completedSets = 0;
+
+          [1, 2, 3].forEach(setNo => {
+            const setKey = `${theme.id}_set${setNo}`;
+            const prog = this.state.unitProgress[setKey];
+            if (prog) {
+              totalStars += (prog.starsEarned || 0);
+              if (prog.completed) completedSets++;
+            }
+          });
+
+          const card = document.createElement('div');
+          card.className = "bg-white rounded-3xl p-5 shadow-lg border-2 border-slate-200 hover:border-arabic-gold transition duration-200 flex flex-col justify-between space-y-4 relative overflow-hidden group";
+
+          card.innerHTML = `
+            <div class="flex items-start justify-between gap-3">
+              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${theme.color} text-white flex items-center justify-center text-2xl shadow-md flex-shrink-0">
+                ${theme.icon}
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                  ⭐ ${totalStars} / 9 Bintang
+                </span>
+                ${completedSets > 0 ? `<div class="mt-1 text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full inline-block">✓ ${completedSets}/3 Set Selesai</div>` : ''}
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <h3 class="text-xl font-bold font-arabic text-arabic-emerald leading-snug">
+                ${theme.titleAr}
+              </h3>
+              <p class="text-sm font-bold text-slate-800">
+                ${isBm ? theme.titleBm : theme.titleEn}
+              </p>
+              <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                ${isBm ? theme.descBm : theme.descEn}
+              </p>
+            </div>
+
+            <div class="pt-2 border-t flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-600">
+                3 Set Soalan (45 Soalan)
+              </span>
+              <button onclick="app.openSetModal('${theme.id}')" class="px-4 py-2 bg-arabic-emerald hover:bg-emerald-700 text-amber-300 font-bold rounded-xl text-xs shadow transition transform group-hover:scale-105 flex items-center gap-1">
+                <span>Pilih Set Soalan</span> <span>➡️</span>
+              </button>
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+      }
+
+      openSetModal(unitId) {
+        this.state.currentUnitId = unitId;
+        const theme = THEMES.find(t => t.id === unitId);
+
+        document.getElementById('modalUnitTag').innerText = `Unit ${theme.unitNo}`;
+        document.getElementById('modalUnitTitle').innerText = theme.titleAr;
+
+        const container = document.getElementById('setButtonsContainer');
+        container.innerHTML = '';
+
+        [1, 2, 3].forEach(setNo => {
+          const setKey = `${unitId}_set${setNo}`;
+          const prog = this.state.unitProgress[setKey] || { bestScore: 0, starsEarned: 0, completed: false };
+
+          const btn = document.createElement('button');
+          btn.className = "w-full p-3.5 bg-slate-50 hover:bg-amber-50 border-2 border-slate-200 hover:border-arabic-gold rounded-2xl flex items-center justify-between transition text-left group";
+          btn.onclick = () => {
+            this.closeSetModal();
+            this.startQuiz(unitId, setNo);
+          };
+
+          btn.innerHTML = `
+            <div>
+              <div class="font-extrabold text-sm text-slate-800 group-hover:text-arabic-emerald">
+                Set ${setNo} ${setNo === 1 ? '(Asas)' : setNo === 2 ? '(Sederhana)' : '(Cabaran)'}
+              </div>
+              <div class="text-[11px] text-slate-500 font-medium">
+                Skor Terbaik: <strong class="text-emerald-700">${prog.bestScore || 0}/15</strong>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300">
+                ⭐ ${prog.starsEarned || 0}/3
+              </span>
+              <span class="text-slate-400 group-hover:text-arabic-gold text-lg">▶</span>
+            </div>
+          `;
+
+          container.appendChild(btn);
+        });
+
+        document.getElementById('setSelectModal').classList.remove('hidden');
+      }
+
+      closeSetModal() {
+        document.getElementById('setSelectModal').classList.add('hidden');
+      }
+
+      startQuiz(unitId, setNo) {
+        this.state.currentUnitId = unitId;
+        this.state.currentSetId = `${unitId}_set${setNo}`;
+        this.state.currentQuestionIndex = 0;
+        this.state.currentScore = 0;
+        this.state.answered = false;
+
+        const theme = THEMES.find(t => t.id === unitId);
+        document.getElementById('quizUnitBadge').innerText = `Unit ${theme.unitNo} • Set ${setNo}`;
+        document.getElementById('quizUnitTitle').innerText = theme.titleAr + " - " + (this.state.language === 'BM' ? theme.titleBm : theme.titleEn);
+
+        this.showSection('quizSection');
+        this.renderCurrentQuestion();
+      }
+
+      renderCurrentQuestion() {
+        this.state.answered = false;
+        const questions = QUESTION_BANK[this.state.currentSetId] || QUESTION_BANK['unit1_set1'];
+        const q = questions[this.state.currentQuestionIndex];
+        const isBm = this.state.language === 'BM';
+
+        // Update score & progress bar
+        document.getElementById('currentScoreDisplay').innerText = `${this.state.currentScore}/${questions.length}`;
+        const pct = ((this.state.currentQuestionIndex) / questions.length) * 100;
+        document.getElementById('quizProgressBar').style.width = `${pct}%`;
+
+        document.getElementById('questionNumBadge').innerText = `Soalan ${this.state.currentQuestionIndex + 1} / ${questions.length}`;
+        document.getElementById('questionArasBadge').innerText = `Aras: ${q.aras}`;
+
+        document.getElementById('arabicQuestionText').innerText = q.qAr;
+        document.getElementById('translationQuestionText').innerText = isBm ? q.qBm : q.qEn;
+
+        // Hide feedback & next button
+        document.getElementById('mascotFeedbackBox').classList.add('hidden');
+        document.getElementById('btnNextQuestion').classList.add('hidden');
+
+        // Render Options
+        const optionsContainer = document.getElementById('optionsContainer');
+        optionsContainer.innerHTML = '';
+
+        q.options.forEach((optText, idx) => {
+          const btn = document.createElement('button');
+          btn.className = "w-full text-left p-4 rounded-2xl border-2 border-slate-200 hover:border-arabic-gold hover:bg-amber-50 font-arabic text-lg sm:text-xl font-bold text-slate-800 transition shadow-sm flex items-center justify-between gap-3 group";
+          btn.onclick = () => this.handleAnswer(idx);
+          btn.id = `optBtn_${idx}`;
+
+          const labelLetters = ['أ', 'ب', 'ج', 'د'];
+          btn.innerHTML = `
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-xl bg-slate-100 group-hover:bg-amber-200 text-slate-700 group-hover:text-amber-900 font-sans text-xs font-black flex items-center justify-center border border-slate-300">
+                ${labelLetters[idx]}
+              </span>
+              <span>${optText}</span>
+            </div>
+            <span class="opacity-0 group-hover:opacity-100 transition">👈</span>
+          `;
+
+          optionsContainer.appendChild(btn);
+        });
+      }
+
+      handleAnswer(selectedIdx) {
+        if (this.state.answered) return;
+        this.state.answered = true;
+
+        const questions = QUESTION_BANK[this.state.currentSetId];
+        const q = questions[this.state.currentQuestionIndex];
+        const isCorrect = selectedIdx === q.correct;
+        const dict = DICTIONARY[this.state.language];
+
+        // Disable all buttons & show correct/wrong styling
+        q.options.forEach((_, idx) => {
+          const btn = document.getElementById(`optBtn_${idx}`);
+          btn.onclick = null;
+          btn.classList.add('cursor-default');
+
+          if (idx === q.correct) {
+            btn.classList.remove('border-slate-200', 'hover:border-arabic-gold');
+            btn.classList.add('bg-green-100', 'border-green-600', 'text-green-900');
+          } else if (idx === selectedIdx && !isCorrect) {
+            btn.classList.remove('border-slate-200');
+            btn.classList.add('bg-red-100', 'border-red-500', 'text-red-900');
+          } else {
+            btn.classList.add('opacity-50');
+          }
+        });
+
+        // Feedback & Audio
+        const feedbackBox = document.getElementById('mascotFeedbackBox');
+        const feedbackText = document.getElementById('mascotFeedbackText');
+        feedbackBox.classList.remove('hidden');
+
+        if (isCorrect) {
+          this.state.currentScore++;
+          soundFx.playCorrect();
+          feedbackText.innerHTML = `<strong class="text-green-700">${dict.feedbackCorrect}</strong><br/>${q.exp}`;
+        } else {
+          soundFx.playIncorrect();
+          feedbackText.innerHTML = `<strong class="text-red-700">${dict.feedbackWrong}</strong><br/>${q.exp}`;
+        }
+
+        // Update current score display live
+        document.getElementById('currentScoreDisplay').innerText = `${this.state.currentScore}/${questions.length}`;
+
+        // Show Next Button
+        const nextBtn = document.getElementById('btnNextQuestion');
+        nextBtn.classList.remove('hidden');
+        nextBtn.classList.add('flex');
+      }
+
+      nextQuestion() {
+        const questions = QUESTION_BANK[this.state.currentSetId];
+        if (this.state.currentQuestionIndex + 1 < questions.length) {
+          this.state.currentQuestionIndex++;
+          this.renderCurrentQuestion();
+        } else {
+          this.finishQuiz();
+        }
+      }
+
+      requestShowMenu() {
+        // If user is currently playing a quiz, show modal confirmation instead of native confirm
+        if (this.state.currentSetId && !document.getElementById('quizSection').classList.contains('hidden')) {
+          document.getElementById('confirmExitModal').classList.remove('hidden');
+        } else {
+          this.showMenu();
+        }
+      }
+
+      closeExitModal() {
+        document.getElementById('confirmExitModal').classList.add('hidden');
+      }
+
+      forceGoToMenu() {
+        this.closeExitModal();
+        this.showMenu();
+      }
+
+      finishQuiz() {
+        const questions = QUESTION_BANK[this.state.currentSetId];
+        const total = questions.length;
+        const score = this.state.currentScore;
+        const pct = Math.round((score / total) * 100);
+
+        // Calculate stars earned (3 stars for >= 80%, 2 stars for >= 60%, 1 star for completed)
+        let starsEarned = 1;
+        if (pct >= 80) starsEarned = 3;
+        else if (pct >= 60) starsEarned = 2;
+
+        // Save progress to LocalStorage for this specific SET
+        const prevProg = this.state.unitProgress[this.state.currentSetId] || { bestScore: 0, starsEarned: 0 };
+        const starsAdded = Math.max(0, starsEarned - prevProg.starsEarned);
+        this.state.stars += starsAdded;
+
+        this.state.unitProgress[this.state.currentSetId] = {
+          bestScore: Math.max(score, prevProg.bestScore),
+          starsEarned: Math.max(starsEarned, prevProg.starsEarned),
+          completed: true,
+          lastDate: new Date().toLocaleDateString('ms-MY')
+        };
+
+        localStorage.setItem('ba6_stars', this.state.stars.toString());
+        localStorage.setItem('ba6_progress', JSON.stringify(this.state.unitProgress));
+
+        this.updateHeaderUI();
+
+        // Sound fanfare
+        soundFx.playVictory();
+
+        // Populate Result Screen
+        document.getElementById('resStudentName').innerText = this.state.studentName;
+        document.getElementById('resFinalScore').innerText = `${score} / ${total}`;
+        document.getElementById('resPercentage').innerText = `${pct}%`;
+        document.getElementById('resStarsEarned').innerText = `⭐ +${starsEarned}`;
+
+        let gradeStr = "ممتاز (Mumtaz / Cemerlang)";
+        if (pct < 60) gradeStr = "مَقْبُول (Maqbul / Boleh Tingkat)";
+        else if (pct < 80) gradeStr = "جَيِّد جِدًّا (Jayyid Jiddan / Baik Sangat)";
+        
+        document.getElementById('gradeBadgeText').innerText = gradeStr;
+
+        this.showSection('resultSection');
+      }
+
+      retryCurrentUnit() {
+        if (this.state.currentUnitId && this.state.currentSetId) {
+          const match = this.state.currentSetId.match(/set(\d+)/);
+          const setNo = match ? parseInt(match[1], 10) : 1;
+          this.startQuiz(this.state.currentUnitId, setNo);
+        }
+      }
+
+      openCertificate() {
+        const theme = THEMES.find(t => t.id === this.state.currentUnitId) || THEMES[0];
+        const progress = this.state.unitProgress[this.state.currentSetId] || { bestScore: this.state.currentScore, starsEarned: 3 };
+
+        document.getElementById('certStudentName').innerText = this.state.studentName.toUpperCase();
+        document.getElementById('certUnitTitle').innerText = `${theme.titleAr} (${theme.titleBm})`;
+        document.getElementById('certScore').innerText = `${progress.bestScore || this.state.currentScore} / 15`;
+        
+        const pct = Math.round(((progress.bestScore || this.state.currentScore) / 15) * 100);
+        document.getElementById('certGrade').innerText = pct >= 80 ? "ممتاز" : (pct >= 60 ? "جَيِّد جِدًّا" : "مَقْبُول");
+        document.getElementById('certStars').innerText = "⭐".repeat(progress.starsEarned || 3);
+        document.getElementById('certDate').innerText = new Date().toLocaleDateString('ms-MY');
+
+        document.getElementById('certificateModal').classList.remove('hidden');
+      }
+
+      closeCertificate() {
+        document.getElementById('certificateModal').classList.add('hidden');
+      }
+
+      shareWhatsApp() {
+        const theme = THEMES.find(t => t.id === this.state.currentUnitId) || THEMES[0];
+        const score = this.state.currentScore;
+        const msg = `Assalamu'alaikum Cikgu, saya *${this.state.studentName}* telah menyelesaikan *Kuiz Bahasa Arab Tahun 6* bagi ${theme.titleBm} dengan skor *${score}/15*! ⭐ Sijil kejayaan telah sedia. Terima kasih!`;
+        const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+      }
+
+      shareEmail() {
+        const theme = THEMES.find(t => t.id === this.state.currentUnitId) || THEMES[0];
+        const score = this.state.currentScore;
+        const subject = `Keputusan Kuiz Bahasa Arab Tahun 6 - ${this.state.studentName}`;
+        const body = `Salam Cikgu,\n\nSaya ${this.state.studentName} telah menyempurnakan cabaran Kuiz Bahasa Arab Tahun 6 bagi unit ${theme.titleBm}.\n\nMarkah: ${score}/15\nStatus: Misi Selesai\n\nTerima kasih!`;
+        const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.open(url, '_blank');
+      }
+    }
+
+    let app;
+    window.onload = function() {
+      app = new QuizApp();
+    };
+  </script>
+</body>
+</html>

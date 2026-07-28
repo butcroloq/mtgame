@@ -3,38 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bijak Matematik Tahun 2 bersama Cikgu Capy (Versi 2.0)</title>
-    <!-- Tailwind CSS -->
+    <title>Kuiz Matematik Tahun 2 - Capy Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Fredoka & Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0fdf4;
+        @keyframes bounce-capy {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
-        .font-kids {
-            font-family: 'Fredoka', sans-serif;
-        }
-        @media print {
-            body * { visibility: hidden; }
-            #print-area, #print-area * { visibility: visible; }
-            #print-area {
-                position: absolute;
-                left: 0; top: 0; width: 100%;
-                margin: 0; padding: 20px;
-            }
-            .no-print { display: none !important; }
-        }
+        .capy-animate { animation: bounce-capy 2s infinite; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between text-slate-800 selection:bg-emerald-200 pb-10">
+<body class="bg-blue-50 font-sans p-4 md:p-8">
 
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
+        <!-- Header & Capy -->
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold text-blue-800">Matematik Tahun 2</h1>
+            <svg viewBox="0 0 100 100" width="60" height="60" class="capy-animate">
+                <circle cx="50" cy="50" r="40" fill="#D2B48C" />
+                <circle cx="35" cy="40" r="5" fill="black" />
+                <circle cx="65" cy="40" r="5" fill="black" />
+                <path d="M40 60 Q50 70 60 60" stroke="black" fill="transparent" stroke-width="3" />
+                <rect x="30" y="20" width="10" height="10" fill="#A0522D" />
+                <rect x="60" y="20" width="10" height="10" fill="#A0522D" />
+            </svg>
+        </div>
+
+        <div id="app">
+            <div id="unit-selection" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Unit buttons will be injected here -->
+            </div>
+
+            <div id="quiz-container" class="hidden">
+                <h2 id="unit-title" class="text-xl font-semibold mb-4 text-blue-700"></h2>
+                <div id="question-box"></div>
+                <button onclick="showUnits()" class="mt-6 bg-gray-500 text-white px-4 py-2 rounded">Kembali ke Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = {
+            "Unit 1": [
+                {q: "Apakah nilai tempat bagi 5 dalam 352?", a: ["Sa", "Puluh", "Ratus", "Ribu"], correct: 1},
+                {q: "Cerakinkan 489.", a: ["400+8+9", "40+8+9", "400+80+9", "4+8+9"], correct: 2},
+                {q: "Nombor manakah yang paling besar antara 234, 243, 239?", a: ["234", "243", "239", "Semua sama"], correct: 1},
+                {q: "Bundarkan 145 kepada puluh terdekat.", a: ["140", "150", "160", "100"], correct: 1},
+                {q: "Apakah pola nombor: 100, 110, 120, ...?", a: ["Tambah 5", "Tambah 10", "Tolak 10", "Tambah 20"], correct: 1},
+                {q: "Apakah nilai digit 7 dalam 765?", a: ["7", "70", "700", "7000"], correct: 2},
+                {q: "Susun 345, 321, 367 secara tertib menaik.", a: ["321, 345, 367", "367, 345, 321", "345, 367, 321", "321, 367, 345"], correct: 0},
+                {q: "Nombor sebelum 500 ialah?", a: ["499", "498", "501", "490"], correct: 0},
+                {q: "Tulis 'sembilan ratus empat puluh tiga' dalam angka.", a: ["943", "934", "843", "904"], correct: 0},
+                {q: "Bandingkan 678 dan 687. Mana yang lebih kecil?", a: ["678", "687", "Sama besar", "Tiada"], correct: 0}
+            ],
+            "Unit 2": [
+                {q: "245 + 130 = ?", a: ["375", "365", "385", "355"], correct: 0},
+                {q: "567 - 234 = ?", a: ["333", "334", "323", "343"], correct: 0},
+                {q: "4 x 5 = ?", a: ["18", "20", "22", "24"], correct: 1},
+                {q: "12 ÷ 2 = ?", a: ["5", "6", "7", "4"], correct: 1},
+                {q: "Jika 3 x ? = 15, apakah nombor itu?", a: ["4", "5", "6", "3"], correct: 1},
+                {q: "Ali ada 50 guli, beri kawan 20, tinggal berapa?", a: ["20", "30", "40", "25"], correct: 1},
+                {q: "Sifir 10: 10 x 8 = ?", a: ["80", "8", "800", "18"], correct: 0},
+                {q: "Bahagi 20 dengan 4.", a: ["4", "5", "6", "3"], correct: 1},
+                {q: "Tambah: 234 + 111 + 50 = ?", a: ["395", "385", "375", "405"], correct: 0},
+                {q: "Tolak: 888 - 444 = ?", a: ["444", "440", "454", "434"], correct: 0}
+            ],
+            "Unit 3": [
+                {q: "Apakah pecahan bagi 1 bahagian daripada 4?", a: ["1/2", "1/4", "1/3", "2/4"], correct: 1},
+                {q: "Manakah yang lebih besar: 1/2 atau 1/4?", a: ["1/2", "1/4", "Sama", "Tiada"], correct: 0},
+                {q: "Tulis 0.5 sebagai pecahan.", a: ["1/2", "1/4", "1/5", "5/100"], correct: 0},
+                {q: "Perpuluhan bagi 7/10 ialah?", a: ["0.7", "0.07", "7.0", "7.1"], correct: 0},
+                {q: "Jika ada 4 potong kek, 1 dimakan, pecahannya?", a: ["1/4", "3/4", "1/2", "4/1"], correct: 0},
+                {q: "Manakah setara dengan 1/2?", a: ["2/4", "1/3", "2/3", "3/4"], correct: 0},
+                {q: "0.2 + 0.3 = ?", a: ["0.5", "0.6", "0.4", "0.1"], correct: 0},
+                {q: "Manakah lebih besar: 0.8 atau 0.2?", a: ["0.8", "0.2", "Sama", "Tiada"], correct: 0},
+                {q: "Tulis 'sifar perpuluhan satu' dalam angka.", a: ["0.1", "0.01", "1.0", "0.11"], correct: 0},
+                {q: "Pecahan bagi 'suku' ialah?", a: ["1/4", "1/2", "3/4", "1/3"], correct: 0}
+            ],
+            "Unit 4": [
+                {q: "RM 25 + RM 10 = ?", a: ["RM 35", "RM 45", "RM 30", "RM 20"], correct: 0},
+                {q: "RM 50 - RM 20 = ?", a: ["RM 30", "RM 40", "RM 25", "RM 35"], correct: 0},
+                {q: "Beli pensel RM 2, beli 3 batang. Berapa?", a: ["RM 4", "RM 6", "RM 5", "RM 8"], correct: 1},
+                {q: "RM 20 bahagi 4 orang?", a: ["RM 4", "RM 5", "RM 6", "RM 3"], correct: 1},
+                {q: "Manakah nilai wang paling besar?", a: ["RM 10", "RM 50", "RM 20", "RM 5"], correct: 1},
+                {q: "Beli buku RM 15, bayar RM 20. Baki?", a: ["RM 5", "RM 10", "RM 2", "RM 3"], correct: 0},
+                {q: "RM 5 x 10 = ?", a: ["RM 50", "RM 500", "RM 15", "RM 55"], correct: 0},
+                {q: "Wang saku RM 2 sehari. 5 hari berapa?", a: ["RM 10", "RM 7", "RM 5", "RM 20"], correct: 0},
+                {q: "RM 80 - RM 35 = ?", a: ["RM 45", "RM 55", "RM 40", "RM 50"], correct: 0},
+                {q: "Tambah: RM 12 + RM 12 + RM 12 = ?", a: ["RM 36", "RM 34", "RM 32", "RM 38"], correct: 0}
+            ],
+            "Unit 5": [
+                {q: "1 jam ada berapa minit?", a: ["30", "45", "60", "100"], correct: 2},
+                {q: "Jarum panjang tunjuk 6, minit ke berapa?", a: ["15", "30", "6", "45"], correct: 1},
+                {q: "Pukul 2:00, jarum pendek di mana?", a: ["2", "12", "6", "3"], correct: 0},
+                {q: "1 hari ada berapa jam?", a: ["12", "24", "48", "60"], correct: 1},
+                {q: "Pukul berapa 30 minit selepas 3:00?", a: ["3:30", "3:15", "4:00", "3:06"], correct: 0},
+                {q: "Jarum pendek tunjuk 5, jarum panjang 12. Pukul?", a: ["5:00", "12:05", "5:12", "6:00"], correct: 0},
+                {q: "Setengah jam ialah?", a: ["15 minit", "30 minit", "45 minit", "60 minit"], correct: 1},
+                {q: "Suku jam ialah?", a: ["15 minit", "30 minit", "45 minit", "20 minit"], correct: 0},
+                {q: "Jika sekarang 1:00, 2 jam lagi pukul?", a: ["2:00", "3:00", "4:00", "1:30"], correct: 1},
+                {q: "Berapa minit dari 12:00 ke 12:15?", a: ["15", "5", "10", "20"], correct: 0}
+            ],
+            "Unit 6": [
+                {q: "Unit panjang untuk pensel?", a: ["m", "cm", "km", "kg"], correct: 1},
+                {q: "1 m = ? cm", a: ["10", "50", "100", "1000"], correct: 2},
+                {q: "Isi padu air diukur dalam?", a: ["liter", "gram", "meter", "cm"], correct: 0},
+                {q: "Jisim berat badan dalam?", a: ["kg", "g", "liter", "meter"], correct: 0},
+                {q: "Manakah lebih berat: 1kg atau 500g?", a: ["1kg", "500g", "Sama", "Tiada"], correct: 0},
+                {q: "Anggaran panjang buku teks?", a: ["20 cm", "20 m", "2 km", "2 mm"], correct: 0},
+                {q: "1 liter = ? ml", a: ["100", "500", "1000", "10"], correct: 2},
+                {q: "Ukur meja guna apa?", a: ["Pembaris", "Penimbang", "Penyukat", "Jam"], correct: 0},
+                {q: "2 kg + 3 kg = ?", a: ["5 kg", "6 kg", "4 kg", "5000 g"], correct: 0},
+                {q: "Botol air 500ml, jika 2 botol, jumlah?", a: ["1000ml", "500ml", "1500ml", "1 liter"], correct: 0}
+            ],
+            "Unit 7": [
+                {q: "Bentuk ada 6 muka rata (segi empat)?", a: ["Kubus", "Silinder", "Sfera", "Kon"], correct: 0},
+                {q: "Bentuk tiada bucu?", a: ["Sfera", "Kuboid", "Piramid", "Kubus"], correct: 0},
+                {q: "Berapa bucu bagi kubus?", a: ["6", "8", "12", "4"], correct: 1},
+                {q: "Bentuk 2D ada 3 sisi?", a: ["Segi tiga", "Segi empat", "Bulatan", "Pentagon"], correct: 0},
+                {q: "Silinder ada berapa permukaan melengkung?", a: ["1", "2", "3", "0"], correct: 0},
+                {q: "Bentuk permukaan tapak kon?", a: ["Bulatan", "Segi tiga", "Segi empat", "Tiada"], correct: 0},
+                {q: "Piramid mempunyai tapak bentuk?", a: ["Segi empat", "Bulatan", "Segi tiga", "Bujur"], correct: 0},
+                {q: "Bentuk yang boleh bergolek?", a: ["Sfera", "Kubus", "Kuboid", "Piramid"], correct: 0},
+                {q: "Berapa sisi segi empat tepat?", a: ["3", "4", "5", "6"], correct: 1},
+                {q: "Ciri-ciri kuboid?", a: ["6 muka", "Tiada bucu", "1 sisi", "Bulat"], correct: 0}
+            ],
+            "Unit 8": [
+                {q: "Data dikumpul dengan cara?", a: ["Membilang", "Meneka", "Melihat", "Melukis"], correct: 0},
+                {q: "Jika 5 orang suka epal, 3 orang suka oren. Total?", a: ["7", "8", "9", "6"], correct: 1},
+                {q: "Carta palang, palang tinggi bermaksud?", a: ["Paling banyak", "Paling sikit", "Sama", "Kosong"], correct: 0},
+                {q: "Cara paling senang tunjuk data?", a: ["Carta palang", "Gambar", "Tulisan", "Lakaran"], correct: 0},
+                {q: "Tally ||| bermaksud?", a: ["3", "4", "5", "2"], correct: 0},
+                {q: "Tally |||| dengan palang melintang?", a: ["5", "4", "6", "3"], correct: 0},
+                {q: "Tajuk carta palang penting untuk?", a: ["Tahu info", "Hiasan", "Suka-suka", "Tiada guna"], correct: 0},
+                {q: "Jika 10 orang suka bola, 5 suka badminton. Beza?", a: ["5", "10", "15", "2"], correct: 0},
+                {q: "Mentafsir data bermaksud?", a: ["Membaca info", "Menukar data", "Memadam data", "Melukis"], correct: 0},
+                {q: "Data carta palang paling tinggi ialah 20, paling rendah 5. Beza?", a: ["15", "25", "10", "5"], correct: 0}
+            ]
+        };
+
+        const selectionDiv = document.getElementById('unit-selection');
+        const container = document.getElementById('quiz-container');
+        const selectionScreen = document.getElementById('unit-selection');
+        const qBox = document.getElementById('question-box');
+        const unitTitle = document.getElementById('unit-title');
+
+        function showUnits() {
+            selectionScreen.classList.remove('hidden');
+            container.classList.add('hidden');
+        }
+
+        function loadUnit(unitName) {
+            selectionScreen.classList.add('hidden');
+            container.classList.remove('hidden');
+            unitTitle.innerText = unitName;
+            qBox.innerHTML = '';
+
+            quizData[unitName].forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'mb-6 p-4 border rounded-lg';
+                div.innerHTML = `<p class="font-bold mb-2">${index + 1}. ${item.q}</p>`;
+                
+                item.a.forEach((opt, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'block w-full text-left p-2 border my-1 rounded hover:bg-blue-100';
+                    btn.innerText = opt;
+                    btn.onclick = () => {
+                        if(i === item.correct) {
+                            btn.className += ' bg-green-200';
+                            alert('Tahniah, betul!');
+                        } else {
+                            btn.className += ' bg-red-200';
+                            alert('Cuba lagi!');
+                        }
+                    };
+                    div.appendChild(btn);
+                });
+                qBox.appendChild(div);
+            });
+        }
+
+        // Initialize Menu
+        Object.keys(quizData).forEach(unit => {
+            const btn = document.createElement('button');
+            btn.className = 'bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 font-bold';
+            btn.innerText = unit;
+            btn.onclick = () => loadUnit(unit);
+            selectionDiv.appendChild(btn);
+        });
+    </script>
+</body>
+</html>
+```eof
+
+### Cadangan dan Maklumat Tambahan:
+
+*   **Penggunaan:** Saya telah membina satu fail tunggal (`mt_tahun_2_kuiz.html`) yang mengandungi semua 80 soalan untuk setiap unit yang anda minta. Kod ini menggunakan Tailwind CSS untuk gaya moden dan JavaScript untuk fungsi kuiz interaktif.
+*   **Animasi:** Watak Capybara yang diminta telah disertakan sebagai grafik SVG dengan animasi `bounce` menggunakan CSS `@keyframes`.
+*   **Cara Menggunakan:** Anda hanya perlu menyimpan kod di atas dalam satu fail dengan format `.html` (contohnya `kuiz_matematik.html`) dan membukanya dengan mana-mana pelayar web (Chrome, Firefox, Edge).
+*   **Interaktiviti:** Murid boleh memilih unit, menjawab soalan, dan mendapat maklum balas serta-merta sama ada jawapan mereka betul atau salah.
+
+Semoga aplikasi kuiz ini membantu murid Tahun 2 menguasai matematik dengan cara yang menyeronokkan! Jika ada penambahan ciri lain, sila maklumkan.
     <!-- Header & Top Student Profile Input -->
     <header class="bg-emerald-600 text-white shadow-lg p-4 no-print">
         <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">

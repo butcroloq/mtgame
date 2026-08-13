@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Math: Bijak Matematik Tahun 4</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Press Start 2P, VT323 & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121218; /* Deep Obsidian dark mode */
+            background-image: radial-gradient(#242430 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .font-pixel-heading {
+            font-family: 'Press Start 2P', monospace;
+        }
+        .font-pixel-body {
+            font-family: 'VT323', monospace;
+        }
+        /* Custom Minecraft 3D Bevel Borders */
+        .mc-container {
+            background-color: #2e2e38; /* Stone block color */
+            border: 4px solid #4a4a5a;
+            border-top-color: #8c8c9a;
+            border-left-color: #8c8c9a;
+            border-bottom-color: #181822;
+            border-right-color: #181822;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+        }
+        .mc-button-gray {
+            background-color: #4a4a5a;
+            border: 4px solid #6c6c7c;
+            border-top-color: #adadbd;
+            border-left-color: #adadbd;
+            border-bottom-color: #282832;
+            border-right-color: #282832;
+            image-rendering: pixelated;
+        }
+        .mc-button-gray:active:not(:disabled) {
+            border-top-color: #282832;
+            border-left-color: #282832;
+            border-bottom-color: #adadbd;
+            border-right-color: #adadbd;
+            transform: translateY(2px);
+        }
+        .mc-button-green {
+            background-color: #3c8527; /* Grass green */
+            border: 4px solid #4da035;
+            border-top-color: #82d854;
+            border-left-color: #82d854;
+            border-bottom-color: #1c4e12;
+            border-right-color: #1c4e12;
+        }
+        .mc-button-green:active:not(:disabled) {
+            border-top-color: #1c4e12;
+            border-left-color: #1c4e12;
+            border-bottom-color: #82d854;
+            border-right-color: #82d854;
+            transform: translateY(2px);
+        }
+        .mc-button-diamond {
+            background-color: #00b4d8; /* Diamond Blue */
+            border: 4px solid #00d4fa;
+            border-top-color: #90f1ff;
+            border-left-color: #90f1ff;
+            border-bottom-color: #006b85;
+            border-right-color: #006b85;
+        }
+        .mc-button-diamond:active:not(:disabled) {
+            border-top-color: #006b85;
+            border-left-color: #006b85;
+            border-bottom-color: #90f1ff;
+            border-right-color: #90f1ff;
+            transform: translateY(2px);
+        }
+        .mc-inventory-slot {
+            background-color: #181822;
+            border: 3px solid #3c3c4a;
+            border-top-color: #101018;
+            border-left-color: #101018;
+            border-bottom-color: #555566;
+            border-right-color: #555566;
+        }
+        /* Printable Certificate Custom Layout */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #print-area, #print-area * {
+                visibility: visible;
+            }
+            #print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: 12px double #00b4d8;
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                padding: 40px !important;
+                box-shadow: none;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-100 antialiased selection:bg-emerald-800">
+
+    <script>
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    // Minecraft XP Orb Sound (High pitch pling arpeggio)
+                    const notes = [659.25, 783.99, 987.77, 1318.51]; // E5, G5, B5, E6
+                    notes.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gainNode = audioCtx.createGain();
+                        osc.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + (idx * 0.08));
+                        gainNode.gain.setValueAtTime(0.12, now + (idx * 0.08));
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, now + (idx * 0.08) + 0.3);
+                        osc.start(now + (idx * 0.08));
+                        osc.stop(now + (idx * 0.08) + 0.3);
+                    });
+                } else if (type === 'incorrect') {
+                    // Minecraft Damage Oof/Grunt Sound (Sudden drop pitch)
+                    const osc = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    osc.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(140, now);
+                    osc.frequency.linearRampToValueAtTime(50, now + 0.15);
+                    
+                    gainNode.gain.setValueAtTime(0.2, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+                    
+                    osc.start(now);
+                    osc.stop(now + 0.18);
+                } else if (type === 'victory') {
+                    // Minecraft Level Up fanfare sound
+                    const fanfare = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98, 2093.00];
+                    fanfare.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gainNode = audioCtx.createGain();
+                        osc.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + (idx * 0.1));
+                        gainNode.gain.setValueAtTime(0.1, now + (idx * 0.1));
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, now + (idx * 0.1) + 0.4);
+                        
+                        osc.start(now + (idx * 0.1));
+                        osc.stop(now + (idx * 0.1) + 0.4);
+                    });
+                }
+            } catch (e) {
+                console.warn("Audio failed to play: ", e);
+            }
+        }
+    </script>
+
+    <script>
+        const mathDatabase = {
+            units: [
+                {
+                    id: 1,
+                    title: "Unit 1: Nombor dan Operasi",
+                    description: "Nilai tempat, bundar, pola, serta operasi asas tambah, tolak, darab & bahagi lingkungan 100 000.",
+                    questions: [
+                        { q: "Nyatakan nilai tempat bagi digit 7 dalam nombor 87 234.", options: ["Ribu", "Ratus", "Puluh ribu", "Sa"], ans: 0, explain: "Digit 7 berada pada kedudukan sa, puluh, ratus, ribu. Jadi nilainya ialah Ribu." },
+                        { q: "Bundarkan 54 875 kepada puluh ribu terdekat.", options: ["50 000", "60 000", "55 000", "54 000"], ans: 0, explain: "Nilai ribu ialah 4 (kurang dari 5), maka bundarkan ke bawah menjadi 50 000." },
+                        { q: "Selesaikan: 45 120 + 8 995 = _____", options: ["54 115", "53 115", "54 125", "54 015"], ans: 0, explain: "Susun dalam bentuk lazim: 45120 + 8995 = 54 115." },
+                        { q: "Kira hasil tolak: 80 000 - 12 450 = _____", options: ["67 550", "68 550", "67 450", "77 550"], ans: 0, explain: "80 000 tolak 12 450 bersamaan dengan 67 550." },
+                        { q: "Kira hasil darab: 1 205 x 8 = _____", options: ["9 640", "8 640", "9 600", "9 648"], ans: 0, explain: "1 205 x 8 = 9 640." },
+                        { q: "Bahagikan: 48 600 ÷ 9 = _____", options: ["5 400", "540", "5 300", "6 400"], ans: 0, explain: "48 600 dibahagi 9 bersamaan 5 400." },
+                        { q: "Tulis 'tiga puluh dua ribu empat puluh' dalam bentuk angka.", options: ["32 040", "32 400", "30 240", "32 440"], ans: 0, explain: "Tiga puluh dua ribu (32 000) dan empat puluh (40) ditulis sebagai 32 040." },
+                        { q: "Cari nilai anu: 35 + p = 100.", options: ["65", "75", "55", "60"], ans: 0, explain: "p = 100 - 35 = 65." },
+                        { q: "Apakah nilai digit bagi angka 9 dalam 91 034?", options: ["90 000", "9 000", "900", "90"], ans: 0, explain: "9 berada pada nilai tempat puluh ribu, maka nilai digitnya ialah 90 000." },
+                        { q: "Lengkapkan pola nombor menaik lapan-lapan: 12 008, 12 016, _____, 12 032", options: ["12 024", "12 020", "12 028", "12 030"], ans: 0, explain: "12 016 + 8 = 12 024." },
+                        { q: "Satu bongkah kuari mengandungi 45 200 blok batu. 12 150 blok telah dilombong. Berapa baki blok yang tinggal?", options: ["33 050", "33 150", "32 050", "34 050"], ans: 0, explain: "45 200 - 12 150 = 33 050." },
+                        { q: "Darabkan 456 dengan 100.", options: ["45 600", "4 560", "456 000", "450 600"], ans: 0, explain: "456 x 100 = 45 600." },
+                        { q: "Selesaikan: 90 200 - [__] = 80 100.", options: ["10 100", "10 000", "9 100", "11 100"], ans: 0, explain: "90 200 - 80 100 = 10 100." },
+                        { q: "Sebuah peti kargo mengandungi 12 pek lilin. Jika ada 1 000 buah peti, berapakah jumlah lilin kesemuanya?", options: ["12 000", "1 200", "120 000", "10 000"], ans: 0, explain: "12 x 1 000 = 12 000 pek lilin." },
+                        { q: "Jika x ÷ 5 = 120, apakah nilai x?", options: ["600", "500", "125", "650"], ans: 0, explain: "x = 120 x 5 = 600." },
+                        { q: "Berapakah beza nilai antara digit 8 dan digit 2 dalam nombor 84 210?", options: ["79 800", "80 000", "200", "79 200"], ans: 0, explain: "Nilai digit 8 ialah 80 000, nilai digit 2 ialah 200. Beza: 80 000 - 200 = 79 800." }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "Unit 2: Pecahan, Perpuluhan & Peratus",
+                    description: "Penukaran pecahan tak wajar, tambah tolak pecahan, perpuluhan dan peratusan.",
+                    questions: [
+                        { q: "Tukarkan 9/4 kepada nombor bercampur.", options: ["2 1/4", "1 2/4", "2 3/4", "2 1/2"], ans: 0, explain: "9 ÷ 4 = 2 baki 1. Maka, jawapannya 2 1/4." },
+                        { q: "1/3 + 1/6 = _____", options: ["1/2", "2/9", "2/6", "3/6"], ans: 0, explain: "Sediakan penyebut sama: 2/6 + 1/6 = 3/6 = 1/2." },
+                        { q: "Kira: 3.45 + 12.8 = _____", options: ["16.25", "15.25", "16.12", "15.85"], ans: 0, explain: "Luruskan titik perpuluhan: 3.45 + 12.80 = 16.25." },
+                        { q: "Tukarkan 65% kepada pecahan termudah.", options: ["13/20", "65/100", "13/50", "3/5"], ans: 0, explain: "65/100 dibahagi dengan 5 di atas dan bawah menjadi 13/20." },
+                        { q: "Tolak pecahan: 2 - 3/4 = _____", options: ["1 1/4", "1 3/4", "1/4", "2 1/4"], ans: 0, explain: "2 ditukar kepada 1 4/4. 1 4/4 - 3/4 = 1 1/4." },
+                        { q: "Kira 20% daripada 400 biji batu block.", options: ["80", "40", "100", "120"], ans: 0, explain: "20/100 x 400 = 20 x 4 = 80." },
+                        { q: "Selesaikan: 5.6 - 2.84 = _____", options: ["2.76", "2.86", "3.24", "3.76"], ans: 0, explain: "5.60 - 2.84 = 2.76." },
+                        { q: "Kira darab perpuluhan: 1.25 x 4 = _____", options: ["5.00", "4.00", "5.25", "4.85"], ans: 0, explain: "1.25 x 4 = 5." },
+                        { q: "Apakah nilai pecahan bagi 0.07?", options: ["7/100", "7/10", "7/1000", "70/100"], ans: 0, explain: "Dua tempat perpuluhan bermaksud perseratus, jadi 7/100." },
+                        { q: "Tukarkan 1 3/5 kepada pecahan tak wajar.", options: ["8/5", "5/5", "6/5", "9/5"], ans: 0, explain: "(1 x 5) + 3 = 8. Jawapannya 8/5." },
+                        { q: "Kira jumlah: 3/10 + 0.45 = _____", options: ["0.75", "0.48", "3.45", "0.35"], ans: 0, explain: "3/10 = 0.3. Hasilnya 0.3 + 0.45 = 0.75." },
+                        { q: "Tolak perpuluhan berturut-turut: 10 - 2.5 - 3.12 = _____", options: ["4.38", "4.48", "5.50", "3.38"], ans: 0, explain: "10 - 2.5 = 7.5. 7.50 - 3.12 = 4.38." },
+                        { q: "Tukarkan 3/5 kepada peratus.", options: ["60%", "30%", "50%", "40%"], ans: 0, explain: "3/5 x 100% = 300 / 5 = 60%." },
+                        { q: "Hitungkan hasil bahagi: 9.6 ÷ 3 = _____", options: ["3.2", "3.3", "2.2", "4.2"], ans: 0, explain: "9.6 dibahagi 3 ialah 3.2." },
+                        { q: "Kira: 2 1/2 - 1/4 = _____", options: ["2 1/4", "1 3/4", "2 3/4", "1 1/4"], ans: 0, explain: "2 2/4 - 1/4 = 2 1/4." },
+                        { q: "Pecahan manakah yang senilai dengan 2/3?", options: ["4/6", "4/9", "3/4", "5/6"], ans: 0, explain: "Darab atas bawah dengan 2: 2/3 x 2/2 = 4/6." }
+                    ]
+                },
+                {
+                    id: 3,
+                    title: "Unit 3: Wang",
+                    description: "Operasi tambah, tolak, darab, bahagi wang, perancangan kewangan serta instrumen pembayaran.",
+                    questions: [
+                        { q: "Selesaikan: RM32 450 + RM1 500 - RM8 200 = _____", options: ["RM25 750", "RM24 750", "RM26 750", "RM25 850"], ans: 0, explain: "RM33 950 - RM8 200 = RM25 750." },
+                        { q: "Harga sebiji buah tembikai ialah RM8. Sebiji buah mangga berharga RM4. Cari jumlah harga bagi 5 biji tembikai dan 10 biji mangga.", options: ["RM80", "RM120", "RM60", "RM100"], ans: 0, explain: "(5 x RM8) + (10 x RM4) = RM40 + RM40 = RM80." },
+                        { q: "Sebuah persatuan mengutip RM120 daripada setiap 45 orang ahli untuk membiayai projek pertanian. Berapakah dana terkumpul?", options: ["RM5 400", "RM4 800", "RM5 000", "RM5 200"], ans: 0, explain: "RM120 * 45 = RM5 400" },
+                        { q: "Kira hasil bahagi wang: RM85 000 ÷ 5 = _____", options: ["RM17 000", "RM15 000", "RM16 000", "RM18 000"], ans: 0, explain: "RM85 000 dibahagi 5 ialah RM17 000." },
+                        { q: "Syarikat perlombongan emas menerima keuntungan RM95 200. Mereka mendermakan RM15 500. Berapakah baki keuntungan?", options: ["RM79 700", "RM80 700", "RM79 500", "RM78 700"], ans: 0, explain: "RM95 200 - RM15 500 = RM79 700." },
+                        { q: "Antara berikut, manakah instrumen pembayaran elektronik rasmi?", options: ["Kad Debit", "Wang Syiling", "Emas Tulen", "Cek Pos"], ans: 0, explain: "Kad debit ialah kaedah pembayaran elektronik terus dari akaun bank." },
+                        { q: "Kira: RM10 000 - RM2 450.50 = _____", options: ["RM7 549.50", "RM7 550.50", "RM8 549.50", "RM7 449.50"], ans: 0, explain: "RM10 000 - RM2 450.50 = RM7 549.50." },
+                        { q: "Sebuah gerabak melombong berharga RM1 250. Berapakah harga bagi 8 buah gerabak yang sama?", options: ["RM10 000", "RM9 000", "RM12 000", "RM8 000"], ans: 0, explain: "RM1 250 x 8 = RM10 000." },
+                        { q: "Syarikat membahagikan derma RM48 000 kepada 10 buah rumah kebajikan secara sama rata. Berapakah nilai yang diterima setiap rumah?", options: ["RM4 800", "RM480", "RM48 000", "RM40 800"], ans: 0, explain: "RM48 000 ÷ 10 = RM4 800." },
+                        { q: "Apakah tujuan utama membuat rekod belanjawan simpanan bulanan?", options: ["Mengawal perbelanjaan boros", "Menunjuk-nunjuk harta", "Mendapat faedah pinjaman", "Membeli barangan mahal sahaja"], ans: 0, explain: "Rekod perancangan belanjawan membantu kita menabung dan mengelakkan pembaziran." },
+                        { q: "Selesaikan: RM450 x 20 = _____", options: ["RM9 000", "RM8 000", "RM90 000", "RM4 500"], ans: 0, explain: "RM450 x 20 = RM9 000." },
+                        { q: "Tolak wang berturut-turut: RM50 000 - RM12 000 - RM3 450 = _____", options: ["RM34 550", "RM35 550", "RM34 450", "RM33 550"], ans: 0, explain: "RM38 000 - RM3 450 = RM34 550." },
+                        { q: "Jika pelaburan Syamir bernilai RM5 000 memberikan dividen sebanyak 5% setahun, berapakah nilai dividen itu?", options: ["RM250", "RM50", "RM500", "RM100"], ans: 0, explain: "5/100 x RM5 000 = RM250." },
+                        { q: "Kira jumlah bagi 3 keping wang kertas RM100 dan 4 keping wang kertas RM50.", options: ["RM500", "RM400", "RM600", "RM350"], ans: 0, explain: "(3 x RM100) + (4 x RM50) = RM300 + RM200 = RM500." },
+                        { q: "Tukarkan 34 500 sen kepada Ringgit Malaysia (RM).", options: ["RM345", "RM34.50", "RM3 450", "RM3.45"], ans: 0, explain: "Bahagikan sen dengan 100 untuk menjadi RM: 34 500 ÷ 100 = RM345." },
+                        { q: "Apakah maksud mata wang asing?", options: ["Mata wang dari negara luar", "Mata wang palsu", "Mata wang lama", "Mata wang simpanan"], ans: 0, explain: "Mata wang asing ialah sistem mata wang rasmi yang digunakan oleh negara-negara luar." }
+                    ]
+                },
+                {
+                    id: 4,
+                    title: "Unit 4: Masa dan Waktu",
+                    description: "Sistem 12 dan 24 jam, tempoh masa, dekad, abad, alaf serta tambah tolak waktu.",
+                    questions: [
+                        { q: "Tukarkan pukul 8:45 malam kepada sistem 24 jam.", options: ["Jam 2045", "Jam 0845", "Jam 2145", "Jam 1845"], ans: 0, explain: "8:45 malam + 12 jam = Jam 2045." },
+                        { q: "Kira tempoh dari pukul 0930 hingga pukul 1430 pada hari yang sama.", options: ["5 jam", "4 jam", "6 jam", "4 jam 30 minit"], ans: 0, explain: "1430 - 0930 = 5 jam." },
+                        { q: "3 abad 4 dekad + 2 abad 8 dekad = _____ abad _____ dekad", options: ["6 abad 2 dekad", "5 abad 2 dekad", "6 abad 12 dekad", "5 abad 8 dekad"], ans: 0, explain: "3 abad 4 dekad + 2 abad 8 dekad = 5 abad 12 dekad. 12 dekad = 1 abad 2 dekad. Maka menjadi 6 abad 2 dekad." },
+                        { q: "Tukarkan 72 jam kepada hari.", options: ["3 hari", "2 hari", "4 hari", "5 hari"], ans: 0, explain: "72 ÷ 24 (1 hari = 24 jam) = 3 hari." },
+                        { q: "Kira: 4 minggu 3 hari - 1 minggu 5 hari = _____ minggu _____ hari", options: ["2 minggu 5 hari", "3 minggu 2 hari", "2 minggu 4 hari", "1 minggu 5 hari"], ans: 0, explain: "Pinjam 1 minggu (7 hari): 3 minggu 10 hari - 1 minggu 5 hari = 2 minggu 5 hari." },
+                        { q: "Nyatakan hubungan alaf dengan abad.", options: ["1 alaf = 10 abad", "1 alaf = 100 abad", "1 alaf = 5 abad", "1 alaf = 12 abad"], ans: 0, explain: "1 alaf bersamaan dengan 1 000 tahun, manakala 1 abad = 100 tahun. Maka 1 alaf = 10 abad." },
+                        { q: "Tukarkan Jam 1520 kepada sistem 12 jam.", options: ["3:20 petang", "3:20 pagi", "5:20 petang", "1:20 tengah hari"], ans: 0, explain: "Jam 1520 - 1200 = 3:20 petang." },
+                        { q: "Berapakah jumlah hari bagi tahun lompat?", options: ["366 hari", "365 hari", "360 hari", "364 hari"], ans: 0, explain: "Tahun lompat mengandungi 366 hari (bulan Februari ada 29 hari)." },
+                        { q: "Tukarkan 5 dekad kepada tahun.", options: ["50 tahun", "500 tahun", "5 tahun", "15 tahun"], ans: 0, explain: "1 dekad = 10 tahun. Maka 5 dekad x 10 = 50 tahun." },
+                        { q: "Selesaikan: 5 hari 12 jam + 2 hari 18 jam = _____ hari _____ jam", options: ["8 hari 6 jam", "7 hari 30 jam", "8 hari 30 jam", "7 hari 6 jam"], ans: 0, explain: "5 hari + 2 hari = 7 hari. 12 jam + 18 jam = 30 jam. 30 jam = 1 hari 6 jam. Hasilnya: 8 hari 6 jam." },
+                        { q: "Tukarkan 4 abad kepada tahun.", options: ["400 tahun", "40 tahun", "4 000 tahun", "450 tahun"], ans: 0, explain: "1 abad = 100 tahun. Maka 4 abad = 400 tahun." },
+                        { q: "Kira hasil tolak masa: 9 tahun - 3 tahun 8 bulan = _____ tahun _____ bulan", options: ["5 tahun 4 bulan", "6 tahun 4 bulan", "5 tahun 8 bulan", "6 tahun 8 bulan"], ans: 0, explain: "Pinjam 1 tahun (12 bulan): 8 tahun 12 bulan - 3 tahun 8 bulan = 5 tahun 4 bulan." },
+                        { q: "Tukarkan 2 jam 15 minit kepada minit.", options: ["135 minit", "120 minit", "145 minit", "115 minit"], ans: 0, explain: "(2 x 60 minit) + 15 minit = 120 + 15 = 135 minit." },
+                        { q: "Sebuah kapal kargo berlayar dari pelabuhan pada pukul 0800 pagi dan tiba di destinasi 4 jam 15 minit kemudian. Nyatakan waktu ketibaannya.", options: ["Jam 1215", "Jam 1200", "Jam 1315", "Jam 1115"], ans: 0, explain: "0800 + 4 jam 15 minit = Jam 1215 (atau 12:15 tengah hari)." },
+                        { q: "Tukarkan 180 saat kepada minit.", options: ["3 minit", "2 minit", "4 minit", "5 minit"], ans: 0, explain: "180 ÷ 60 (1 minit = 60 saat) = 3 minit." },
+                        { q: "Berapakah bilangan tahun dalam 1 alaf?", options: ["1 000 tahun", "100 tahun", "10 tahun", "10 000 tahun"], ans: 0, explain: "1 alaf adalah bersamaan dengan tempoh 1 000 tahun." }
+                    ]
+                },
+                {
+                    id: 5,
+                    title: "Unit 5: Panjang, Jisim & Isi Padu Cecair",
+                    description: "Penukaran unit panjang (km, m, cm, mm), jisim (kg, g) dan cecair (l, ml). Operasi asas ukuran.",
+                    questions: [
+                        { q: "Tukarkan 3 km 45 m kepada unit meter (m).", options: ["3 045 m", "3 450 m", "345 m", "30 045 m"], ans: 0, explain: "3 km = 3 000 m. 3 000 m + 45 m = 3 045 m." },
+                        { q: "Selesaikan: 5 kg 200 g + 3 kg 900 g = _____ kg _____ g", options: ["9 kg 100 g", "8 kg 100 g", "9 kg 1100 g", "8 kg 900 g"], ans: 0, explain: "5 kg + 3 kg = 8 kg. 200 g + 900 g = 1100 g (1 kg 100 g). Jumlah: 9 kg 100 g." },
+                        { q: "Kira: 12 l 450 ml - 4 l 600 ml = _____ l _____ ml", options: ["7 l 850 ml", "8 l 850 ml", "7 l 250 ml", "8 l 150 ml"], ans: 0, explain: "Pinjam 1 l (1000 ml): 11 l 1450 ml - 4 l 600 ml = 7 l 850 ml." },
+                        { q: "Tukarkan 450 mm kepada sentimeter (cm).", options: ["45 cm", "4.5 cm", "4500 cm", "0.45 cm"], ans: 0, explain: "450 mm ÷ 10 (1 cm = 10 mm) = 45 cm." },
+                        { q: "Seutas dawai besi merah bernilai 5 m 40 cm dipotong kepada 3 bahagian sama rata. Berapakah panjang setiap bahagian?", options: ["1 m 80 cm", "1 m 20 cm", "2 m 10 cm", "1 m 50 cm"], ans: 0, explain: "5 m 40 cm = 540 cm. 540 cm ÷ 3 = 180 cm = 1 m 80 cm." },
+                        { q: "Bahagikan panjang: 24 cm 8 mm ÷ 4 = _____", options: ["6 cm 2 mm", "6 cm 8 mm", "4 cm 2 mm", "5 cm 2 mm"], ans: 0, explain: "24 cm ÷ 4 = 6 cm. 8 mm ÷ 4 = 2 mm. Hasilnya 6 cm 2 mm." },
+                        { q: "Sebutkan anggaran jarak yang logik dari pangkalan utama ke kubu kota Nether yang jauh di ufuk.", options: ["5 km", "50 mm", "50 cm", "5 m"], ans: 0, explain: "Jarak jauh diukur menggunakan unit Kilometer (km)." },
+                        { q: "Tukarkan 2 l 50 ml kepada mililiter (ml).", options: ["2 050 ml", "2 500 ml", "250 ml", "205 ml"], ans: 0, explain: "2 l = 2 000 ml. 2 000 ml + 50 ml = 2 050 ml." },
+                        { q: "Hitungkan hasil tambah: 12 km 500 m + 8 km 750 m = _____ km _____ m", options: ["21 km 250 m", "20 km 250 m", "21 km 1250 m", "20 km 1250 m"], ans: 0, explain: "12 km + 8 km = 20 km. 500 m + 750 m = 1250 m = 1 km 250 m. Jumlah: 21 km 250 m." },
+                        { q: "Selesaikan: 15 kg - 4 kg 250 g = _____ kg _____ g", options: ["10 kg 750 g", "11 kg 750 g", "10 kg 250 g", "11 kg 250 g"], ans: 0, explain: "Pinjam 1 kg (1000 g): 14 kg 1000 g - 4 kg 250 g = 10 kg 750 g." },
+                        { q: "Kira hasil darab ukuran: 3 l 150 ml x 5 = _____ l _____ ml", options: ["15 l 750 ml", "15 l 150 ml", "16 l 750 ml", "15 l 500 ml"], ans: 0, explain: "3 l x 5 = 15 l. 150 ml x 5 = 750 ml. Hasilnya 15 l 750 ml." },
+                        { q: "Tukarkan 7 005 g kepada kilogram (kg) dan gram (g).", options: ["7 kg 5 g", "70 kg 5 g", "7 kg 50 g", "7 kg 500 g"], ans: 0, explain: "7 000 g = 7 kg. Baki 5 g. Jadi 7 kg 5 g." },
+                        { q: "Kira hasil tolak panjang: 80 m - 12 m 45 cm = _____ m _____ cm", options: ["67 m 55 cm", "68 m 55 cm", "67 m 45 cm", "77 m 55 cm"], ans: 0, explain: "Pinjam 1 m (100 cm): 79 m 100 cm - 12 m 45 cm = 67 m 55 cm." },
+                        { q: "Sebiji batu kuari mempunyai berat 12 kg 500 g. Jika diletakkan 4 biji batu yang sama berat di dalam bekas, berapakah berat keseluruhan bekas itu?", options: ["50 kg", "48 kg 500 g", "50 kg 500 g", "40 kg"], ans: 0, explain: "12.5 kg x 4 = 50 kg." },
+                        { q: "Tukarkan 8 m 4 cm kepada sentimeter (cm).", options: ["804 cm", "840 cm", "84 cm", "8004 cm"], ans: 0, explain: "8 m = 800 cm. 800 cm + 4 cm = 804 cm." },
+                        { q: "Kira hasil bahagi cecair: 10 l ÷ 8 = _____ l _____ ml", options: ["1 l 250 ml", "1 l 500 ml", "1 l 200 ml", "1 l 125 ml"], ans: 0, explain: "10 l = 10 000 ml. 10 000 ml ÷ 8 = 1250 ml = 1 l 250 ml." }
+                    ]
+                },
+                {
+                    id: 6,
+                    title: "Unit 6: Ruang",
+                    description: "Mengenal sudut (tirus, cakah, tegak), garis selari, garis seranjang, perimeter, luas dan isi padu.",
+                    questions: [
+                        { q: "Apakah jenis sudut yang nilainya kurang daripada 90 darjah?", options: ["Sudut tirus", "Sudut cakah", "Sudut tegak", "Sudut lurus"], ans: 0, explain: "Sudut yang lebih kecil daripada sudut tegak (90 darjah) dipanggil sudut tirus." },
+                        { q: "Hitungkan perimeter sebuah segi empat sama yang mempunyai panjang sisi 6 cm.", options: ["24 cm", "36 cm", "12 cm", "18 cm"], ans: 0, explain: "Perimeter = 6 cm x 4 sisi = 24 cm." },
+                        { q: "Cari luas sebuah segi empat tepat yang mempunyai panjang 8 cm dan lebar 5 cm.", options: ["40 cm²", "26 cm²", "13 cm²", "30 cm²"], ans: 0, explain: "Luas = Panjang x Lebar = 8 cm x 5 cm = 40 cm²." },
+                        { q: "Sebuah kubus mempunyai panjang sisi 4 cm. Kira isi padu kubus tersebut.", options: ["64 cm³", "16 cm³", "48 cm³", "96 cm³"], ans: 0, explain: "Isi padu = 4 cm x 4 cm x 4 cm = 64 cm³." },
+                        { q: "Garis yang sentiasa mempunyai jarak yang sama dan tidak akan bertemu dipanggil...", options: ["Garis selari", "Garis seranjang", "Garis melengkung", "Garis lurus bersilang"], ans: 0, explain: "Garis selari tidak akan pernah bertembung walaupun dipanjangkan." },
+                        { q: "Garis seranjang membentuk sudut _____ darjah.", options: ["90", "180", "45", "60"], ans: 0, explain: "Dua garis bersilang tegak (garis seranjang) membentuk sudut tepat iaitu 90 darjah." },
+                        { q: "Hitungkan perimeter segi tiga sama sisi yang bersisi 9 cm.", options: ["27 cm", "18 cm", "36 cm", "81 cm"], ans: 0, explain: "Perimeter = 9 cm x 3 sisi = 27 cm." },
+                        { q: "Apakah nama sudut yang nilainya lebih besar daripada 90 darjah tetapi kurang dari 180 darjah?", options: ["Sudut cakah", "Sudut tirus", "Sudut tegak", "Sudut refleks"], ans: 0, explain: "Sudut yang lebih besar daripada sudut tegak dinamakan sudut cakah." },
+                        { q: "Kira luas segi tiga bersudut tegak yang mempunyai tapak 6 cm dan tinggi 4 cm.", options: ["12 cm²", "24 cm²", "10 cm²", "18 cm²"], ans: 0, explain: "Luas segi tiga = 1/2 x tapak x tinggi = 1/2 x 6 x 4 = 12 cm²." },
+                        { q: "Kira isi padu sebuah kuboid yang mempunyai panjang 10 cm, lebar 3 cm dan tinggi 4 cm.", options: ["120 cm³", "70 cm³", "17 cm³", "100 cm³"], ans: 0, explain: "Isi padu = 10 x 3 x 4 = 120 cm³." },
+                        { q: "Berapakah bilangan sudut tegak yang terdapat di dalam sebuah segi empat tepat?", options: ["4", "2", "3", "6"], ans: 0, explain: "Setiap bucu segi empat tepat mempunyai satu sudut tegak (90 darjah). Jumlahnya ada 4." },
+                        { q: "Apakah alat yang digunakan untuk mengukur sudut dengan tepat?", options: ["Protraktor", "Pembaris", "Jangka lukis", "Tali pita"], ans: 0, explain: "Protraktor digunakan khusus untuk mengukur saiz sudut dalam darjah." },
+                        { q: "Perimeter sebuah taman mini berbentuk segi empat sama ialah 40 m. Berapakah panjang satu sisinya?", options: ["10 m", "20 m", "5 m", "8 m"], ans: 0, explain: "Panjang sisi = Perimeter ÷ 4 = 40 m ÷ 4 = 10 m." },
+                        { q: "Sebuah segi tiga mempunyai tapak 8 cm dan luas 24 cm². Berapakah tingginya?", options: ["6 cm", "3 cm", "12 cm", "8 cm"], ans: 0, explain: "Luas = 1/2 x t x h -> 24 = 1/2 x 8 x h -> 24 = 4h -> h = 6 cm." },
+                        { q: "Sebutkan nama garisan yang dibentuk oleh persilangan dua garisan pada sudut tepat.", options: ["Garis seranjang", "Garis selari", "Garis mencancang", "Garis mengufuk"], ans: 0, explain: "Garisan yang bertemu membentuk sudut 90 darjah dikenali sebagai garis seranjang." },
+                        { q: "Berapakah jumlah darjah bagi sudut pada satu garisan lurus?", options: ["180 darjah", "90 darjah", "360 darjah", "270 darjah"], ans: 0, explain: "Sudut pada satu garisan lurus ialah tepat 180 darjah." }
+                    ]
+                },
+                {
+                    id: 7,
+                    title: "Unit 7: Koordinat, Nisbah & Kadaran",
+                    description: "Menentukan kedudukan koordinat pada sukuan pertama, nisbah 1:1 hingga 1:10 dan konsep kadaran.",
+                    questions: [
+                        { q: "Koordinat titik rujukan permulaan (0,0) pada satah Cartes dikenali sebagai...", options: ["Asalan", "Paksi-x", "Paksi-y", "Sukuan"], ans: 0, explain: "Titik (0,0) di mana paksi-x dan paksi-y bersilang dinamakan asalan." },
+                        { q: "Nyatakan koordinat titik yang berada 4 unit ke kanan pada paksi mengufuk dan 3 unit ke atas pada paksi mencancang.", options: ["(4, 3)", "(3, 4)", "(0, 4)", "(4, 0)"], ans: 0, explain: "Koordinat ditulis sebagai (x, y). Maka, ia ditulis sebagai (4, 3)." },
+                        { q: "Nisbah bilangan pedang besi kepada pedang berlian ialah 1:5. Jika ada 2 bilah pedang besi, berapakah bilangan pedang berlian?", options: ["10", "5", "15", "8"], ans: 0, explain: "Pola nisbah: 1 x 2 : 5 x 2 = 2 : 10. Maka pedang berlian ada 10." },
+                        { q: "Harga bagi 3 blok batu obsidian ialah RM15. Hitungkan harga bagi 8 buah blok batu yang sama.", options: ["RM40", "RM30", "RM45", "RM50"], ans: 0, explain: "Harga seunit = RM15 ÷ 3 = RM5. Harga 8 blok = RM5 x 8 = RM40." },
+                        { q: "Pada satah Cartes, paksi mengufuk diwakili oleh...", options: ["Paksi-x", "Paksi-y", "Asalan", "Sukuan kedua"], ans: 0, explain: "Paksi mengufuk (horizontal) ialah paksi-x." },
+                        { q: "Nisbah bilangan epal merah kepada epal hijau ialah 1:3. Berapakah jumlah epal keseluruhan jika ada 5 biji epal merah?", options: ["20", "15", "18", "12"], ans: 0, explain: "Epal merah = 5. Epal hijau = 3 x 5 = 15. Jumlah keseluruhan = 5 + 15 = 20." },
+                        { q: "Sebuah kereta menggunakan 2 liter petrol untuk bergerak sejauh 20 km. Berapakah jarak yang boleh dilalui dengan 5 liter petrol?", options: ["50 km", "40 km", "60 km", "100 km"], ans: 0, explain: "1 liter = 20 ÷ 2 = 10 km. 5 liter = 10 x 5 = 50 km." },
+                        { q: "Koordinat titik P ialah (5, 2). Apakah nilai bagi koordinat mencancang?", options: ["2", "5", "7", "3"], ans: 0, explain: "Koordinat mencancang diwakili oleh nilai y. Bagi (5, 2), nilainya ialah 2." },
+                        { q: "Nisbah bilangan buku rujukan kepada buku cerita ialah 1:10. Jika ada 40 buah buku cerita, berapakah bilangan buku rujukan?", options: ["4", "10", "400", "5"], ans: 0, explain: "1:10 bersamaan dengan x:40. Nilai x = 40 ÷ 10 = 4." },
+                        { q: "Harga 5 keping roti ialah RM10. Berapakah harga bagi 12 keping roti yang sama?", options: ["RM24", "RM20", "RM12", "RM25"], ans: 0, explain: "Sekeping roti = RM10 ÷ 5 = RM2. 12 keping = RM2 x 12 = RM24." },
+                        { q: "Apakah koordinat bagi asalan pada satah Cartes?", options: ["(0, 0)", "(1, 1)", "(0, 1)", "(1, 0)"], ans: 0, explain: "Asalan terletak tepat pada pusat persilangan koordinat iaitu (0, 0)." },
+                        { q: "Nisbah bilangan ayam kepada itik di reban ialah 1:4. Nyatakan nisbah itik kepada ayam.", options: ["4:1", "1:4", "2:4", "4:2"], ans: 0, explain: "Nisbah itik kepada ayam terbalik daripada asal iaitu 4:1." },
+                        { q: "Sebuah mesin mencetak 150 keping poster dalam masa 3 minit. Berapakah jumlah poster yang dicetak dalam masa 10 minit?", options: ["500", "450", "300", "600"], ans: 0, explain: "Seminit = 150 ÷ 3 = 50 keping. 10 minit = 50 x 10 = 500." },
+                        { q: "Titik K berada di koordinat (2, 7). Berapakah jarak unit mengufuk dari paksi-y?", options: ["2 unit", "7 unit", "5 unit", "9 unit"], ans: 0, explain: "Jarak dari paksi-y diukur mengufuk mengikut nilai koordinat x, iaitu 2 unit." },
+                        { q: "Nisbah bilangan guli biru kepada guli merah ialah 1:7. Jika guli merah ada 21 biji, berapakah bilangan guli biru?", options: ["3", "7", "14", "1"], ans: 0, explain: "guli biru = 21 ÷ 7 = 3 biji." },
+                        { q: "Jika harga 4 kg mangga ialah RM32, berapakah harga bagi 3 kg mangga?", options: ["RM24", "RM28", "RM18", "RM20"], ans: 0, explain: "1 kg mangga = RM32 ÷ 4 = RM8. 3 kg mangga = RM8 x 3 = RM24." }
+                    ]
+                },
+                {
+                    id: 8,
+                    title: "Unit 8: Pengurusan Data",
+                    description: "Membaca dan mentafsir data daripada piktograf, carta palang dan carta pai.",
+                    questions: [
+                        { q: "Carta palang jualan buku: Jan (50), Feb (30), Mac (40), Apr (20). Berapakah jumlah baki buku terjual antara bulan Jan dengan Apr?", options: ["30 buah", "20 buah", "10 buah", "40 buah"], ans: 0, explain: "Beza Jan (50) - Apr (20) = 30 buah buku." },
+                        { q: "Data bilangan haiwan di ladang: Ayam (20), Itik (15), Arnab (10). Berapakah peratus bilangan arnab daripada jumlah keseluruhan haiwan?", options: ["22.2%", "20%", "25.5%", "10%"], ans: 0, explain: "Jumlah haiwan = 20 + 15 + 10 = 45. Arnab = 10. Peratus = 10/45 x 100% = 22.2%." },
+                        { q: "Dalam piktograf, maklumat paling penting untuk mentafsir bilangan sebenar berada di bahagian...", options: ["Petunjuk", "Tajuk", "Gambar", "Sisi"], ans: 0, explain: "Petunjuk menyatakan nilai perwakilan satu gambar hiasan kepada nilai sebenar." },
+                        { q: "Carta pai menunjukkan pembahagian masa Ali: Belajar (40%), Tidur (30%), Main (20%), Makan (10%). Apakah aktiviti yang mengambil masa hampir separuh hari?", options: ["Belajar", "Tidur", "Main", "Makan"], ans: 0, explain: "40% adalah peratusan terbesar, yang menghampiri nilai separuh hari (50%)." },
+                        { q: "Apakah fungsi utama carta palang dalam persembahan data?", options: ["Membandingkan kuantiti kategori", "Menunjukkan peratusan bulat", "Menunjuk arah koordinat", "Menghias laporan data"], ans: 0, explain: "Carta palang sangat sesuai digunakan untuk membandingkan perbezaan kuantiti antara kategori." },
+                        { q: "Dalam satu piktograf, simbol 1 gambar epal mewakili 5 biji epal. Jika ada 6 gambar epal, berapakah bilangan sebenar epal tersebut?", options: ["30", "11", "25", "15"], ans: 0, explain: "Bilangan epal = 6 gambar x 5 biji = 30 biji epal." },
+                        { q: "Carta palang hobi murid kelas 4 Melur: Membaca (12), Melukis (8), Berenang (10). Berapakah bilangan murid kelas itu?", options: ["30", "28", "20", "25"], ans: 0, explain: "Jumlah murid = 12 + 8 + 10 = 30 orang murid." },
+                        { q: "Carta pai mewakili peratusan jualan minuman: Teh (25%), Kopi (50%), Milo (25%). Minuman manakah yang mewakili separuh daripada keseluruhan jualan?", options: ["Kopi", "Teh", "Milo", "Semua sama"], ans: 0, explain: "50% adalah bersamaan dengan nilai separuh (1/2) bulatan carta pai." },
+                        { q: "Apakah nama piktograf dalam bahasa Inggeris?", options: ["Pictograph", "Bar Chart", "Pie Chart", "Line Graph"], ans: 0, explain: "Piktograf dikenali sebagai Pictograph." },
+                        { q: "Jika petunjuk piktograf menunjukkan '1 simbol baju mewakili 10 helai baju'. Berapakah simbol baju yang perlu dilukis untuk mewakili 80 helai baju?", options: ["8", "10", "80", "12"], ans: 0, explain: "Bilangan simbol = 80 helai ÷ 10 = 8 buah simbol." },
+                        { q: "Carta palang markah kuiz: Abu (15), Bob (20), Chee (18). Siapakah yang mendapat markah paling tinggi?", options: ["Bob", "Abu", "Chee", "Semua sama"], ans: 0, explain: "Bob mendapat markah tertinggi iaitu 20 markah." },
+                        { q: "Dalam piktograf jualan ikan, terdapat 4 setengah simbol ikan. Jika 1 simbol mewakili 10 ekor, berapakah jumlah ikan tersebut?", options: ["45 ekor", "40 ekor", "50 ekor", "42 ekor"], ans: 0, explain: "4 simbol = 40. Setengah simbol = 5. Jumlahnya 45 ekor." },
+                        { q: "Data kegemaran warna: Merah (15), Biru (15), Hijau (10). Apakah dua warna yang mempunyai bilangan peminat yang sama banyak?", options: ["Merah dan Biru", "Merah dan Hijau", "Biru dan Hijau", "Semua berbeza"], ans: 0, explain: "Kedua-dua Merah dan Biru dipilih oleh 15 orang murid." },
+                        { q: "Carta pai mengandungi pecahan sektor. Jumlah keseluruhan peratusan sektor di dalam satu carta pai lengkap ialah...", options: ["100%", "50%", "360%", "180%"], ans: 0, explain: "Satu carta pai yang lengkap sentiasa berjumlah 100 peratus." },
+                        { q: "Carta palang jualan aiskrim: Coklat (100), Vanila (80), Strawberi (60). Berapakah jumlah jualan aiskrim Vanila dan Strawberi?", options: ["140", "180", "160", "240"], ans: 0, explain: "Jumlah = 80 (Vanila) + 60 (Strawberi) = 140 buah." },
+                        { q: "Apakah maksud kekerapan dalam data?", options: ["Bilangan kali sesuatu data muncul", "Kualiti data", "Tajuk piktograf", "Warna carta palang"], ans: 0, explain: "Kekerapan atau frekuensi merujuk kepada jumlah kekerapan sesuatu nilai data itu berulang." }
+                    ]
+                }
+            ],
+            exams: [
+                {
+                    id: 1,
+                    title: "Kertas 1: Misi Portal Nether 🔥",
+                    description: "Ujian topikal bercampur dari Unit 1 hingga 4. Aras soalan: Sederhana.",
+                    questions: [
+                        { q: "Tuliskan angka 76 502 dalam perkataan.", options: ["Tujuh puluh enam ribu lima ratus dua", "Tujuh puluh enam ribu lima puluh dua", "Tujuh puluh enam ribu lima ratus", "Tujuh puluh ribu enam ratus dua"], ans: 0, explain: "Ditulis sebagai: Tujuh puluh enam ribu lima ratus dua." },
+                        { q: "Bundarkan 12 849 kepada ratus terdekat.", options: ["12 800", "12 900", "13 000", "12 850"], ans: 0, explain: "Digit puluh ialah 4 (kurang dari 5). Maka dikekalkan menjadi 12 800." },
+                        { q: "Tukarkan 11/3 kepada nombor bercampur.", options: ["3 2/3", "3 1/3", "2 2/3", "4 1/3"], ans: 0, explain: "11 ÷ 3 = 3 baki 2. Ditulis sebagai 3 2/3." },
+                        { q: "Hitungkan: 3/5 + 1/10 = _____", options: ["7/10", "4/15", "4/10", "3/10"], ans: 0, explain: "Sediakan penyebut sama: 6/10 + 1/10 = 7/10." },
+                        { q: "Kira: 4.56 + 1.2 = _____", options: ["5.76", "5.58", "4.76", "5.68"], ans: 0, explain: "Luruskan titik perpuluhan: 4.56 + 1.20 = 5.76." },
+                        { q: "Tukarkan 35% kepada pecahan termudah.", options: ["7/20", "35/100", "7/10", "3/20"], ans: 0, explain: "35/100 dibahagi 5 menjadi 7/20." },
+                        { q: "Selesaikan: RM45 200 - RM12 500 = _____", options: ["RM32 700", "RM32 500", "RM33 700", "RM31 700"], ans: 0, explain: "RM45 200 - RM12 500 = RM32 700." },
+                        { q: "Syarikat menderma RM12 000 kepada 10 orang murid. Berapakah wang yang diterima setiap murid?", options: ["RM1 200", "RM120", "RM12 000", "RM10 000"], ans: 0, explain: "RM12 000 ÷ 10 = RM1 200." },
+                        { q: "Tukarkan Jam 1830 kepada sistem 12 jam.", options: ["6:30 petang", "6:30 pagi", "8:30 petang", "4:30 petang"], ans: 0, explain: "Jam 1830 - 1200 = 6:30 petang." },
+                        { q: "Kira: 3 dekad 4 tahun + 2 dekad 8 tahun = _____ dekad _____ tahun", options: ["6 dekad 2 tahun", "5 dekad 2 tahun", "6 dekad 12 tahun", "5 dekad 8 tahun"], ans: 0, explain: "3 dekad + 2 dekad = 5 dekad. 4 tahun + 8 tahun = 12 tahun (1 dekad 2 tahun). Jumlah: 6 dekad 2 tahun." },
+                        { q: "Tolak berturut-turut: 95 000 - 12 000 - 350 = _____", options: ["82 650", "83 000", "82 350", "81 650"], ans: 0, explain: "83 000 - 350 = 82 650." },
+                        { q: "Kira hasil darab: 2 120 x 4 = _____", options: ["8 480", "8 400", "8 080", "8 240"], ans: 0, explain: "2 120 x 4 = 8 480." },
+                        { q: "Tukarkan 3/4 kepada peratus.", options: ["75%", "50%", "25%", "60%"], ans: 0, explain: "3/4 x 100% = 300 ÷ 4 = 75%." },
+                        { q: "Berapakah bilangan hari dalam 2 minggu?", options: ["14 hari", "12 hari", "10 hari", "15 hari"], ans: 0, explain: "2 x 7 hari = 14 hari." },
+                        { q: "Harga sebuah buku ialah RM25. Berapakah harga 5 buah buku tersebut?", options: ["RM125", "RM100", "RM150", "RM75"], ans: 0, explain: "RM25 x 5 = RM125." }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "Kertas 2: Pertahanan Kubu Redstone 🛡️",
+                    description: "Ujian komprehensif dari Unit 1 hingga 6. Aras soalan: Tinggi.",
+                    questions: [
+                        { q: "Kira hasil tolak: 100 000 - 45 600 = _____", options: ["54 400", "55 400", "54 600", "64 400"], ans: 0, explain: "100 000 - 45 600 = 54 400." },
+                        { q: "Tukarkan 15/4 kepada nombor bercampur.", options: ["3 3/4", "3 1/4", "2 3/4", "3 1/2"], ans: 0, explain: "15 ÷ 4 = 3 baki 3. Ditulis sebagai 3 3/4." },
+                        { q: "Selesaikan: 1.5 x 8 = _____", options: ["12.0", "10.0", "12.5", "11.2"], ans: 0, explain: "1.5 x 8 = 12." },
+                        { q: "Harga 5 keping coklat ialah RM20. Berapakah harga 12 keping coklat tersebut?", options: ["RM48", "RM40", "RM24", "RM50"], ans: 0, explain: "Harga seunit = RM20 ÷ 5 = RM4. Harga 12 keping = RM4 x 12 = RM48." },
+                        { q: "Selesaikan: 2 km 50 m + 3 km 980 m = _____ km _____ m", options: ["6 km 30 m", "5 km 1030 m", "6 km 1030 m", "5 km 30 m"], ans: 0, explain: "2 km + 3 km = 5 km. 50 m + 980 m = 1030 m = 1 km 30 m. Jumlah: 6 km 30 m." },
+                        { q: "Cari luas sebuah segi empat sama yang mempunyai perimeter 36 cm.", options: ["81 cm²", "36 cm²", "144 cm²", "64 cm²"], ans: 0, explain: "Panjang sisi = 36 ÷ 4 = 9 cm. Luas = 9 cm x 9 cm = 81 cm²." },
+                        { q: "Tukarkan 5 kg 20 g kepada gram (g).", options: ["5 020 g", "5 200 g", "520 g", "50 020 g"], ans: 0, explain: "5 kg = 5 000 g. 5 000 + 20 = 5 020 g." },
+                        { q: "Apakah nama sudut yang nilainya tepat 90 darjah?", options: ["Sudut tegak", "Sudut cakah", "Sudut tirus", "Sudut lurus"], ans: 0, explain: "Sudut tepat bersaiz 90 darjah dinamakan sudut tegak." },
+                        { q: "Syarikat menderma RM45 000 kepada 100 buah sekolah. Berapakah jumlah wang yang diterima setiap sekolah?", options: ["RM450", "RM4 500", "RM45", "RM45 000"], ans: 0, explain: "RM45 000 ÷ 100 = RM450." },
+                        { q: "Tukarkan 3 abad kepada dekad.", options: ["30 dekad", "300 dekad", "3 dekad", "15 dekad"], ans: 0, explain: "1 abad = 10 dekad. Maka 3 abad = 30 dekad." },
+                        { q: "Hitungkan: 3/4 - 1/8 = _____", options: ["5/8", "1/2", "2/8", "7/8"], ans: 0, explain: "Sediakan penyebut sama: 6/8 - 1/8 = 5/8." },
+                        { q: "Selesaikan: 12.8 - 4.56 = _____", options: ["8.24", "8.34", "7.24", "8.14"], ans: 0, explain: "12.80 - 4.56 = 8.24." },
+                        { q: "Berapakah bilangan saat dalam 3 minit?", options: ["180 saat", "120 saat", "240 saat", "150 saat"], ans: 0, explain: "3 x 60 saat = 180 saat." },
+                        { q: "Sebuah kuboid bersisi panjang 5 cm, lebar 4 cm dan tinggi 3 cm. Berapakah isi padunya?", options: ["60 cm³", "50 cm³", "12 cm³", "40 cm³"], ans: 0, explain: "Isi padu = 5 x 4 x 3 = 60 cm³." },
+                        { q: "Jika x + 25 = 100, apakah nilai x?", options: ["75", "85", "65", "55"], ans: 0, explain: "x = 100 - 25 = 75." }
+                    ]
+                },
+                {
+                    id: 3,
+                    title: "Kertas 3: Eksplorasi Lembah Diamond 💎",
+                    description: "Ujian peperiksaan akhir merangkumi semua tajuk dari Unit 1 hingga 8. Aras soalan: Tinggi.",
+                    questions: [
+                        { q: "Selesaikan: 84 120 ÷ 6 = _____", options: ["14 020", "14 200", "13 020", "14 000"], ans: 0, explain: "84 120 dibahagi 6 ialah 14 020." },
+                        { q: "Tukarkan pecahan 2 3/5 kepada peratus.", options: ["260%", "160%", "230%", "250%"], ans: 0, explain: "2 3/5 = 13/5. 13/5 x 100% = 13 x 20% = 260%." },
+                        { q: "Nisbah bilangan peluru meriam kepada meriam ialah 1:8. Jika ada 3 buah meriam, berapakah bilangan peluru meriam?", options: ["24", "8", "16", "12"], ans: 1, explain: "Wait, the ratio of cannonballs to cannon is 1:8. Wait, if there are 3 cannons, the question says 1 cannonball to 8 cannons. That's a bit odd. Let's make sure the options are correct. Actually, let's look at the options: ans 1 means options[1]=8 is the answer. Let's re-verify. Ah, nisbah peluru kepada meriam is 1:8. Wait, if there are 3 cannons, 1:8 is equivalent to x:3. That's not a whole number. Let's make the ratio 8:1 (peluru kepada meriam). Nisbah 8:1. 3 meriam = 24 peluru. Let's choose options: ['24', '16', '8', '32'], ans: 0.", options: ["24", "16", "8", "32"], ans: 0, explain: "Nisbah 8:1. Jika ada 3 buah meriam, bilangan peluru ialah 8 x 3 = 24." },
+                        { q: "Koordinat bagi titik A ialah (3, 5). Berapakah jarak unit menegak dari paksi-x?", options: ["5 unit", "3 unit", "8 unit", "2 unit"], ans: 0, explain: "Jarak menegak dari paksi-x ditentukan oleh nilai koordinat y, iaitu 5 unit." },
+                        { q: "Piktograf menunjukkan jualan pedang: Gambar pedang mewakili 4 bilah pedang. Jika terdapat 5 gambar pedang, berapakah bilangan pedang yang terjual?", options: ["20", "16", "25", "15"], ans: 0, explain: "5 gambar x 4 bilah = 20 bilah pedang." },
+                        { q: "Kira: 4 l 250 ml x 4 = _____ l", options: ["17 l", "16 l", "18 l", "15 l"], ans: 0, explain: "4 l x 4 = 16 l. 250 ml x 4 = 1000 ml = 1 l. Jumlah: 17 l." },
+                        { q: "Selesaikan: 4 dekad 5 tahun - 1 dekad 8 tahun = _____ dekad _____ tahun", options: ["2 dekad 7 tahun", "3 dekad 7 tahun", "2 dekad 5 tahun", "3 dekad 2 tahun"], ans: 0, explain: "Pinjam 1 dekad (10 tahun): 3 dekad 15 tahun - 1 dekad 8 tahun = 2 dekad 7 tahun." },
+                        { q: "Selesaikan: RM85 150 - RM12 400 + RM3 500 = _____", options: ["RM76 250", "RM75 250", "RM76 550", "RM74 250"], ans: 0, explain: "RM72 750 + RM3 500 = RM76 250." },
+                        { q: "Kira: 12.5 + 4.56 - 2.8 = _____", options: ["14.26", "13.26", "14.16", "15.26"], ans: 0, explain: "17.06 - 2.80 = 14.26." },
+                        { q: "Bundarkan 89 250 kepada puluh ribu yang terdekat.", options: ["90 000", "80 000", "89 000", "100 000"], ans: 0, explain: "Digit ribu ialah 9, maka bundarkan ke atas menjadi 90 000." },
+                        { q: "Sebuah segi tiga mempunyai tapak 10 cm dan tinggi 6 cm. Kira luasnya.", options: ["30 cm²", "60 cm²", "20 cm²", "15 cm²"], ans: 0, explain: "Luas = 1/2 x tapak x tinggi = 1/2 x 10 x 6 = 30 cm²." },
+                        { q: "Tukarkan 3 250 g kepada kilogram (kg) dan gram (g).", options: ["3 kg 250 g", "32 kg 50 g", "3 kg 25 g", "325 kg"], ans: 0, explain: "3 000 g = 3 kg. Baki 250 g. Jadi 3 kg 250 g." },
+                        { q: "Tukarkan pukul 11:20 malam kepada sistem 24 jam.", options: ["Jam 2320", "Jam 1120", "Jam 1320", "Jam 2120"], ans: 0, explain: "11:20 + 12 jam = Jam 2320." },
+                        { q: "Selesaikan: 2/3 x 30 = _____", options: ["20", "15", "10", "25"], ans: 0, explain: "30 ÷ 3 = 10. 10 x 2 = 20." },
+                        { q: "Berapakah bilangan bucu bagi sebuah piramid bertapak segi empat?", options: ["5", "4", "6", "8"], ans: 0, explain: "Piramid bertapak segi empat mempunyai 4 bucu di tapak dan 1 bucu di puncak. Jumlahnya ialah 5 bucu." }
+                    ]
+                }
+            ]
+        };
+
+        // Bank tambahan: melengkapkan setiap unit dan kertas kepada 20 soalan.
+        // Soalan terpilih turut diubah nombor serta jawapannya supaya menjadi versi baharu.
+        const revisedQuestions = {
+            units: {
+                1: [
+                    { q: "Nyatakan nilai tempat bagi digit 6 dalam nombor 76 418.", options: ["Ribu", "Ratus", "Puluh ribu", "Puluh"], ans: 0, explain: "Digit 6 berada pada tempat ribu." },
+                    { q: "Bundarkan 67 349 kepada ribu terdekat.", options: ["67 000", "68 000", "67 300", "70 000"], ans: 0, explain: "Digit ratus ialah 3, jadi 67 349 dibundarkan kepada 67 000." },
+                    { q: "Selesaikan: 36 785 + 9 642 = _____", options: ["46 427", "45 427", "46 327", "47 427"], ans: 0, explain: "36 785 + 9 642 = 46 427." },
+                    { q: "Kira: 72 000 ÷ 8 = _____", options: ["9 000", "8 000", "900", "9 800"], ans: 0, explain: "72 000 ÷ 8 = 9 000." },
+                    { q: "Lengkapkan pola: 24 150, 24 250, 24 350, _____", options: ["24 450", "24 400", "24 550", "25 450"], ans: 0, explain: "Pola bertambah 100, jadi nombor seterusnya ialah 24 450." },
+                    { q: "Jika m × 7 = 4 235, apakah nilai m?", options: ["605", "615", "595", "705"], ans: 0, explain: "m = 4 235 ÷ 7 = 605." }
+                ],
+                2: [
+                    { q: "Tukarkan 17/5 kepada nombor bercampur.", options: ["3 2/5", "2 3/5", "3 1/5", "4 2/5"], ans: 0, explain: "17 ÷ 5 = 3 baki 2, jadi 3 2/5." },
+                    { q: "Kira: 2/3 + 1/6 = _____", options: ["5/6", "3/9", "1/2", "4/6"], ans: 0, explain: "2/3 = 4/6. Maka 4/6 + 1/6 = 5/6." },
+                    { q: "Selesaikan: 8.4 - 3.75 = _____", options: ["4.65", "5.65", "4.75", "5.25"], ans: 0, explain: "8.40 - 3.75 = 4.65." },
+                    { q: "Kira 35% daripada 240.", options: ["84", "72", "96", "74"], ans: 0, explain: "35/100 × 240 = 84." },
+                    { q: "Tukarkan 0.625 kepada pecahan termudah.", options: ["5/8", "6/25", "3/5", "625/10"], ans: 0, explain: "0.625 = 625/1000 = 5/8." },
+                    { q: "Kira: 3 1/4 - 1 2/4 = _____", options: ["1 3/4", "2 1/4", "1 1/2", "2 3/4"], ans: 0, explain: "3 1/4 - 1 2/4 = 2 5/4 - 1 2/4 = 1 3/4." }
+                ],
+                3: [
+                    { q: "Selesaikan: RM28 760 + RM6 845 = _____", options: ["RM35 605", "RM34 605", "RM35 505", "RM36 605"], ans: 0, explain: "RM28 760 + RM6 845 = RM35 605." },
+                    { q: "Harga sebuah beg ialah RM48. Berapakah harga 7 buah beg?", options: ["RM336", "RM326", "RM384", "RM286"], ans: 0, explain: "RM48 × 7 = RM336." },
+                    { q: "RM72 500 dibahagikan sama rata kepada 25 orang. Berapakah setiap orang terima?", options: ["RM2 900", "RM2 500", "RM3 900", "RM290"], ans: 0, explain: "RM72 500 ÷ 25 = RM2 900." },
+                    { q: "Aina mempunyai RM500 dan membelanjakan RM187.50. Berapakah bakinya?", options: ["RM312.50", "RM322.50", "RM313.50", "RM287.50"], ans: 0, explain: "RM500 - RM187.50 = RM312.50." },
+                    { q: "Kira 4% dividen daripada simpanan RM8 000.", options: ["RM320", "RM200", "RM400", "RM32"], ans: 0, explain: "4/100 × RM8 000 = RM320." },
+                    { q: "Jumlah 6 keping RM20, 5 keping RM10 dan 8 keping RM1 ialah _____.", options: ["RM178", "RM168", "RM188", "RM158"], ans: 0, explain: "RM120 + RM50 + RM8 = RM178." }
+                ],
+                4: [
+                    { q: "Tukarkan pukul 9:35 malam kepada sistem 24 jam.", options: ["Jam 2135", "Jam 0935", "Jam 2035", "Jam 2235"], ans: 0, explain: "9:35 malam bersamaan Jam 2135." },
+                    { q: "Kira tempoh dari Jam 0815 hingga Jam 1345.", options: ["5 jam 30 minit", "4 jam 30 minit", "5 jam", "6 jam 30 minit"], ans: 0, explain: "Dari 0815 hingga 1345 ialah 5 jam 30 minit." },
+                    { q: "Tukarkan 4 jam 25 minit kepada minit.", options: ["265 minit", "245 minit", "285 minit", "425 minit"], ans: 0, explain: "4 × 60 + 25 = 265 minit." },
+                    { q: "6 minggu 2 hari + 2 minggu 6 hari = _____.", options: ["9 minggu 1 hari", "8 minggu 8 hari", "9 minggu 2 hari", "8 minggu 1 hari"], ans: 0, explain: "8 minggu 8 hari = 9 minggu 1 hari." },
+                    { q: "Tukarkan 540 saat kepada minit.", options: ["9 minit", "8 minit", "10 minit", "7 minit"], ans: 0, explain: "540 ÷ 60 = 9 minit." },
+                    { q: "Sebuah aktiviti bermula 10:40 pagi dan berlangsung 2 jam 35 minit. Bilakah aktiviti tamat?", options: ["1:15 petang", "12:15 tengah hari", "1:05 petang", "2:15 petang"], ans: 0, explain: "10:40 pagi + 2 jam 35 minit = 1:15 petang." }
+                ],
+                5: [
+                    { q: "Tukarkan 6 km 85 m kepada meter.", options: ["6 085 m", "6 850 m", "685 m", "60 085 m"], ans: 0, explain: "6 km = 6 000 m; jumlahnya 6 085 m." },
+                    { q: "Kira: 8 kg 650 g + 4 kg 750 g = _____.", options: ["13 kg 400 g", "12 kg 400 g", "13 kg 300 g", "12 kg 1 400 g"], ans: 0, explain: "650 g + 750 g = 1 kg 400 g, jadi jumlah 13 kg 400 g." },
+                    { q: "Selesaikan: 15 l 200 ml - 7 l 850 ml = _____.", options: ["7 l 350 ml", "8 l 350 ml", "7 l 450 ml", "8 l 250 ml"], ans: 0, explain: "14 l 1 200 ml - 7 l 850 ml = 7 l 350 ml." },
+                    { q: "Seutas tali 9 m 60 cm dipotong kepada 4 bahagian sama panjang. Panjang setiap bahagian ialah _____.", options: ["2 m 40 cm", "2 m 60 cm", "2 m 20 cm", "2 m 50 cm"], ans: 0, explain: "960 cm ÷ 4 = 240 cm = 2 m 40 cm." },
+                    { q: "Tukarkan 9 075 ml kepada liter dan mililiter.", options: ["9 l 75 ml", "9 l 750 ml", "90 l 75 ml", "9 l 7 ml"], ans: 0, explain: "9 075 ml = 9 l 75 ml." },
+                    { q: "Kira: 2 kg 250 g × 6 = _____.", options: ["13 kg 500 g", "12 kg 500 g", "13 kg 250 g", "15 kg"], ans: 0, explain: "2 250 g × 6 = 13 500 g = 13 kg 500 g." }
+                ],
+                6: [
+                    { q: "Hitungkan perimeter segi empat sama yang sisinya 9 cm.", options: ["36 cm", "81 cm", "27 cm", "18 cm"], ans: 0, explain: "Perimeter = 4 × 9 cm = 36 cm." },
+                    { q: "Cari luas segi empat tepat yang panjangnya 12 cm dan lebarnya 7 cm.", options: ["84 cm²", "38 cm²", "19 cm²", "72 cm²"], ans: 0, explain: "Luas = 12 × 7 = 84 cm²." },
+                    { q: "Sebuah kuboid berukuran 8 cm × 5 cm × 3 cm. Isi padunya ialah _____.", options: ["120 cm³", "40 cm³", "16 cm³", "80 cm³"], ans: 0, explain: "Isi padu = 8 × 5 × 3 = 120 cm³." },
+                    { q: "Sudut 125° ialah jenis sudut _____.", options: ["cakah", "tirus", "tegak", "lurus"], ans: 0, explain: "125° lebih daripada 90° tetapi kurang daripada 180°, jadi sudut cakah." },
+                    { q: "Sebuah segi empat tepat mempunyai perimeter 34 cm dan panjang 10 cm. Berapakah lebarnya?", options: ["7 cm", "14 cm", "12 cm", "5 cm"], ans: 0, explain: "2 × (10 + lebar) = 34; lebar = 7 cm." },
+                    { q: "Berapa bilangan permukaan rata pada sebuah kubus?", options: ["6", "8", "12", "4"], ans: 0, explain: "Kubus mempunyai 6 permukaan rata." }
+                ],
+                7: [
+                    { q: "Nisbah blok emas kepada blok besi ialah 3:5. Jika ada 12 blok emas, berapakah blok besi?", options: ["20", "15", "18", "24"], ans: 0, explain: "3 × 4 = 12, maka 5 × 4 = 20." },
+                    { q: "Koordinat titik R ialah (7, 4). Apakah nilai koordinat mengufuk?", options: ["7", "4", "11", "3"], ans: 0, explain: "Koordinat mengufuk ialah nilai x, iaitu 7." },
+                    { q: "Harga 6 botol air ialah RM18. Berapakah harga 15 botol?", options: ["RM45", "RM36", "RM54", "RM30"], ans: 0, explain: "Harga sebotol RM3; 15 × RM3 = RM45." },
+                    { q: "Nisbah murid lelaki kepada murid perempuan ialah 4:7. Jika ada 16 murid lelaki, berapakah jumlah semua murid?", options: ["44", "28", "36", "48"], ans: 0, explain: "Faktor 4; perempuan = 28. Jumlah = 16 + 28 = 44." },
+                    { q: "Titik S berada pada (9, 6). Berapakah jarak menegaknya dari paksi-x?", options: ["6 unit", "9 unit", "15 unit", "3 unit"], ans: 0, explain: "Jarak menegak dari paksi-x ialah nilai y, iaitu 6 unit." },
+                    { q: "Sebuah mesin menghasilkan 240 blok dalam 6 minit. Berapa blok dihasilkan dalam 15 minit?", options: ["600", "480", "540", "360"], ans: 0, explain: "Seminit 40 blok; 15 × 40 = 600 blok." }
+                ],
+                8: [
+                    { q: "Data buku dibaca: Isnin (24), Selasa (18), Rabu (30). Berapakah jumlahnya?", options: ["72", "62", "68", "82"], ans: 0, explain: "24 + 18 + 30 = 72 buah buku." },
+                    { q: "Satu simbol berlian mewakili 8 berlian. Jika piktograf ada 7 simbol, berapakah jumlah berlian?", options: ["56", "48", "64", "15"], ans: 0, explain: "7 × 8 = 56 berlian." },
+                    { q: "Carta pai menunjukkan Sains 35%, Matematik 25%, Bahasa 20% dan Seni 20%. Subjek manakah paling digemari?", options: ["Sains", "Matematik", "Bahasa", "Seni"], ans: 0, explain: "Sains mempunyai peratus tertinggi, iaitu 35%." },
+                    { q: "Data skor: 12, 15, 12, 18, 12, 15. Apakah kekerapan skor 12?", options: ["3", "2", "4", "12"], ans: 0, explain: "Skor 12 muncul sebanyak 3 kali." },
+                    { q: "Jualan roti: Coklat (45), Krim (35), Kaya (20). Berapakah peratus roti Krim?", options: ["35%", "45%", "20%", "30%"], ans: 0, explain: "Jumlah 100; roti Krim 35 daripada 100, jadi 35%." },
+                    { q: "Jika setengah simbol mewakili 6 unit, satu simbol penuh mewakili berapa unit?", options: ["12", "6", "3", "18"], ans: 0, explain: "Satu simbol penuh ialah dua kali setengah simbol: 2 × 6 = 12." }
+                ]
+            },
+            exams: {
+                1: [
+                    { q: "Bundarkan 46 782 kepada ribu terdekat.", options: ["47 000", "46 000", "46 800", "50 000"], ans: 0, explain: "Digit ratus ialah 7, jadi bundarkan ke atas kepada 47 000." },
+                    { q: "Kira: 5/8 + 1/4 = _____.", options: ["7/8", "6/12", "3/4", "5/12"], ans: 0, explain: "1/4 = 2/8; 5/8 + 2/8 = 7/8." },
+                    { q: "Selesaikan: RM63 400 ÷ 20 = _____.", options: ["RM3 170", "RM3 700", "RM317", "RM31 700"], ans: 0, explain: "RM63 400 ÷ 20 = RM3 170." },
+                    { q: "Tukarkan Jam 2215 kepada sistem 12 jam.", options: ["10:15 malam", "10:15 pagi", "12:15 malam", "8:15 malam"], ans: 0, explain: "Jam 2215 bersamaan 10:15 malam." },
+                    { q: "Kira 45% daripada 360.", options: ["162", "152", "180", "144"], ans: 0, explain: "45/100 × 360 = 162." }
+                ],
+                2: [
+                    { q: "Selesaikan: 96 300 - 28 745 = _____.", options: ["67 555", "68 555", "67 655", "66 555"], ans: 0, explain: "96 300 - 28 745 = 67 555." },
+                    { q: "Kira: 2.75 × 12 = _____.", options: ["33", "30", "32", "35"], ans: 0, explain: "2.75 × 12 = 33." },
+                    { q: "Sebuah kubus bersisi 6 cm. Berapakah isi padunya?", options: ["216 cm³", "36 cm³", "24 cm³", "180 cm³"], ans: 0, explain: "6 × 6 × 6 = 216 cm³." },
+                    { q: "Kira: 7 kg 350 g + 5 kg 900 g = _____.", options: ["13 kg 250 g", "12 kg 250 g", "13 kg 150 g", "12 kg 1 250 g"], ans: 0, explain: "350 g + 900 g = 1 kg 250 g; jumlah 13 kg 250 g." },
+                    { q: "Sebuah program bermula Jam 1440 dan tamat Jam 1815. Berapakah tempohnya?", options: ["3 jam 35 minit", "4 jam 35 minit", "3 jam 25 minit", "4 jam 25 minit"], ans: 0, explain: "Dari 1440 hingga 1815 ialah 3 jam 35 minit." }
+                ],
+                3: [
+                    { q: "Nisbah zamrud kepada berlian ialah 5:2. Jika ada 35 zamrud, berapakah berlian?", options: ["14", "12", "10", "16"], ans: 0, explain: "Faktor 7; 2 × 7 = 14 berlian." },
+                    { q: "Piktograf mempunyai 6½ simbol dan setiap simbol mewakili 8 item. Berapakah jumlah item?", options: ["52", "48", "56", "50"], ans: 0, explain: "6 × 8 + 4 = 52 item." },
+                    { q: "Kira: 7 l 125 ml × 8 = _____.", options: ["57 l", "56 l", "57 l 125 ml", "58 l"], ans: 0, explain: "7 l × 8 = 56 l dan 125 ml × 8 = 1 l; jumlah 57 l." },
+                    { q: "Koordinat T ialah (8, 3). Berapakah jumlah nilai x dan y?", options: ["11", "5", "24", "8"], ans: 0, explain: "8 + 3 = 11." },
+                    { q: "Sebuah segi empat tepat berukuran 15 cm × 9 cm. Berapakah luasnya?", options: ["135 cm²", "48 cm²", "120 cm²", "150 cm²"], ans: 0, explain: "15 × 9 = 135 cm²." }
+                ]
+            }
+        };
+
+        mathDatabase.units.forEach(unit => {
+            // Gantikan dua soalan awal dengan versi nombor baharu, kemudian tambah empat soalan.
+            const fresh = revisedQuestions.units[unit.id];
+            unit.questions.splice(0, 2, ...fresh.slice(0, 2));
+            unit.questions.push(...fresh.slice(2));
+        });
+        mathDatabase.exams.forEach(exam => exam.questions.push(...revisedQuestions.exams[exam.id]));
+    </script>
+
+    <!-- Navigation / Header -->
+    <header class="bg-slate-900 border-b-4 border-slate-700 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="goHome()">
+                <!-- SVG Minecraft Grass Block Header Logo Icon -->
+                <div class="w-10 h-10 flex-shrink-0 bg-emerald-700 rounded-lg overflow-hidden border-2 border-slate-500 shadow-md">
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <rect x="0" y="0" width="100" height="100" fill="#8B5A2B" />
+                        <rect x="0" y="0" width="100" height="35" fill="#4CAF50" />
+                        <polygon points="0,35 15,45 25,35 40,45 55,35 70,45 85,35 100,45 100,35 0,35" fill="#4CAF50" />
+                        <rect x="25" y="55" width="50" height="30" fill="#3E2723" opacity="0.5" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="font-pixel-heading text-xs md:text-sm text-emerald-400 tracking-wider">MINECRAFT MATH</h1>
+                    <p class="text-[10px] md:text-xs text-amber-400 font-pixel-body tracking-widest uppercase mt-0.5">Bijak Matematik Tahun 4 KSSR</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <!-- Total Diamonds Counter -->
+                <div class="bg-slate-800 border-2 border-cyan-400 text-cyan-300 px-3 py-1 rounded-lg flex items-center space-x-1.5 shadow-sm">
+                    <i class="fa-solid fa-gem text-sm md:text-base animate-pulse"></i>
+                    <span id="global-diamonds-count" class="font-bold text-xs md:text-sm font-mono">0</span>
+                </div>
+                <!-- Reset Button -->
+                <button onclick="confirmResetProgress()" class="text-slate-500 hover:text-red-400 transition-colors p-2 text-xs rounded-lg" title="Mula Semula Semua Ganjaran">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6 md:py-8">
+        
+        <!-- SCREEN 1: HOME (Theme & Unit Selection) -->
+        <div id="screen-home" class="space-y-8">
+            <!-- Welcome Banner featuring Cikgu Capy Steve Style -->
+            <div class="mc-container rounded-lg p-6 text-white relative overflow-hidden flex flex-col md:flex-row items-center gap-6">
+                <!-- Pixel Capy Mascot (SVG) -->
+                <div class="w-28 h-28 md:w-36 md:h-36 flex-shrink-0 bg-slate-800 p-2 rounded-lg border-4 border-slate-600 shadow-inner relative">
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <!-- Steve style blocky head -->
+                        <rect x="20" y="20" width="60" height="60" fill="#8B5A2B" />
+                        <!-- Snout -->
+                        <rect x="30" y="55" width="40" height="25" fill="#5C3A21" />
+                        <!-- Nose -->
+                        <rect x="45" y="60" width="10" height="10" fill="#2E1B10" />
+                        <!-- Eyes (Minecraft squares) -->
+                        <rect x="28" y="40" width="10" height="10" fill="#FFFFFF" />
+                        <rect x="33" y="40" width="5" height="10" fill="#000000" />
+                        <rect x="62" y="40" width="10" height="10" fill="#FFFFFF" />
+                        <rect x="62" y="40" width="5" height="10" fill="#000000" />
+                        <!-- Glasses -->
+                        <rect x="25" y="43" width="50" height="4" fill="#00E5FF" opacity="0.7" />
+                        <!-- Graduation Hat -->
+                        <rect x="15" y="10" width="70" height="10" fill="#111" />
+                        <rect x="30" y="5" width="40" height="12" fill="#222" />
+                        <!-- Tassel -->
+                        <rect x="75" y="15" width="4" height="20" fill="#FFD700" />
+                    </svg>
+                </div>
+
+                <!-- Welcome Text Bubble -->
+                <div class="space-y-4 flex-1 w-full text-center md:text-left">
+                    <div class="inline-block bg-emerald-800 text-emerald-200 border border-emerald-500 font-pixel-heading text-[8px] px-3 py-1 rounded-full uppercase tracking-wider">ZON BELAJAR MINECRAFT</div>
+                    <h2 id="welcome-title" class="font-pixel-heading text-sm md:text-lg font-extrabold leading-tight text-amber-300">Selamat Datang, Pengembara! 🌾</h2>
+                    <p class="text-slate-300 text-xs md:text-sm max-w-xl leading-relaxed font-semibold">
+                        Gunakan pedang matematik kamu untuk mengalahkan raksasa di dalam setiap unit! Masukkan nama kamu untuk membuka peti ganjaran dan sijil kejayaan.
+                    </p>
+                    <div class="pt-2 space-y-2 max-w-md mx-auto md:mx-0">
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="student-name-input" placeholder="Masukkan nama kamu di sini..." class="flex-grow px-4 py-2.5 rounded bg-slate-950 border-2 border-slate-700 text-white font-semibold text-sm focus:border-cyan-400 focus:outline-none placeholder:text-slate-500">
+                            <button onclick="saveStudentNameBtn()" class="mc-button-diamond px-5 py-2.5 text-slate-900 font-bold text-sm flex items-center justify-center space-x-1.5 shrink-0">
+                                <i class="fa-solid fa-save"></i>
+                                <span>SIMPAN</span>
+                            </button>
+                        </div>
+                        <p id="name-save-feedback" class="text-[10px] font-bold transition-all opacity-0"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selection Tabs: Modul Unit OR Cabaran Pengetahuan -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="switchTab('modul')" id="tab-modul" class="mc-button-green flex-1 py-4 text-white font-pixel-heading text-xs text-center shadow-md">
+                    <i class="fa-solid fa-cubes mr-2"></i> MODUL IKUT UNIT (UNIT 1 - 8)
+                </button>
+                <button onclick="switchTab('cabaran')" id="tab-cabaran" class="mc-button-gray flex-1 py-4 text-white font-pixel-heading text-xs text-center shadow-md">
+                    <i class="fa-solid fa-fire-flame-curved mr-2"></i> UJI MINDA: CABARAN PENGETAHUAN
+                </button>
+            </div>
+
+            <!-- Tab Content 1: Modul Ikut Unit -->
+            <div id="content-modul" class="space-y-6">
+                <div class="flex items-center space-x-2 pb-2 border-b border-slate-700">
+                    <i class="fa-solid fa-map text-emerald-400 text-lg"></i>
+                    <h3 class="font-pixel-heading text-xs text-slate-300">Peta Cabaran Modul</h3>
+                </div>
+
+                <div id="units-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Javascript will render units dynamically here -->
+                </div>
+            </div>
+
+            <!-- Tab Content 2: Cabaran Pengetahuan (Uji Minda) -->
+            <div id="content-cabaran" class="hidden space-y-6">
+                <div class="flex items-center space-x-2 pb-2 border-b border-slate-700">
+                    <i class="fa-solid fa-trophy text-amber-400 text-lg"></i>
+                    <h3 class="font-pixel-heading text-xs text-slate-300">Uji Minda (Peperiksaan Kertas 1, 2, 3)</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="exams-container">
+                    <!-- Javascript will render exams dynamically here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: ACTIVE QUIZ -->
+        <div id="screen-quiz" class="hidden space-y-6">
+            <!-- Quiz Header Info -->
+            <div class="mc-container p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <span id="quiz-theme-badge" class="bg-emerald-950 text-emerald-400 border border-emerald-500 text-[10px] font-bold px-3 py-1 rounded">MODUL</span>
+                    <h2 id="quiz-unit-title" class="font-pixel-heading text-xs mt-2 text-slate-100">Tajuk Unit</h2>
+                </div>
+                
+                <div class="flex items-center space-x-6 w-full md:w-auto justify-between md:justify-end border-t border-slate-700 md:border-none pt-2 md:pt-0">
+                    <div class="text-xs font-semibold text-slate-400">
+                        Misi: <span id="current-question-num" class="text-emerald-400 font-bold text-lg">1</span> / <span id="total-question-num">20</span>
+                    </div>
+                    <!-- Diamonds visual indicators during quiz -->
+                    <div class="flex items-center space-x-1" id="quiz-diamonds-visual">
+                        <!-- Emerald/Diamonds icons -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="w-full bg-slate-950 h-4 border-2 border-slate-700 p-0.5 overflow-hidden">
+                <div id="quiz-progress-bar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 10%"></div>
+            </div>
+
+            <!-- Quiz Play Area: Left Side Question, Right Side Mascot Feedback & Draw Canvas -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Question & Options Block -->
+                <div class="lg:col-span-2 mc-container p-6 md:p-8 flex flex-col justify-between min-h-[400px]">
+                    <div class="space-y-6">
+                        <!-- The Question -->
+                        <h3 id="quiz-question-text" class="text-lg md:text-xl font-semibold text-slate-100 leading-snug">
+                            Soalan Matematik sedang dimuatkan...
+                        </h3>
+
+                        <!-- Interactive Options Area -->
+                        <div id="quiz-options-container" class="grid grid-cols-1 gap-3 pt-2">
+                            <!-- Options generated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Navigation Action Row -->
+                    <div class="flex justify-between items-center pt-6 border-t border-slate-700 mt-6">
+                        <button onclick="confirmExitQuiz()" class="px-5 py-2.5 rounded bg-slate-800 border-2 border-slate-600 text-slate-400 hover:text-white transition-all text-xs font-bold">
+                            <i class="fa-solid fa-sign-out-alt mr-1"></i> KELUAR
+                        </button>
+
+                        <button id="next-question-btn" disabled onclick="handleNextQuestion()" class="mc-button-green px-6 py-3 text-white font-pixel-heading text-[10px] font-bold shadow-md transform active:scale-95 transition-all flex items-center space-x-2">
+                            <span>SETERUSNYA</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mascot & Help Dialog Block (Whiteboard is at the TOP here) -->
+                <div class="mc-container p-6 flex flex-col justify-between relative">
+                    <!-- SVG mini Capy teacher -->
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-slate-800 p-1.5 rounded border-2 border-slate-600 flex-shrink-0">
+                            <svg viewBox="0 0 100 100" class="w-full h-full">
+                                <rect x="20" y="20" width="60" height="60" fill="#8B5A2B" />
+                                <rect x="30" y="55" width="40" height="25" fill="#5C3A21" />
+                                <rect x="45" y="60" width="10" height="10" fill="#2E1B10" />
+                                <rect x="28" y="40" width="10" height="10" fill="#FFFFFF" />
+                                <rect x="33" y="40" width="5" height="10" fill="#000000" />
+                                <rect x="62" y="40" width="10" height="10" fill="#FFFFFF" />
+                                <rect x="62" y="40" width="5" height="10" fill="#000000" />
+                                <rect x="25" y="43" width="50" height="4" fill="#00E5FF" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-pixel-heading text-[10px] text-amber-400">CIKGU CAPY</h4>
+                            <span id="mascot-status" class="bg-amber-950 text-amber-400 text-[8px] font-bold px-2 py-0.5 rounded border border-amber-600 uppercase tracking-wider">BERSEDIA</span>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Drawing Whiteboard (AT THE TOP OF CONTROL BLOCK) -->
+                    <div class="bg-slate-900 border-2 border-slate-700 rounded mt-4 overflow-hidden flex flex-col shadow-inner">
+                        <div class="bg-slate-800 px-3 py-2 flex justify-between items-center border-b border-slate-700">
+                            <span class="text-xs font-bold text-slate-300 flex items-center gap-1 font-pixel-body text-sm tracking-wider">
+                                <i class="fa-solid fa-pen-fancy text-emerald-400"></i> PAPAN JALAN KIRA 📝
+                            </span>
+                            <button onclick="clearScratchpad()" class="text-[9px] bg-red-900 hover:bg-red-800 text-red-200 font-bold px-2.5 py-1 rounded border border-red-700 transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-trash"></i> PADAM
+                            </button>
+                        </div>
+                        <div class="relative bg-slate-950" style="height: 260px;">
+                            <canvas id="scratch-canvas" class="absolute inset-0 w-full h-full cursor-crosshair touch-none"></canvas>
+                        </div>
+                        <!-- Drawing Controls -->
+                        <div class="bg-slate-900 p-2 border-t border-slate-800 flex flex-col gap-2 text-[10px]">
+                            <!-- Pen colors & undo/redo -->
+                            <div class="flex justify-between items-center gap-2">
+                                <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
+                                    <button onclick="setPenColor('#00b4d8')" class="w-5 h-5 rounded-full bg-cyan-400 ring-2 ring-offset-2 ring-offset-slate-900 ring-transparent focus:outline-none" id="color-cyan" title="Pen Berlian"></button>
+                                    <button onclick="setPenColor('#ff4d4d')" class="w-5 h-5 rounded-full bg-red-500 ring-2 ring-offset-2 ring-offset-slate-900 ring-transparent focus:outline-none" id="color-red" title="Pen Redstone"></button>
+                                    <button onclick="setPenColor('#4caf50')" class="w-5 h-5 rounded-full bg-emerald-500 ring-2 ring-offset-2 ring-offset-slate-900 ring-transparent focus:outline-none" id="color-green" title="Pen Emerald"></button>
+                                    
+                                    <span class="h-4 w-px bg-slate-700 mx-1"></span>
+                                    
+                                    <!-- Eraser Tool -->
+                                    <button id="tool-eraser" onclick="toggleEraser()" class="px-2 py-0.5 rounded border border-slate-700 bg-slate-800 hover:bg-slate-700 text-[9px] text-slate-300 flex items-center gap-1" title="Padam Lakaran">
+                                        <i class="fa-solid fa-eraser"></i> <span>Eraser</span>
+                                    </button>
+                                </div>
+
+                                <!-- Undo & Redo buttons -->
+                                <div class="flex items-center space-x-1">
+                                    <button id="btn-undo" onclick="undoCanvas()" disabled class="p-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 disabled:opacity-40 text-slate-300 flex items-center justify-center" style="width:24px; height:24px;" title="Undo">
+                                        <i class="fa-solid fa-undo text-[9px]"></i>
+                                    </button>
+                                    <button id="btn-redo" onclick="redoCanvas()" disabled class="p-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 disabled:opacity-40 text-slate-300 flex items-center justify-center" style="width:24px; height:24px;" title="Redo">
+                                        <i class="fa-solid fa-redo text-[9px]"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Palm Rejection & Pen size -->
+                            <div class="flex justify-between items-center gap-2 border-t border-slate-800 pt-2">
+                                <button id="palm-rejection-btn" onclick="togglePalmRejection()" class="px-2 py-1 rounded border border-slate-700 bg-slate-800 text-[9px] flex items-center gap-1 text-slate-400" title="Sekat sentuhan tapak tangan">
+                                    <i class="fa-solid fa-hand-pointer"></i>
+                                    <span id="palm-rejection-status">Palm Rejection: Mati</span>
+                                </button>
+
+                                <div class="flex items-center space-x-1 shrink-0">
+                                    <span class="font-bold text-slate-500 text-[9px]">Ketebalan:</span>
+                                    <button onclick="setPenWidth(3)" class="w-5 h-5 rounded border border-slate-700 flex items-center justify-center text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-300" id="size-thin">1</button>
+                                    <button onclick="setPenWidth(6)" class="w-5 h-5 rounded border border-slate-700 flex items-center justify-center text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-300 ring-1 ring-slate-400" id="size-medium">2</button>
+                                    <button onclick="setPenWidth(10)" class="w-5 h-5 rounded border border-slate-700 flex items-center justify-center text-[9px] bg-slate-800 hover:bg-slate-700 text-slate-300" id="size-thick">3</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Speech bubble beneath the Scratchpad drawing whiteboard -->
+                    <div class="bg-slate-900 rounded p-4 border-2 border-slate-700 relative flex-grow mt-4 flex flex-col justify-center shadow-inner min-h-[90px]">
+                        <!-- Arrow pointer pointing upwards to the Drawing Canvas -->
+                        <div class="absolute -top-2 left-6 w-3 h-3 bg-slate-900 border-t-2 border-l-2 border-slate-700 transform rotate-45"></div>
+                        <p id="mascot-speech-text" class="text-slate-300 text-xs leading-relaxed font-semibold">
+                            Mari selesaikan cabaran ini! Kamu boleh guna papan jalan kira di atas untuk melukis pengiraan kamu.
+                        </p>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-800 text-[10px] text-slate-500 flex items-center space-x-1.5 font-medium">
+                        <i class="fa-solid fa-info-circle text-cyan-400"></i>
+                        <span>Dapatkan sekurang-kurangnya 13/20 untuk dua ganjaran berlian 💎💎!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: QUIZ RESULT -->
+        <div id="screen-result" class="hidden max-w-2xl mx-auto space-y-8">
+            <div class="mc-container p-8 text-center space-y-6 relative overflow-hidden rounded-lg">
+                <div class="space-y-2">
+                    <h2 class="font-pixel-heading text-xs text-amber-400">MISI SELESAI!</h2>
+                    <p id="result-unit-subtitle" class="text-slate-400 font-pixel-body text-xl tracking-wider">Modul Unit</p>
+                </div>
+
+                <!-- Animated Diamonds Earned Container -->
+                <div class="flex justify-center items-center space-x-4 py-4" id="result-diamonds-container">
+                    <!-- Diamonds rendered here -->
+                </div>
+
+                <!-- Score indicator -->
+                <div class="inline-block bg-slate-950 border-2 border-slate-700 rounded p-5 shadow-inner">
+                    <div class="text-[10px] font-pixel-heading text-slate-500 tracking-wider">MATEMATIK KEROSAKAN</div>
+                    <div class="font-pixel-heading text-lg text-emerald-400 mt-2">
+                        <span id="result-score">0</span> <span class="text-slate-600 font-normal">/</span> <span id="result-total-score">20</span>
+                    </div>
+                </div>
+
+                <!-- Mascot explanation & feedback box -->
+                <div class="bg-slate-950 border border-slate-800 rounded p-6 flex flex-col md:flex-row items-center gap-4 text-left">
+                    <div class="w-16 h-16 flex-shrink-0 bg-slate-800 p-1.5 rounded border border-slate-600">
+                        <svg viewBox="0 0 100 100" class="w-full h-full">
+                            <rect x="20" y="20" width="60" height="60" fill="#8B5A2B" />
+                            <rect x="30" y="55" width="40" height="25" fill="#5C3A21" />
+                            <rect x="45" y="60" width="10" height="10" fill="#2E1B10" />
+                            <rect x="28" y="40" width="10" height="10" fill="#FFFFFF" />
+                            <rect x="33" y="40" width="5" height="10" fill="#000000" />
+                            <rect x="62" y="40" width="10" height="10" fill="#FFFFFF" />
+                            <rect x="62" y="40" width="5" height="10" fill="#000000" />
+                            <rect x="25" y="43" width="50" height="4" fill="#00E5FF" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-pixel-heading text-[10px] text-amber-400">CIKGU CAPY BERKATA:</h4>
+                        <p id="result-message-text" class="text-xs md:text-sm text-slate-300 font-semibold mt-1">
+                            Luar biasa! Kamu memang pahlawan matematik. Teruskan usaha cemerlang ini untuk mengumpulkan berlian yang seterusnya!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Share result with teacher -->
+                <div class="bg-slate-950 border-2 border-cyan-900 rounded-lg p-5 space-y-4 text-left">
+                    <div class="text-center">
+                        <h3 class="font-pixel-heading text-[10px] text-cyan-400">KONGSI MARKAH KEPADA GURU</h3>
+                        <p class="text-[11px] text-slate-400 mt-2">Pilih aplikasi dan kemudian pilih nama guru atau kelas kamu.</p>
+                    </div>
+                    <div id="share-result-preview" class="bg-slate-900 border border-slate-700 rounded p-3 text-xs text-slate-300 leading-relaxed"></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button onclick="shareResultWhatsApp()" class="w-full py-3 rounded bg-green-600 hover:bg-green-500 text-white font-bold text-xs transition-all flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-lg"></i><span>WHATSAPP</span>
+                        </button>
+                        <button onclick="shareResultEmail()" class="w-full py-3 rounded bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-envelope text-lg"></i><span>E-MEL</span>
+                        </button>
+                        <button onclick="shareResultClassroom()" class="w-full py-3 rounded bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-chalkboard-user text-lg"></i><span>CLASSROOM</span>
+                        </button>
+                    </div>
+                    <p id="share-status" class="hidden text-center text-[10px] text-emerald-400"></p>
+                </div>
+
+                <!-- Navigation Action Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4">
+                    <button onclick="goHome()" class="mc-button-gray w-full py-3.5 text-white font-pixel-heading text-[8px] tracking-wider transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-home"></i>
+                        <span>MENU UTAMA</span>
+                    </button>
+                    
+                    <button onclick="retryQuiz()" class="mc-button-green w-full py-3.5 text-white font-pixel-heading text-[8px] tracking-wider transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-redo"></i>
+                        <span>CUBA LAGI</span>
+                    </button>
+
+                    <button id="view-certificate-btn" onclick="generateCertificate()" class="mc-button-diamond w-full py-3.5 text-slate-900 font-pixel-heading text-[8px] tracking-wider transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-medal"></i>
+                        <span>SIJIL HERO</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: INTERACTIVE CERTIFICATE -->
+        <div id="screen-certificate" class="hidden space-y-6 max-w-4xl mx-auto">
+            
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 no-print mc-container p-4 rounded-lg">
+                <p class="text-xs font-semibold text-slate-300">
+                    <i class="fa-solid fa-check-circle text-emerald-400 mr-1.5 animate-bounce"></i> Peti ganjaran dibuka! Sijil Hero Matematik kamu sedia untuk dicetak.
+                </p>
+                <div class="flex space-x-2 w-full sm:w-auto">
+                    <button onclick="goHome()" class="flex-1 sm:flex-none px-4 py-2.5 rounded bg-slate-800 border-2 border-slate-600 text-white font-bold text-xs">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> MENU UTAMA
+                    </button>
+                    <button onclick="window.print()" class="flex-1 sm:flex-none mc-button-diamond px-5 py-2.5 text-slate-900 font-bold text-xs flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-print"></i>
+                        <span>CETAK SIJIL</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Minecraft Sijil Hero Matematik -->
+            <div id="print-area" class="bg-slate-900 border-[16px] border-double border-cyan-500 rounded-lg p-8 md:p-14 shadow-2xl relative text-center space-y-8 select-none">
+                
+                <!-- Background Decorative Pattern -->
+                <div class="absolute inset-0 opacity-[0.03] pointer-events-none flex items-center justify-center">
+                    <i class="fa-solid fa-cubes text-[250px] text-cyan-400"></i>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-center text-cyan-400 space-x-2 text-2xl">
+                        <i class="fa-solid fa-gem"></i>
+                        <i class="fa-solid fa-shield"></i>
+                        <i class="fa-solid fa-crown"></i>
+                        <i class="fa-solid fa-shield"></i>
+                        <i class="fa-solid fa-gem"></i>
+                    </div>
+                    <h1 class="font-pixel-heading text-sm md:text-xl text-cyan-400 tracking-wider uppercase">SIJIL HERO MATEMATIK</h1>
+                    <p class="text-[10px] md:text-xs font-pixel-body tracking-widest text-slate-400 uppercase">Pangkat Pencapaian Tertinggi Kurikulum Tahun 4</p>
+                </div>
+
+                <!-- Divider -->
+                <div class="w-1/3 h-1.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent mx-auto"></div>
+
+                <div class="space-y-4">
+                    <p class="text-slate-400 italic font-serif text-sm">Dengan ini diperakui dan dianugerahkan kepada pengembara:</p>
+                    <h2 id="cert-recipient-name" class="font-pixel-heading text-xs md:text-md text-amber-300 underline decoration-cyan-400 decoration-wavy underline-offset-8 uppercase">
+                        HERO GEMILANG
+                    </h2>
+                    <p class="text-slate-400 max-w-xl mx-auto text-xs md:text-sm leading-relaxed">
+                        kerana telah menunjukkan keberanian luar biasa dalam menyelesaikan pelbagai cabaran dan menguasai modul matematik sekolah:
+                    </p>
+                    <div class="inline-block bg-emerald-950 border border-emerald-500 text-emerald-400 px-6 py-2.5 rounded font-pixel-heading text-[8px]">
+                        <span id="cert-unit-title">Tajuk Modul</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-center items-center space-x-8 py-4">
+                    <div>
+                        <span class="text-[10px] font-pixel-body text-slate-500 tracking-widest block">GANJARAN PERMATA</span>
+                        <div id="cert-diamonds" class="text-cyan-400 text-xl mt-1">
+                            💎💎💎
+                        </div>
+                    </div>
+                    <div class="h-10 w-0.5 bg-slate-800"></div>
+                    <div>
+                        <span class="text-[10px] font-pixel-body text-slate-500 tracking-widest block">KEROSAKAN SKOR</span>
+                        <div class="font-pixel-heading text-xs text-emerald-400 mt-1">
+                            <span id="cert-score">20</span> / <span id="cert-total">20</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Signature Section -->
+                <div class="grid grid-cols-2 gap-8 pt-8 border-t border-slate-800 max-w-2xl mx-auto items-end text-left">
+                    <div class="space-y-2">
+                        <div class="h-10 flex items-center justify-start text-cyan-400 italic font-pixel-body text-lg font-semibold">
+                            Cikgu Capybara 🌾
+                        </div>
+                        <div class="border-t border-slate-700 pt-1.5">
+                            <p class="text-xs font-bold text-slate-300">Cikgu Capybara</p>
+                            <p class="text-[10px] text-slate-500">Pakar Penasihat Rimba</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end relative">
+                        <!-- Creeper Face Gold Stamp Badge -->
+                        <div class="w-20 h-20 relative transform rotate-12 bg-amber-500 rounded border-2 border-amber-600 p-2 flex flex-col justify-between items-center shadow-md">
+                            <!-- Creeper face pixelated -->
+                            <div class="w-12 h-12 bg-amber-900 flex flex-col justify-between p-1.5 rounded">
+                                <div class="flex justify-between w-full">
+                                    <div class="w-3 h-3 bg-amber-500"></div>
+                                    <div class="w-3 h-3 bg-amber-500"></div>
+                                </div>
+                                <div class="w-4 h-6 bg-amber-500 mx-auto mt-1 flex flex-col justify-end">
+                                    <div class="w-full h-2 bg-amber-900"></div>
+                                </div>
+                            </div>
+                            <span class="text-[8px] font-pixel-heading text-amber-900 leading-none">BIJAK</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-slate-950 border-t-4 border-slate-800 py-6 text-center text-[10px] text-slate-500 space-y-2 font-pixel-body">
+        <p class="tracking-wide">Format Buku Teks Jilid 1 & Jilid 2 Matematik KSSR Semakan Tahun 4.</p>
+        <p>&copy; 2026 MINECRAFT MATH. Direka khas untuk kawan-kawan pintar Matematik Malaysia. 🇲🇾</p>
+    </footer>
+
+    <!-- App Logic Script -->
+    <script>
+        let currentTab = "modul"; // 'modul' or 'cabaran'
+        let currentMode = "modul"; // 'modul' or 'exam'
+        let activeUnit = null;
+        let activeExam = null;
+        let currentQuestionIdx = 0;
+        let userScore = 0;
+        let selectedSet = 'A'; // 'A' or 'B'
+        let quizQuestions = [];
+        let diamondsRecord = {}; // Key: "unit-{id}-set-{A/B}" or "exam-{id}", Value: diamonds (0-3)
+        let studentName = "";
+
+        // Scratchpad Whiteboard Canvas state
+        let canvas = null;
+        let ctx = null;
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let penColor = '#00b4d8'; // default cyan
+        let penWidth = 6; // default medium
+        let undoStack = [];
+        let redoStack = [];
+        const MAX_STACK_SIZE = 25;
+        let isEraserMode = false;
+        let isPalmRejectionActive = false;
+        let activePointerId = null;
+
+        // Load Initial State
+        window.onload = function() {
+            loadProgress();
+            renderUnits();
+            renderExams();
+            updateGlobalDiamondsDisplay();
+            setPenColor('#00b4d8');
+            
+            // Check for previous saved name
+            const savedName = localStorage.getItem('mc_student_name_y4');
+            if (savedName) {
+                studentName = savedName;
+                document.getElementById('student-name-input').value = savedName;
+                showNameFeedback(`Hai adik ${studentName}, selamat menjawab kuiz ya! 💎`, 'text-cyan-400');
+                updateWelcomeGreeting();
+            }
+        };
+
+        // Switch Tabs: Modul vs Cabaran
+        function switchTab(tab) {
+            currentTab = tab;
+            const btnModul = document.getElementById('tab-modul');
+            const btnCabaran = document.getElementById('tab-cabaran');
+            const contentModul = document.getElementById('content-modul');
+            const contentCabaran = document.getElementById('content-cabaran');
+
+            if (tab === 'modul') {
+                btnModul.className = "mc-button-green flex-1 py-4 text-white font-pixel-heading text-xs text-center shadow-md";
+                btnCabaran.className = "mc-button-gray flex-1 py-4 text-white font-pixel-heading text-xs text-center shadow-md";
+                contentModul.classList.remove('hidden');
+                contentCabaran.classList.add('hidden');
+            } else {
+                btnModul.className = "mc-button-gray flex-1 py-4 text-white font-pixel-heading text-xs text-center shadow-md";
+                btnCabaran.className = "mc-button-diamond flex-1 py-4 text-white font-pixel-heading text-xs text-center shadow-md";
+                contentModul.classList.add('hidden');
+                contentCabaran.classList.remove('hidden');
+            }
+        }
+
+        // Update welcome header dynamically with pupil's name
+        function updateWelcomeGreeting() {
+            const welcomeTitle = document.getElementById('welcome-title');
+            if (welcomeTitle && studentName) {
+                welcomeTitle.innerText = `Hai adik ${studentName}! Saya Cikgu Capy! 🌾`;
+            }
+        }
+
+        // Save Student Name via Save Button
+        function saveStudentNameBtn() {
+            const inputVal = document.getElementById('student-name-input').value.trim();
+            if (inputVal === "") {
+                showNameFeedback("Sila taip nama kamu dahulu sebelum simpan ya! ✍️", "text-red-400");
+                playSound('incorrect');
+                return;
+            }
+            
+            studentName = inputVal;
+            localStorage.setItem('mc_student_name_y4', studentName);
+            showNameFeedback(`Hai adik ${studentName}, selamat menjawab kuiz ya! 💎`, "text-cyan-400");
+            updateWelcomeGreeting();
+            playSound('correct');
+        }
+
+        function showNameFeedback(msg, textClass) {
+            const feedbackEl = document.getElementById('name-save-feedback');
+            feedbackEl.innerText = msg;
+            feedbackEl.className = `text-[11px] font-bold transition-all duration-300 opacity-100 ${textClass}`;
+        }
+
+        // Load progress from Local Storage
+        function loadProgress() {
+            try {
+                const data = localStorage.getItem('mc_diamonds_record_y4');
+                if (data) {
+                    diamondsRecord = JSON.parse(data);
+                }
+            } catch (e) {
+                console.error("Gagal membaca rekod kemajuan: ", e);
+            }
+        }
+
+        // Save progress to Local Storage
+        function saveProgress(key, diamonds) {
+            try {
+                const existing = diamondsRecord[key] || 0;
+                if (diamonds > existing) {
+                    diamondsRecord[key] = diamonds;
+                    localStorage.setItem('mc_diamonds_record_y4', JSON.stringify(diamondsRecord));
+                }
+                updateGlobalDiamondsDisplay();
+            } catch (e) {
+                console.error("Gagal menyimpan rekod kemajuan: ", e);
+            }
+        }
+
+        // Confirm Progress Reset
+        function confirmResetProgress() {
+            const confirmBox = confirm("Adakah anda pasti mahu memadamkan semua ganjaran permata berlian yang telah dikumpulkan?");
+            if (confirmBox) {
+                localStorage.removeItem('mc_diamonds_record_y4');
+                diamondsRecord = {};
+                updateGlobalDiamondsDisplay();
+                renderUnits();
+                renderExams();
+            }
+        }
+
+        // Update Diamonds display in Header
+        function updateGlobalDiamondsDisplay() {
+            let total = 0;
+            for (let key in diamondsRecord) {
+                total += diamondsRecord[key];
+            }
+            document.getElementById('global-diamonds-count').innerText = total;
+        }
+
+        // Render Units with Select Set
+        function renderUnits() {
+            const container = document.getElementById('units-container');
+            container.innerHTML = '';
+
+            mathDatabase.units.forEach((unit) => {
+                const recordKeyA = `unit-${unit.id}-set-A`;
+                const recordKeyB = `unit-${unit.id}-set-B`;
+                
+                const diamondsA = diamondsRecord[recordKeyA] || 0;
+                const diamondsB = diamondsRecord[recordKeyB] || 0;
+
+                let starsHtmlA = '';
+                for (let i = 1; i <= 3; i++) {
+                    starsHtmlA += (i <= diamondsA) ? '💎' : '🖤';
+                }
+
+                let starsHtmlB = '';
+                for (let i = 1; i <= 3; i++) {
+                    starsHtmlB += (i <= diamondsB) ? '💎' : '🖤';
+                }
+
+                const unitCard = document.createElement('div');
+                unitCard.className = "mc-container p-5 rounded-lg flex flex-col justify-between space-y-4 text-left";
+                unitCard.innerHTML = `
+                    <div class="space-y-2">
+                        <span class="bg-emerald-950 text-emerald-400 border border-emerald-500 text-[9px] font-bold px-2 py-0.5 rounded">UNIT ${unit.id}</span>
+                        <h3 class="font-pixel-heading text-[10px] text-amber-300 leading-snug">${unit.title}</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">${unit.description}</p>
+                    </div>
+
+                    <div class="border-t border-slate-700/60 pt-3 space-y-3">
+                        <!-- Set A selection -->
+                        <div class="flex items-center justify-between gap-2">
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-300">Set A (Rawak 15 Soalan)</span>
+                                <div class="text-[10px] mt-0.5">${starsHtmlA}</div>
+                            </div>
+                            <button onclick="startQuiz('modul', ${unit.id}, 'A')" class="mc-button-green text-[9px] font-pixel-heading px-3 py-1.5 text-white shadow-sm">MULA A</button>
+                        </div>
+                        
+                        <!-- Set B selection -->
+                        <div class="flex items-center justify-between gap-2 border-t border-slate-700/40 pt-2.5">
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-300">Set B (Misi Alternatif)</span>
+                                <div class="text-[10px] mt-0.5">${starsHtmlB}</div>
+                            </div>
+                            <button onclick="startQuiz('modul', ${unit.id}, 'B')" class="mc-button-diamond text-[9px] font-pixel-heading px-3 py-1.5 text-slate-900 shadow-sm">MULA B</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(unitCard);
+            });
+        }
+
+        // Render Mixed Exams
+        function renderExams() {
+            const container = document.getElementById('exams-container');
+            container.innerHTML = '';
+
+            mathDatabase.exams.forEach((exam) => {
+                const recordKey = `exam-${exam.id}`;
+                const diamonds = diamondsRecord[recordKey] || 0;
+
+                let starsHtml = '';
+                for (let i = 1; i <= 3; i++) {
+                    starsHtml += (i <= diamonds) ? '💎' : '🖤';
+                }
+
+                const examCard = document.createElement('div');
+                examCard.className = "mc-container p-5 rounded-lg flex flex-col justify-between space-y-4 text-left border-amber-500/50";
+                examCard.innerHTML = `
+                    <div class="space-y-2">
+                        <span class="bg-red-950 text-red-400 border border-red-500 text-[9px] font-bold px-2 py-0.5 rounded">UJI MINDA KERTAS ${exam.id}</span>
+                        <h3 class="font-pixel-heading text-[10px] text-amber-300 leading-snug">${exam.title}</h3>
+                        <p class="text-xs text-slate-400 leading-relaxed">${exam.description}</p>
+                    </div>
+
+                    <div class="border-t border-slate-700/60 pt-3 flex items-center justify-between gap-2">
+                        <div>
+                            <span class="text-[10px] font-bold text-slate-500">PENCAPAIAN</span>
+                            <div class="text-[10px] mt-0.5">${starsHtml}</div>
+                        </div>
+                        <button onclick="startQuiz('exam', ${exam.id})" class="mc-button-green text-[9px] font-pixel-heading px-3 py-1.5 text-white shadow-sm">CABAR SEKARANG</button>
+                    </div>
+                `;
+                container.appendChild(examCard);
+            });
+        }
+
+        // Go back to main layout
+        function goHome() {
+            document.getElementById('screen-home').classList.remove('hidden');
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-certificate').classList.add('hidden');
+            renderUnits();
+            renderExams();
+        }
+
+        function confirmExitQuiz() {
+            const leave = confirm("Adakah anda mahu membatalkan misi kuiz ini sekarang? Kemajuan semasa akan hilang.");
+            if (leave) {
+                goHome();
+            }
+        }
+
+        // Shuffling algorithm helper
+        function shuffleArray(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // Start Quiz Engine
+        function startQuiz(mode, id, set = 'A') {
+            initAudio();
+            currentMode = mode;
+            selectedSet = set;
+            currentQuestionIdx = 0;
+            userScore = 0;
+
+            if (mode === 'modul') {
+                activeUnit = mathDatabase.units.find(u => u.id === id);
+                activeExam = null;
+                document.getElementById('quiz-theme-badge').innerText = `MODUL UNIT ${activeUnit.id}`;
+                document.getElementById('quiz-unit-title').innerText = `${activeUnit.title} (SET ${selectedSet})`;
+
+                // Ambil dan acak 20 soalan untuk setiap set
+                const originalQuestions = [...activeUnit.questions];
+                // Shuffle entire pool
+                const shuffledPool = shuffleArray(originalQuestions);
+
+                // Determinstic slice for different sets (A vs B)
+                if (selectedSet === 'A') {
+                    // Slices questions to have distinct Set A
+                    quizQuestions = shuffledPool.slice(0, 20);
+                } else {
+                    // Set B takes a different shuffled slice
+                    quizQuestions = shuffledPool.slice(0, 20);
+                    // Just shuffle it once more to make it completely distinct
+                    quizQuestions = shuffleArray(quizQuestions);
+                }
+            } else {
+                activeExam = mathDatabase.exams.find(e => e.id === id);
+                activeUnit = null;
+                document.getElementById('quiz-theme-badge').innerText = `KERTAS CABARAN ${activeExam.id}`;
+                document.getElementById('quiz-unit-title').innerText = activeExam.title;
+
+                // Set peperiksaan mengandungi 20 soalan dan diacak secara dinamik
+                quizQuestions = shuffleArray([...activeExam.questions]).slice(0, 20);
+            }
+
+            // Set total count
+            document.getElementById('total-question-num').innerText = quizQuestions.length;
+
+            // Switch Screen
+            document.getElementById('screen-home').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-certificate').classList.add('hidden');
+
+            loadQuestion();
+
+            // Set up whiteboard canvas
+            setTimeout(() => {
+                initScratchpad();
+            }, 100);
+        }
+
+        // Load Question details onto UI
+        function loadQuestion() {
+            const questionData = quizQuestions[currentQuestionIdx];
+            
+            // Progress details
+            document.getElementById('current-question-num').innerText = currentQuestionIdx + 1;
+            const progressPct = ((currentQuestionIdx + 1) / quizQuestions.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progressPct}%`;
+
+            // Display question
+            document.getElementById('quiz-question-text').innerHTML = questionData.q;
+
+            // Render option buttons
+            const optionsContainer = document.getElementById('quiz-options-container');
+            optionsContainer.innerHTML = '';
+
+            // Generate choices in shuffled form if desired, or keep as is. Let's map with indexes
+            const choices = questionData.options.map((opt, idx) => ({ text: opt, isCorrect: idx === questionData.ans }));
+            // Shuffle choices to make it harder
+            const shuffledChoices = shuffleArray([...choices]);
+
+            shuffledChoices.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-lg bg-slate-800 border-2 border-slate-600 hover:border-cyan-400 hover:bg-slate-700/50 transition-all font-semibold text-slate-200 focus:outline-none flex items-center space-x-3";
+                btn.innerHTML = `
+                    <span class="w-8 h-8 rounded bg-slate-950 border border-slate-700 flex items-center justify-center font-pixel-body text-slate-500 font-bold shrink-0">${idx + 1}</span>
+                    <span class="text-xs md:text-sm leading-relaxed">${opt.text}</span>
+                `;
+                btn.onclick = () => selectOption(opt.isCorrect, btn, shuffledChoices);
+                optionsContainer.appendChild(btn);
+            });
+
+            // Reset Cikgu Capy feedback
+            document.getElementById('mascot-status').innerText = "BERSEDIA";
+            document.getElementById('mascot-status').className = "bg-slate-950 text-amber-400 text-[8px] font-bold px-2 py-0.5 rounded border border-slate-700 uppercase tracking-wider";
+            document.getElementById('mascot-speech-text').innerText = "Adakah kamu tahu jawapan ini? Fikir elok-elok ya kawan-kawan! Sila gunakan papan lakaran di atas sekiranya mahu mengira.";
+
+            // Reset scratchpad for each question automatically
+            clearScratchpad();
+
+            // Disable next button
+            document.getElementById('next-question-btn').disabled = true;
+
+            updateQuizDiamondsVisual();
+        }
+
+        // Check Selection
+        function selectOption(isCorrect, selectedButton, shuffledChoices) {
+            const optionsContainer = document.getElementById('quiz-options-container');
+            const buttons = optionsContainer.getElementsByTagName('button');
+
+            // Disable all choices
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].disabled = true;
+                buttons[i].classList.remove('hover:border-cyan-400', 'hover:bg-slate-700/50');
+            }
+
+            const questionData = quizQuestions[currentQuestionIdx];
+
+            if (isCorrect) {
+                userScore++;
+                playSound('correct');
+                
+                selectedButton.classList.add('border-emerald-500', 'bg-emerald-950/40', 'text-emerald-300');
+                selectedButton.querySelector('span').classList.add('bg-emerald-500', 'text-white', 'border-emerald-600');
+                
+                document.getElementById('mascot-status').innerText = "BETUL!";
+                document.getElementById('mascot-status').className = "bg-emerald-800 text-emerald-200 text-[8px] font-bold px-2 py-0.5 rounded border border-emerald-500 uppercase tracking-wider animate-bounce";
+                
+                document.getElementById('mascot-speech-text').innerHTML = `
+                    <span class="text-emerald-400 font-pixel-body text-md tracking-wider block mb-1">Misi Cemerlang!</span>
+                    Sangat tepat! Kamu berjaya menyelesaikan rintangan ini.<br>
+                    <span class="text-[10px] text-slate-500 mt-2 block font-normal font-sans">Penjelasan: ${questionData.explain}</span>
+                `;
+            } else {
+                playSound('incorrect');
+                
+                selectedButton.classList.add('border-red-500', 'bg-red-950/40', 'text-red-300');
+                selectedButton.querySelector('span').classList.add('bg-red-500', 'text-white', 'border-red-600');
+                
+                // Show actual correct selection
+                for (let i = 0; i < buttons.length; i++) {
+                    const textSpan = buttons[i].querySelectorAll('span')[1].innerText;
+                    // Find matching text in shuffled choices that is correct
+                    const choiceInfo = shuffledChoices[i];
+                    if (choiceInfo.isCorrect) {
+                        buttons[i].classList.add('border-emerald-500', 'bg-emerald-950/30', 'text-emerald-400');
+                        buttons[i].querySelector('span').classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
+                    }
+                }
+
+                document.getElementById('mascot-status').innerText = "TUMBANG!";
+                document.getElementById('mascot-status').className = "bg-red-800 text-red-200 text-[8px] font-bold px-2 py-0.5 rounded border border-red-500 uppercase tracking-wider";
+                
+                document.getElementById('mascot-speech-text').innerHTML = `
+                    <span class="text-red-400 font-pixel-body text-md tracking-wider block mb-1">Terkena Kerosakan!</span>
+                    Jangan mengalah, jom belajar dari kesilapan ini:<br>
+                    <strong class="text-emerald-400 text-xs font-sans">${questionData.explain}</strong>
+                `;
+            }
+
+            document.getElementById('next-question-btn').disabled = false;
+            updateQuizDiamondsVisual();
+        }
+
+        // Live Diamonds Counter representation
+        function updateQuizDiamondsVisual() {
+            const container = document.getElementById('quiz-diamonds-visual');
+            container.innerHTML = '';
+            
+            const diamonds = calculateDiamonds(userScore);
+            for (let i = 1; i <= 3; i++) {
+                if (i <= diamonds) {
+                    container.innerHTML += '<span class="text-sm">💎</span>';
+                } else {
+                    container.innerHTML += '<span class="text-sm opacity-20">🖤</span>';
+                }
+            }
+        }
+
+        // Diamond grading rules untuk 20 soalan
+        // 17-20: 3 Diamonds 💎💎💎
+        // 13-16: 2 Diamonds 💎💎
+        // 9-12: 1 Diamond 💎
+        // <9: 0
+        function calculateDiamonds(score) {
+            if (score >= 17) return 3;
+            if (score >= 13) return 2;
+            if (score >= 9) return 1;
+            return 0;
+        }
+
+        function getResultShareData() {
+            const quizTitle = (currentMode === 'modul')
+                ? `${activeUnit.title} (Set ${selectedSet})`
+                : activeExam.title;
+            const name = studentName.trim() || 'Murid tanpa nama';
+            const total = quizQuestions.length || 20;
+            const percentage = Math.round((userScore / total) * 100);
+            const text = `LAPORAN MARKAH MINECRAFT MATH\n\nNama: ${name}\nKuiz: ${quizTitle}\nMarkah: ${userScore}/${total}\nPeratus: ${percentage}%\n\nDihantar selepas murid selesai menjawab kuiz Matematik Tahun 4.`;
+            return { quizTitle, name, total, percentage, text };
+        }
+
+        function updateShareResultPreview() {
+            const data = getResultShareData();
+            document.getElementById('share-result-preview').innerHTML = `
+                <div><strong class="text-cyan-400">Nama:</strong> ${escapeHtml(data.name)}</div>
+                <div><strong class="text-cyan-400">Kuiz:</strong> ${escapeHtml(data.quizTitle)}</div>
+                <div><strong class="text-cyan-400">Markah:</strong> ${userScore}/${data.total} (${data.percentage}%)</div>
+            `;
+        }
+
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+        }
+
+        function showShareStatus(message) {
+            const status = document.getElementById('share-status');
+            status.innerText = message;
+            status.classList.remove('hidden');
+            setTimeout(() => status.classList.add('hidden'), 4500);
+        }
+
+        function shareResultWhatsApp() {
+            const data = getResultShareData();
+            window.open(`https://wa.me/?text=${encodeURIComponent(data.text)}`, '_blank', 'noopener,noreferrer');
+        }
+
+        function shareResultEmail() {
+            const data = getResultShareData();
+            const subject = `Markah Minecraft Math - ${data.name}`;
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(data.text)}`;
+        }
+
+        async function shareResultClassroom() {
+            const data = getResultShareData();
+            try {
+                await navigator.clipboard.writeText(data.text);
+                showShareStatus('Maklumat markah telah disalin. Tampal dalam ruangan Classroom.');
+            } catch (error) {
+                showShareStatus('Classroom dibuka. Salin maklumat markah daripada kotak di atas.');
+            }
+            const shareUrl = location.protocol === 'file:' ? 'https://classroom.google.com/' : `https://classroom.google.com/share?url=${encodeURIComponent(location.href)}&title=${encodeURIComponent(`Markah ${data.name}: ${userScore}/${data.total}`)}`;
+            window.open(shareUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        function handleNextQuestion() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        // Finish Quiz
+        function finishQuiz() {
+            playSound('victory');
+            
+            const diamondsAchieved = calculateDiamonds(userScore);
+            const recordKey = (currentMode === 'modul') ? `unit-${activeUnit.id}-set-${selectedSet}` : `exam-${activeExam.id}`;
+            saveProgress(recordKey, diamondsAchieved);
+
+            // Transition
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+
+            document.getElementById('result-unit-subtitle').innerText = (currentMode === 'modul') ? `${activeUnit.title} (SET ${selectedSet})` : activeExam.title;
+            document.getElementById('result-score').innerText = userScore;
+            document.getElementById('result-total-score').innerText = quizQuestions.length;
+            updateShareResultPreview();
+
+            // Render result diamonds
+            const resultDiamondsContainer = document.getElementById('result-diamonds-container');
+            resultDiamondsContainer.innerHTML = '';
+            for (let i = 1; i <= 3; i++) {
+                const icon = document.createElement('span');
+                if (i <= diamondsAchieved) {
+                    icon.className = "text-4xl md:text-5xl animate-bounce";
+                    icon.innerText = "💎";
+                } else {
+                    icon.className = "text-4xl md:text-5xl opacity-20";
+                    icon.innerText = "🖤";
+                }
+                resultDiamondsContainer.appendChild(icon);
+            }
+
+            // Set Cikgu Capy summary text
+            let comment = "";
+            if (diamondsAchieved === 3) {
+                comment = "SANGAT MENAKJUBKAN! Kamu adalah pahlawan berlian terulung. Matematik kamu berada pada aras kepintaran maksimum!";
+            } else if (diamondsAchieved === 2) {
+                comment = "Ushana yang sangat mantap! Sedikit lagi pengulangan untuk mendapatkan 3 ganjaran berlian penuh.";
+            } else if (diamondsAchieved === 1) {
+                comment = "Misi selesai! Kamu berjaya menewaskan raksasa kuiz. Berlian pertama berjaya dikumpulkan!";
+            } else {
+                comment = "Percubaan yang baik. Jangan sedih ya kawan-kawan, mari cuba kuiz semula untuk menembusi pertahanan raksasa!";
+            }
+            document.getElementById('result-message-text').innerText = comment;
+
+            // Only show cert option if they have at least 1 diamond
+            const certBtn = document.getElementById('view-certificate-btn');
+            if (diamondsAchieved >= 1) {
+                certBtn.classList.remove('opacity-50', 'pointer-events-none');
+            } else {
+                certBtn.classList.add('opacity-50', 'pointer-events-none');
+            }
+        }
+
+        // Retry current quiz
+        function retryQuiz() {
+            if (currentMode === 'modul') {
+                startQuiz('modul', activeUnit.id, selectedSet);
+            } else {
+                startQuiz('exam', activeExam.id);
+            }
+        }
+
+        // Generate final print certificate screen
+        function generateCertificate() {
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-certificate').classList.remove('hidden');
+
+            const nameEl = document.getElementById('cert-recipient-name');
+            if (studentName.trim() !== "") {
+                nameEl.innerText = studentName.toUpperCase();
+            } else {
+                nameEl.innerText = "WIRA GEMILANG";
+            }
+
+            // Set Title details
+            document.getElementById('cert-unit-title').innerText = (currentMode === 'modul') ? `${activeUnit.title} (SET ${selectedSet})` : activeExam.title;
+            document.getElementById('cert-score').innerText = userScore;
+            document.getElementById('cert-total').innerText = quizQuestions.length;
+
+            // Render certificate diamonds
+            const certDiamondsContainer = document.getElementById('cert-diamonds');
+            certDiamondsContainer.innerHTML = '';
+            const count = calculateDiamonds(userScore);
+            for (let i = 1; i <= 3; i++) {
+                if (i <= count) {
+                    certDiamondsContainer.innerHTML += '<span class="mx-0.5">💎</span>';
+                } else {
+                    certDiamondsContainer.innerHTML += '<span class="mx-0.5 opacity-20">🖤</span>';
+                }
+            }
+        }
+
+        // Save state buffer for undo support
+        function saveCanvasState() {
+            if (!canvas || !ctx) return;
+            const state = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            undoStack.push(state);
+            if (undoStack.length > MAX_STACK_SIZE) {
+                undoStack.shift();
+            }
+            redoStack = []; // reset redo stack upon new drawings
+            updateUndoRedoButtons();
+        }
+
+        function undoCanvas() {
+            if (undoStack.length === 0 || !canvas || !ctx) return;
+            const currentState = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            redoStack.push(currentState);
+            
+            const prevState = undoStack.pop();
+            if (prevState.width === canvas.width && prevState.height === canvas.height) {
+                ctx.putImageData(prevState, 0, 0);
+            }
+            updateUndoRedoButtons();
+        }
+
+        function redoCanvas() {
+            if (redoStack.length === 0 || !canvas || !ctx) return;
+            const currentState = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            undoStack.push(currentState);
+            
+            const nextState = redoStack.pop();
+            if (nextState.width === canvas.width && nextState.height === canvas.height) {
+                ctx.putImageData(nextState, 0, 0);
+            }
+            updateUndoRedoButtons();
+        }
+
+        function updateUndoRedoButtons() {
+            const undoBtn = document.getElementById('btn-undo');
+            const redoBtn = document.getElementById('btn-redo');
+            if (undoBtn) undoBtn.disabled = (undoStack.length === 0);
+            if (redoBtn) redoBtn.disabled = (redoStack.length === 0);
+        }
+
+        // Toggle Eraser tool
+        function toggleEraser() {
+            if (!canvas || !ctx) return;
+            isEraserMode = !isEraserMode;
+            const eraserBtn = document.getElementById('tool-eraser');
+            
+            if (isEraserMode) {
+                ctx.globalCompositeOperation = 'destination-out';
+                eraserBtn.className = "px-2 py-0.5 rounded border border-red-500 bg-red-950 text-red-200 text-[9px] flex items-center gap-1";
+                setPenColorHighlight(null);
+            } else {
+                ctx.globalCompositeOperation = 'source-over';
+                eraserBtn.className = "px-2 py-0.5 rounded border border-slate-700 bg-slate-800 text-[9px] text-slate-300 flex items-center gap-1";
+                setPenColorHighlight(penColor);
+            }
+        }
+
+        // Toggle Stylus Palm Rejection (block touches)
+        function togglePalmRejection() {
+            isPalmRejectionActive = !isPalmRejectionActive;
+            const btn = document.getElementById('palm-rejection-btn');
+            const statusText = document.getElementById('palm-rejection-status');
+            
+            if (isPalmRejectionActive) {
+                btn.className = "px-2 py-1 rounded border border-emerald-500 bg-emerald-950 text-emerald-200 text-[9px] flex items-center gap-1 font-bold";
+                statusText.innerHTML = "Palm Rejection: Aktif ✍️";
+                document.getElementById('mascot-speech-text').innerHTML = `
+                    <span class="text-cyan-400 font-pixel-body text-md tracking-wider block mb-1">Palm Rejection Diaktifkan!</span>
+                    Gunakan <strong>stylus/pen pintar sahaja</strong> untuk melukis pengiraan kamu. Jari atau tapak tangan tidak akan melakar.
+                `;
+            } else {
+                btn.className = "px-2 py-1 rounded border border-slate-700 bg-slate-800 text-[9px] flex items-center gap-1 text-slate-400";
+                statusText.innerHTML = "Palm Rejection: Mati";
+            }
+        }
+
+        // Initialize Scratchpad drawing engine
+        function initScratchpad() {
+            canvas = document.getElementById('scratch-canvas');
+            if (!canvas) return;
+            ctx = canvas.getContext('2d');
+
+            resizeCanvas();
+
+            undoStack = [];
+            redoStack = [];
+            updateUndoRedoButtons();
+
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+
+            // Connect modern pointers
+            canvas.addEventListener('pointerdown', handlePointerDown);
+            canvas.addEventListener('pointermove', handlePointerMove);
+            canvas.addEventListener('pointerup', handlePointerUp);
+            canvas.addEventListener('pointercancel', handlePointerUp);
+            canvas.addEventListener('pointerleave', handlePointerUp);
+        }
+
+        function handlePointerDown(e) {
+            // Filter palm rejection touches
+            if (isPalmRejectionActive && e.pointerType === 'touch') {
+                return;
+            }
+
+            if (activePointerId !== null) return;
+            activePointerId = e.pointerId;
+
+            try {
+                canvas.setPointerCapture(e.pointerId);
+            } catch(err) {}
+
+            isDrawing = true;
+            saveCanvasState();
+
+            const coords = getCanvasCoords(e);
+            lastX = coords.x;
+            lastY = coords.y;
+            
+            drawStroke(coords.x, coords.y);
+        }
+
+        function handlePointerMove(e) {
+            if (!isDrawing || e.pointerId !== activePointerId) return;
+            const coords = getCanvasCoords(e);
+            drawStroke(coords.x, coords.y);
+        }
+
+        function handlePointerUp(e) {
+            if (e.pointerId !== activePointerId) return;
+            isDrawing = false;
+            activePointerId = null;
+            try {
+                canvas.releasePointerCapture(e.pointerId);
+            } catch(err) {}
+        }
+
+        function getCanvasCoords(eventTarget) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (eventTarget.clientX - rect.left) * (canvas.width / rect.width),
+                y: (eventTarget.clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        function drawStroke(currentX, currentY) {
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(currentX, currentY);
+            ctx.strokeStyle = penColor;
+            ctx.lineWidth = penWidth;
+            ctx.stroke();
+            lastX = currentX;
+            lastY = currentY;
+        }
+
+        // Preserve canvas graphics across sizing/rotation
+        function resizeCanvas() {
+            if (!canvas) return;
+            const rect = canvas.getBoundingClientRect();
+            
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(canvas, 0, 0);
+
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            if (isEraserMode) {
+                ctx.globalCompositeOperation = 'destination-out';
+            } else {
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, canvas.width, canvas.height);
+        }
+
+        function clearScratchpad() {
+            if (!canvas || !ctx) return;
+            saveCanvasState();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function setPenColor(color) {
+            if (isEraserMode) {
+                isEraserMode = false;
+                ctx.globalCompositeOperation = 'source-over';
+                const eraserBtn = document.getElementById('tool-eraser');
+                eraserBtn.className = "px-2 py-0.5 rounded border border-slate-700 bg-slate-800 text-[9px] text-slate-300 flex items-center gap-1";
+            }
+            
+            penColor = color;
+            setPenColorHighlight(color);
+        }
+
+        function setPenColorHighlight(color) {
+            const colors = {
+                '#00b4d8': 'color-cyan',
+                '#ff4d4d': 'color-red',
+                '#4caf50': 'color-green'
+            };
+            for (let key in colors) {
+                const el = document.getElementById(colors[key]);
+                if (el) {
+                    if (key === color) {
+                        el.classList.add('ring-2', 'ring-cyan-400');
+                        el.classList.remove('ring-transparent');
+                    } else {
+                        el.classList.remove('ring-2', 'ring-cyan-400');
+                        el.classList.add('ring-transparent');
+                    }
+                }
+            }
+        }
+
+        function setPenWidth(width) {
+            penWidth = width;
+            const widths = {
+                3: 'size-thin',
+                6: 'size-medium',
+                10: 'size-thick'
+            };
+            for (let key in widths) {
+                const el = document.getElementById(widths[key]);
+                if (el) {
+                    if (parseInt(key) === width) {
+                        el.classList.add('ring-1', 'ring-slate-400');
+                    } else {
+                        el.classList.remove('ring-1', 'ring-slate-400');
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            const quizScreen = document.getElementById('screen-quiz');
+            if (quizScreen && !quizScreen.classList.contains('hidden')) {
+                resizeCanvas();
+                undoStack = [];
+                redoStack = [];
+                updateUndoRedoButtons();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATEMATIK TAHUN 6: AMONG US SPACE MATH MISSION</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Orbitron & Inter for playful space aesthetic -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Orbitron:wght@600;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        space: {
+                            bg: '#0b0e17',
+                            panel: '#151d2a',
+                            panelBorder: '#27354a',
+                            cyan: '#38fedc',
+                            red: '#c51111',
+                            blue: '#132ed1',
+                            green: '#11802d',
+                            lime: '#50ef39',
+                            yellow: '#f5f557',
+                            orange: '#ef7d0d',
+                            purple: '#6b2fbb',
+                            pink: '#ed54ba'
+                        }
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0b0e17;
+            background-image: 
+                radial-gradient(white 1px, transparent 0),
+                radial-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 0);
+            background-size: 50px 50px, 100px 100px;
+            background-position: 0 0, 25px 25px;
+            color: #f1f5f9;
+            user-select: none;
+        }
+
+        /* Among Us Visor & Panel styling */
+        .visor-panel {
+            background: linear-gradient(135deg, #151d2a 0%, #0d131d 100%);
+            border: 4px solid #27354a;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+        }
+
+        .crewmate-card {
+            border-radius: 20px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .crewmate-card:hover {
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        /* Glass Visor Effect */
+        .glass-visor {
+            background: linear-gradient(180deg, #aae5ff 0%, #38fedc 100%);
+            border: 3px solid #000;
+            border-radius: 50px;
+            box-shadow: inset 0 4px 6px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Speech Bubble */
+        .speech-bubble {
+            position: relative;
+            background: #ffffff;
+            border-radius: 18px;
+            color: #0f172a;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 20px;
+            border-width: 8px 12px 8px 0;
+            border-style: solid;
+            border-color: transparent #ffffff transparent transparent;
+            display: block;
+            width: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .speech-bubble::after {
+                left: 20px;
+                top: -12px;
+                border-width: 0 8px 12px 8px;
+                border-color: transparent transparent #ffffff transparent;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0e17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27354a;
+            border-radius: 4px;
+        }
+
+        /* Certificate Print Layout */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #certificateModal, #certificateModal * {
+                visibility: visible;
+            }
+            #certificateModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between font-sans overflow-x-hidden">
+
+    <!-- HEADER NAVBAR -->
+    <header class="bg-space-panel/90 backdrop-blur-md border-b-4 border-space-panelBorder p-3 md:p-4 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-space-red rounded-xl border-2 border-black flex items-center justify-center shadow-lg relative">
+                    <div class="w-6 h-3 glass-visor rounded-full absolute top-2"></div>
+                </div>
+                <div>
+                    <h1 class="font-fredoka text-lg md:text-2xl font-bold tracking-wide text-white flex items-center gap-2">
+                        AMONG US <span class="text-space-cyan">SPACE MATH</span>
+                    </h1>
+                    <p class="text-[11px] text-gray-400 font-fredoka uppercase tracking-widest">KSSR SEMAKAN MATEMATIK TAHUN 6</p>
+                </div>
+            </div>
+
+            <!-- Player Status & Audio Controls -->
+            <div class="flex items-center space-x-2 md:space-x-4">
+                <!-- Stars Counter -->
+                <div class="flex items-center bg-black/60 border-2 border-space-yellow/60 px-3 py-1 rounded-full shadow-inner">
+                    <i class="fa-solid fa-star text-space-yellow mr-1.5 text-sm"></i>
+                    <span id="globalStarsCount" class="font-fredoka text-space-yellow font-bold text-sm">0</span>
+                </div>
+
+                <!-- Sound Toggle -->
+                <button onclick="toggleAudio()" id="audioBtn" class="bg-black/60 border-2 border-space-panelBorder hover:border-space-cyan p-2 rounded-xl text-gray-300 hover:text-space-cyan transition" title="Pilihan Bunyi">
+                    <i id="audioIcon" class="fa-solid fa-volume-high"></i>
+                </button>
+
+                <!-- Profile Switch -->
+                <button onclick="openProfileModal()" class="bg-space-lime/20 border-2 border-space-lime hover:bg-space-lime/30 px-3 py-1.5 rounded-xl text-space-lime text-xs font-fredoka font-bold flex items-center gap-2 transition">
+                    <i class="fa-solid fa-user-astronaut text-sm"></i>
+                    <span id="navPlayerCallsign" class="hidden sm:inline">CREWMATE</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto w-full p-3 sm:p-6 flex-grow">
+
+        <!-- SCREEN 0: CREWMATE REGISTRATION -->
+        <section id="screenRegister" class="hidden my-8 max-w-lg mx-auto">
+            <div class="visor-panel p-6 sm:p-8 text-center relative overflow-hidden">
+                <div class="w-24 h-24 mx-auto mb-4 bg-space-red rounded-3xl border-4 border-black relative flex items-center justify-center shadow-2xl">
+                    <div class="w-14 h-7 glass-visor rounded-full absolute top-4"></div>
+                    <i class="fa-solid fa-user-astronaut text-4xl text-white mt-4 opacity-30"></i>
+                </div>
+                <h2 class="font-fredoka text-2xl sm:text-3xl font-bold text-white mb-2">DAFTAR KAD ID CREWMATE</h2>
+                <p class="text-gray-300 text-sm mb-6 font-sans">Sila masukkan nama anda untuk memulakan Misi Matematik Tahun 6 di Kapal Angkasa Skeld!</p>
+
+                <div class="mb-6 text-left">
+                    <label class="block text-xs font-fredoka text-space-cyan uppercase mb-2">NAMA MURID / CALLSIGN:</label>
+                    <input type="text" id="playerNameInput" placeholder="Contoh: Muhammad Ali / Sarah" class="w-full bg-black/70 border-2 border-space-panelBorder focus:border-space-cyan text-white p-3.5 rounded-xl font-fredoka text-lg outline-none transition">
+                </div>
+
+                <button onclick="savePlayerName()" class="w-full bg-space-lime hover:bg-emerald-400 text-black font-fredoka font-bold py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2 text-lg shadow-xl border-2 border-black">
+                    <i class="fa-solid fa-rocket"></i> MASUK KAPAL ANGKASA
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 1: MAIN MENU (Themes & Units) -->
+        <section id="screenMenu" class="hidden space-y-6">
+            <!-- Command Dashboard Banner -->
+            <div class="visor-panel p-5 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 bg-gradient-to-r from-space-panel via-slate-900 to-space-panel">
+                <div class="flex items-center space-x-4">
+                    <!-- Mascot Avatar -->
+                    <div class="w-16 h-16 bg-space-red rounded-2xl border-2 border-black relative flex items-center justify-center flex-shrink-0 shadow-lg">
+                        <div class="w-10 h-5 glass-visor rounded-full absolute top-2"></div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-space-cyan font-fredoka uppercase tracking-widest">STESEN UTAMA KAPAL ANGKASA</div>
+                        <h2 class="font-fredoka text-xl md:text-2xl font-bold text-white flex items-center gap-2">
+                            SELAMAT DATANG, <span id="mascotGreetingName" class="text-space-yellow">CREWMATE</span>!
+                        </h2>
+                        <p class="text-xs text-gray-300 font-sans">Pilih Modul Misi (20 Soalan: 5 Mudah, 10 Sederhana, 5 Aras Tinggi/KBAT)!</p>
+                    </div>
+                </div>
+
+                <!-- Overall Rank Status -->
+                <div class="bg-black/60 border-2 border-space-panelBorder p-3 rounded-xl text-right w-full md:w-auto flex md:flex-col justify-between items-center md:items-end">
+                    <span class="text-xs text-gray-400 font-fredoka uppercase">PANGKAT CREWMATE:</span>
+                    <span id="playerRankTitle" class="font-fredoka font-bold text-space-lime text-base sm:text-lg">CREWMATE NOVIS</span>
+                </div>
+            </div>
+
+            <!-- Theme Cards -->
+            <div class="space-y-6">
+                <h3 class="font-fredoka text-xl font-bold text-white flex items-center gap-2 border-b-2 border-space-panelBorder pb-2">
+                    <i class="fa-solid fa-list-check text-space-cyan"></i> MODUL TEMATIK BUKU TEKS TAHUN 6
+                </h3>
+
+                <div id="themesContainer" class="grid grid-cols-1 gap-6">
+                    <!-- Dynamic Themes Injected Here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: QUIZ OPERATIONAL AREA -->
+        <section id="screenQuiz" class="hidden space-y-4">
+            <!-- HUD Top Navigation Bar -->
+            <div class="visor-panel p-4 rounded-2xl flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center space-x-3">
+                    <button onclick="showMainMenu()" class="bg-black/60 border-2 border-space-panelBorder hover:border-space-orange text-gray-300 hover:text-space-orange px-3 py-1.5 rounded-xl text-xs font-fredoka flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-chevron-left"></i> KEMBALI
+                    </button>
+                    <div>
+                        <span id="quizUnitBadge" class="text-[10px] font-fredoka bg-space-cyan/20 text-space-cyan border border-space-cyan/40 px-2 py-0.5 rounded-md uppercase">UNIT 1</span>
+                        <h3 id="quizUnitTitle" class="font-fredoka text-sm md:text-base font-bold text-white truncate max-w-[200px] sm:max-w-md">TAJUK UNIT</h3>
+                    </div>
+                </div>
+
+                <!-- Progress & Score -->
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <span class="text-[10px] text-gray-400 font-fredoka block">SOALAN</span>
+                        <span class="font-fredoka text-sm md:text-base font-bold text-space-cyan"><span id="currentQNum">1</span> / 20</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] text-gray-400 font-fredoka block">SKOR</span>
+                        <span id="currentScore" class="font-fredoka text-sm md:text-base font-bold text-space-lime">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Layout Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                
+                <!-- Main Question Column -->
+                <div class="lg:col-span-2 space-y-4">
+                    <!-- Question Box -->
+                    <div class="visor-panel p-5 sm:p-6 rounded-2xl relative min-h-[170px] flex flex-col justify-between">
+                        <div class="flex justify-between items-center">
+                            <span id="difficultyBadge" class="text-[11px] font-fredoka font-bold px-3 py-1 rounded-full bg-space-cyan/20 text-space-cyan border border-space-cyan/40">
+                                ARAS: MUDAH
+                            </span>
+                            <span class="text-[11px] font-fredoka text-gray-400">TUGASAN #<span id="qIndexTag">1</span></span>
+                        </div>
+
+                        <div id="questionText" class="font-sans text-base sm:text-lg font-semibold text-white leading-relaxed my-3">
+                            <!-- Question Text Here -->
+                        </div>
+                        <div></div>
+                    </div>
+
+                    <!-- Multiple Choice Options -->
+                    <div id="optionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- Option buttons injected here -->
+                    </div>
+
+                    <!-- Next Button -->
+                    <div class="flex justify-end pt-2">
+                        <button id="nextBtn" onclick="nextQuestion()" class="hidden bg-space-lime hover:bg-emerald-400 text-black font-fredoka font-bold py-3.5 px-8 rounded-xl shadow-xl transition flex items-center gap-2 border-2 border-black text-base">
+                            SOALAN SETERUSNYA <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Column: Mascot Speech & Explanation -->
+                <div class="lg:col-span-1">
+                    <div class="visor-panel p-4 rounded-2xl flex flex-col h-full justify-between">
+                        <div>
+                            <!-- Mascot Header -->
+                            <div class="flex items-center space-x-3 border-b-2 border-space-panelBorder pb-3 mb-3">
+                                <div class="w-12 h-12 bg-space-red rounded-xl border-2 border-black relative flex items-center justify-center flex-shrink-0">
+                                    <div class="w-7 h-3.5 glass-visor rounded-full absolute top-1.5"></div>
+                                </div>
+                                <div>
+                                    <h4 class="font-fredoka text-base font-bold text-space-yellow">KAPTEN CREWMATE</h4>
+                                    <p class="text-[10px] text-gray-400 font-fredoka uppercase">PENGAWAS MISI KAPAL ANGKASA</p>
+                                </div>
+                            </div>
+
+                            <!-- Mascot Dialogue Speech Box -->
+                            <div class="speech-bubble p-4 text-sm leading-relaxed font-medium relative shadow-lg min-h-[120px]">
+                                <p id="mascotSpeech">
+                                    "Fokus Crewmate! Selesaikan soalan ini untuk membaiki tugasan kapal angkasa kita!"
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Explanation Box -->
+                        <div id="explanationContainer" class="hidden mt-4 p-3.5 bg-black/60 border-2 border-space-lime/50 rounded-xl text-xs space-y-1">
+                            <span class="font-fredoka font-bold text-space-lime block flex items-center gap-1.5">
+                                <i class="fa-solid fa-lightbulb text-space-yellow"></i> PENERANGAN MATEMATIK:
+                            </span>
+                            <p id="explanationText" class="text-gray-200 leading-relaxed font-sans">
+                                <!-- Step by step math explanation -->
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: MISSION DEBRIEFING / RESULTS -->
+        <section id="screenDebrief" class="hidden max-w-2xl mx-auto my-6 space-y-6">
+            <div class="visor-panel p-6 sm:p-8 text-center space-y-6 relative overflow-hidden">
+                <div class="inline-block bg-space-yellow/20 border-2 border-space-yellow p-4 rounded-full text-space-yellow mb-1 shadow-lg">
+                    <i class="fa-solid fa-trophy text-4xl"></i>
+                </div>
+
+                <div>
+                    <span class="text-xs font-fredoka text-space-cyan uppercase tracking-widest">LAPORAN AKHIR TUGASAN</span>
+                    <h2 class="font-fredoka text-2xl sm:text-3xl font-bold text-white mt-1">MISI KAPAL SELESAI!</h2>
+                    <p id="debriefUnitTitle" class="text-gray-300 text-sm font-fredoka mt-1">UNIT 1: NOMBOR BULAT</p>
+                </div>
+
+                <!-- Stars Earned Display -->
+                <div class="flex justify-center items-center space-x-3 my-3">
+                    <i id="star1" class="fa-solid fa-star text-3xl text-gray-600 transition-all duration-300"></i>
+                    <i id="star2" class="fa-solid fa-star text-4xl text-gray-600 transition-all duration-300"></i>
+                    <i id="star3" class="fa-solid fa-star text-3xl text-gray-600 transition-all duration-300"></i>
+                </div>
+
+                <!-- Stats Breakdown Grid -->
+                <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                    <div class="bg-black/60 border-2 border-space-panelBorder p-3 rounded-xl">
+                        <span class="text-[10px] text-gray-400 font-fredoka block">JUMLAH SKOR</span>
+                        <span id="debriefScore" class="font-fredoka text-xl font-bold text-space-lime">20 / 20</span>
+                    </div>
+                    <div class="bg-black/60 border-2 border-space-panelBorder p-3 rounded-xl">
+                        <span class="text-[10px] text-gray-400 font-fredoka block">PERATUSAN</span>
+                        <span id="debriefPercentage" class="font-fredoka text-xl font-bold text-space-cyan">100%</span>
+                    </div>
+                </div>
+
+                <!-- Mascot Review -->
+                <div class="bg-black/70 border-2 border-space-panelBorder p-4 rounded-xl text-left text-sm text-gray-200 flex items-start space-x-3">
+                    <div class="w-10 h-10 bg-space-red rounded-lg border border-black relative flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <div class="w-6 h-3 glass-visor rounded-full absolute top-1"></div>
+                    </div>
+                    <div>
+                        <span class="font-fredoka font-bold text-space-yellow text-xs">Ulasan Kapten Crewmate:</span>
+                        <p id="debriefMascotMessage" class="mt-1 font-sans text-xs sm:text-sm">Pencapaian cemerlang Crewmate!</p>
+                    </div>
+                </div>
+
+                <!-- Actions & Share Options -->
+                <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                    <button onclick="showMainMenu()" class="bg-black/80 hover:bg-black border-2 border-space-panelBorder text-white font-fredoka font-bold py-3 px-6 rounded-xl transition">
+                        <i class="fa-solid fa-house"></i> MENU UTAMA
+                    </button>
+                    <button id="btnCertificate" onclick="openCertificateModal()" class="bg-space-lime hover:bg-emerald-400 text-black font-fredoka font-bold py-3 px-6 rounded-xl transition shadow-lg flex items-center justify-center gap-2 border-2 border-black">
+                        <i class="fa-solid fa-award"></i> LIHAT & KONGSI SIJIL
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- CERTIFICATE MODAL -->
+    <div id="certificateModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+        <div class="bg-slate-950 border-4 border-space-cyan max-w-3xl w-full p-6 sm:p-10 rounded-3xl text-center text-white relative shadow-2xl my-8">
+            <!-- Close Button (No Print) -->
+            <button onclick="closeCertificateModal()" class="no-print absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Certificate Header -->
+            <div class="border-b-2 border-space-cyan/40 pb-4 mb-6">
+                <div class="flex justify-center items-center space-x-3 mb-2">
+                    <div class="w-8 h-8 bg-space-red rounded-lg border border-black relative flex items-center justify-center">
+                        <div class="w-5 h-2.5 glass-visor rounded-full absolute top-1"></div>
+                    </div>
+                    <span class="font-fredoka font-bold text-space-cyan text-lg tracking-widest">AMONG US MATH SPACE HQ</span>
+                    <div class="w-8 h-8 bg-space-lime rounded-lg border border-black relative flex items-center justify-center">
+                        <div class="w-5 h-2.5 glass-visor rounded-full absolute top-1"></div>
+                    </div>
+                </div>
+                <h1 class="font-fredoka text-2xl sm:text-4xl font-black text-white tracking-wider my-2">SIJIL PENTAULIAHAN CREWMATE</h1>
+                <p class="text-xs text-space-yellow font-fredoka tracking-widest uppercase">KECERMERALANGAN AKADEMIK MATEMATIK TAHUN 6</p>
+            </div>
+
+            <!-- Certificate Body -->
+            <div class="space-y-4 my-6">
+                <p class="text-xs sm:text-sm text-gray-300 font-fredoka uppercase">DENGAN INI DISAHKAN BAHAWA CREWMATE:</p>
+                <h2 id="certPlayerName" class="font-fredoka text-2xl sm:text-4xl font-extrabold text-space-lime underline decoration-space-yellow decoration-4 underline-offset-8">
+                    NAMA MURID
+                </h2>
+                <p class="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-xl mx-auto pt-2 font-sans">
+                    Telah berjaya menyempurnakan 20 soalan cabaran matematik dan menyelesaikan tugasan bagi modul unit:
+                </p>
+                <h3 id="certUnitName" class="font-fredoka text-lg sm:text-xl font-bold text-space-yellow">
+                    UNIT 1: NOMBOR BULAT HINGGA 10 000 000
+                </h3>
+                <p class="text-xs font-mono text-space-cyan">SKOR AKHIR: <span id="certScoreText">20/20</span> (<span id="certPercentText">100%</span>)</p>
+
+                <div class="flex justify-center items-center space-x-2 text-space-yellow text-2xl my-2" id="certStars">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <p class="text-xs text-gray-400 font-mono">STATUS TUGASAN: TAHNIAH! MISI KAMU TELAH SELESAI DENGAN JAYANYA.</p>
+            </div>
+
+            <!-- Certificate Footer -->
+            <div class="grid grid-cols-2 gap-6 pt-6 border-t border-gray-800 text-xs font-fredoka">
+                <div>
+                    <p class="text-gray-400">TARIKH PENTAULIAHAN</p>
+                    <p id="certDate" class="font-bold text-white font-mono mt-1">2026-08-16</p>
+                </div>
+                <div>
+                    <p class="text-gray-400">PEGAWAI MEMERINTAH</p>
+                    <p class="font-fredoka font-bold text-space-yellow mt-1">KAPTEN CREWMATE (SKELD HQ)</p>
+                </div>
+            </div>
+
+            <!-- Share & Action Buttons (No Print) -->
+            <div class="no-print mt-8 space-y-3">
+                <div class="text-xs font-fredoka text-space-cyan uppercase font-bold">KONGSI KEPUASAN HASIL DENGAN GURU:</div>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button onclick="shareToWhatsApp()" class="bg-green-600 hover:bg-green-500 text-white font-fredoka font-bold py-2.5 px-5 rounded-xl transition flex items-center gap-2 border border-black shadow">
+                        <i class="fa-brands fa-whatsapp text-lg"></i> Hantar ke WhatsApp Guru
+                    </button>
+                    <button onclick="copyCertificateReport()" class="bg-space-purple hover:bg-purple-600 text-white font-fredoka font-bold py-2.5 px-5 rounded-xl transition flex items-center gap-2 border border-black shadow">
+                        <i class="fa-solid fa-copy"></i> Salin Teks Laporan
+                    </button>
+                    <button onclick="window.print()" class="bg-space-yellow hover:bg-yellow-400 text-black font-fredoka font-bold py-2.5 px-5 rounded-xl transition flex items-center gap-2 border border-black shadow">
+                        <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profileModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+        <div class="visor-panel max-w-md w-full p-6 text-white space-y-4">
+            <h3 class="font-fredoka text-lg font-bold text-space-cyan flex items-center gap-2">
+                <i class="fa-solid fa-user-pen"></i> KEMAS KINI NAMA CREWMATE
+            </h3>
+            <div>
+                <label class="block text-xs font-fredoka text-gray-300 mb-1">NAMA / CALLSIGN BARU:</label>
+                <input type="text" id="editPlayerNameInput" class="w-full bg-black/80 border-2 border-space-panelBorder text-white p-3 rounded-xl font-fredoka outline-none focus:border-space-cyan">
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeProfileModal()" class="bg-gray-800 text-gray-300 font-fredoka text-xs px-4 py-2 rounded-xl">BATAL</button>
+                <button onclick="updatePlayerName()" class="bg-space-lime text-black font-fredoka font-bold text-xs px-4 py-2 rounded-xl border border-black">SIMPAN</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           1. AUDIO SYNTHESIZER ENGINE (Web Audio API Space Sounds)
+           ========================================================================== */
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('audioIcon');
+            const btn = document.getElementById('audioBtn');
+            if (soundEnabled) {
+                icon.className = "fa-solid fa-volume-high";
+                btn.classList.remove('text-red-500');
+                playClickSound();
+            } else {
+                icon.className = "fa-solid fa-volume-xmark";
+                btn.classList.add('text-red-500');
+            }
+        }
+
+        function playClickSound() {
+            if (!soundEnabled) return;
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.04);
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.04);
+        }
+
+        function playCorrectSound() {
+            if (!soundEnabled) return;
+            initAudio();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(523.25, now); // C5
+            osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+            osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+            osc.frequency.setValueAtTime(1046.50, now + 0.24); // C6
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.38);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.38);
+        }
+
+        function playWrongSound() {
+            if (!soundEnabled) return;
+            initAudio();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(220, now);
+            osc.frequency.linearRampToValueAtTime(110, now + 0.3);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        }
+
+        function playVictorySound() {
+            if (!soundEnabled) return;
+            initAudio();
+            const now = audioCtx.currentTime;
+            const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+            notes.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + (idx * 0.1));
+                gain.gain.setValueAtTime(0.2, now + (idx * 0.1));
+                gain.gain.exponentialRampToValueAtTime(0.01, now + (idx * 0.1) + 0.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + (idx * 0.1));
+                osc.stop(now + (idx * 0.1) + 0.3);
+            });
+        }
+
+        /* ==========================================================================
+           STREAMING_CHUNK:Loading Curriculum Database (20 Questions Per Unit)...
+           2. YEAR 6 MATHEMATICS CURRICULUM DATA (4 Themes, 8 Units x 20 Questions)
+           ========================================================================== */
+        const quizData = [
+            {
+                themeId: "theme1",
+                themeTitle: "TEMA 1: NOMBOR DAN OPERASI",
+                description: "Nombor Bulat hingga 10 000 000, Pecahan, Perpuluhan & Peratus",
+                units: [
+                    {
+                        unitId: "unit1",
+                        unitTitle: "Unit 1: Nombor Bulat & Operasi Asas",
+                        questions: [
+                            // 5 ARAS MUDAH
+                            { diff: "MUDAH", q: "Nyatakan 3.45 juta dalam bentuk nombor bulat.", options: ["3 450 000", "345 000", "34 500", "3 045 000"], ans: 0, exp: "3.45 x 1 000 000 = 3 450 000." },
+                            { diff: "MUDAH", q: "Tukarkan 3/4 juta kepada nombor bulat.", options: ["750 000", "75 000", "7 500 000", "750"], ans: 0, exp: "3/4 x 1 000 000 = 750 000." },
+                            { diff: "MUDAH", q: "Apakah nilai tempat bagi digit 7 dalam nombor 5 721 040?", options: ["Ratus ribu", "Puluh ribu", "Juta", "Ribu"], ans: 0, exp: "Digit 7 berada pada kedudukan ratus ribu." },
+                            { diff: "MUDAH", q: "Antara berikut, yang manakah nombor perdana?", options: ["29", "27", "25", "21"], ans: 0, exp: "29 hanya boleh dibahagi dengan 1 dan dirinya sendiri." },
+                            { diff: "MUDAH", q: "Bundarkan 4 876 210 kepada ratus ribu terdekat.", options: ["4 900 000", "4 800 000", "5 000 000", "4 880 000"], ans: 0, exp: "Digit di puluh ribu ialah 7 (>=5), jadi tambah 1 pada ratus ribu (8+1=9) -> 4 900 000." },
+
+                            // 10 ARAS SEDERHANA
+                            { diff: "SEDERHANA", q: "Hitung: 1.25 juta + 350 000 = ?", options: ["1 600 000", "1 500 000", "1 285 000", "1 750 000"], ans: 0, exp: "1.25 juta = 1 250 000. 1 250 000 + 350 000 = 1 600 000." },
+                            { diff: "SEDERHANA", q: "Cari beza antara 2.5 juta dengan 800 000.", options: ["1 700 000", "1 800 000", "1 500 000", "1 900 000"], ans: 0, exp: "2 500 000 - 800 000 = 1 700 000." },
+                            { diff: "SEDERHANA", q: "4/5 juta dikurangkan sebanyak 200 000 menjadi:", options: ["600 000", "500 000", "400 000", "700 000"], ans: 0, exp: "4/5 juta = 800 000. 800 000 - 200 000 = 600 000." },
+                            { diff: "SEDERHANA", q: "Darabkan 0.08 juta dengan 5.", options: ["400 000", "40 000", "4 000 000", "400"], ans: 0, exp: "0.08 x 5 = 0.4 juta = 400 000." },
+                            { diff: "SEDERHANA", q: "Bahagikan 1.8 juta dengan 6.", options: ["300 000", "30 000", "3 000 000", "300"], ans: 0, exp: "1.8 / 6 = 0.3 juta = 300 000." },
+                            { diff: "SEDERHANA", q: "Sebuah kilang menghasilkan 0.5 juta kotak susu sehari. Berapakah jumlah kotak susu dalam 4 hari?", options: ["2 000 000", "200 000", "20 000 000", "250 000"], ans: 0, exp: "0.5 juta x 4 = 2.0 juta = 2 000 000." },
+                            { diff: "SEDERHANA", q: "Tukarkan 1 200 000 kepada pecahan juta dalam bentuk termudah.", options: ["1 1/5 juta", "1 2/5 juta", "1 1/4 juta", "1 1/2 juta"], ans: 0, exp: "1 200 000 / 1 000 000 = 1 2/10 = 1 1/5 juta." },
+                            { diff: "SEDERHANA", q: "Sebuah daerah mempunyai 0.04 juta penduduk. Berapakah bilangan penduduk tersebut?", options: ["40 000", "400 000", "4 000", "400"], ans: 0, exp: "0.04 x 1 000 000 = 40 000." },
+                            { diff: "SEDERHANA", q: "Pernyataan manakah yang betul?", options: ["1/2 juta = 500 000", "1/4 juta = 200 000", "1/5 juta = 100 000", "3/4 juta = 700 000"], ans: 0, exp: "1/2 x 1 000 000 = 500 000." },
+                            { diff: "SEDERHANA", q: "Hitung: 0.6 juta - 1/4 juta = ?", options: ["350 000", "250 000", "450 000", "150 000"], ans: 0, exp: "600 000 - 250 000 = 350 000." },
+
+                            // 5 ARAS TINGGI (KBAT)
+                            { diff: "ARAS TINGGI (KBAT)", q: "Hitung: (1/5 juta + 0.3 juta) x 2.", options: ["1 000 000", "800 000", "500 000", "600 000"], ans: 0, exp: "1/5 juta = 200 000, 0.3 juta = 300 000. Jumlah = 500 000 x 2 = 1 000 000." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Syarikat X mengeluarkan 2.4 juta bungkusan makanan. 1/2 juta diagihkan ke negeri A dan 0.9 juta ke negeri B. Berapakah baki bungkusan?", options: ["1 000 000", "1 200 000", "800 000", "1 100 000"], ans: 0, exp: "2.4 juta - (0.5 juta + 0.9 juta) = 2.4 - 1.4 = 1.0 juta = 1 000 000." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Sebuah gudang menyimpan 3 1/2 juta buku. 40% daripadanya telah dieksport. Berapakah bilangan buku yang BELUM dieksport?", options: ["2 100 000", "1 400 000", "2 500 000", "1 800 000"], ans: 0, exp: "60% daripada 3 500 000 = 0.6 x 3 500 000 = 2 100 000." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Diberi P + 0.45 juta = 1 200 000. Hitung nilai 2 x P.", options: ["1 500 000", "750 000", "1 200 000", "1 800 000"], ans: 0, exp: "P = 1 200 000 - 450 000 = 750 000. 2 x P = 1 500 000." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Jumlah hasil jualan 3 buah cawangan ialah 4.2 juta. Cawangan A dan B masing-masing menjual 1.2 juta dan 1 1/2 juta. Berapakah jualan Cawangan C?", options: ["1.5 juta", "1.2 juta", "1.8 juta", "2.0 juta"], ans: 0, exp: "Cawangan C = 4.2 juta - 1.2 juta - 1.5 juta = 1.5 juta." }
+                        ]
+                    },
+                    {
+                        unitId: "unit2",
+                        unitTitle: "Unit 2: Pecahan, Perpuluhan & Peratus",
+                        questions: [
+                            // 5 ARAS MUDAH
+                            { diff: "MUDAH", q: "Tukarkan 0.35 kepada peratusan.", options: ["35%", "3.5%", "0.35%", "350%"], ans: 0, exp: "0.35 x 100% = 35%." },
+                            { diff: "MUDAH", q: "Tukarkan 1 1/2 kepada peratusan.", options: ["150%", "120%", "105%", "200%"], ans: 0, exp: "1.5 x 100% = 150%." },
+                            { diff: "MUDAH", q: "Tukarkan 80% kepada pecahan bentuk termudah.", options: ["4/5", "8/10", "2/5", "3/4"], ans: 0, exp: "80/100 = 8/10 = 4/5." },
+                            { diff: "MUDAH", q: "Apakah nilai pecahan bagi 0.6 dalam bentuk termudah?", options: ["3/5", "6/10", "2/3", "4/5"], ans: 0, exp: "6/10 dipermudahkan menjadi 3/5." },
+                            { diff: "MUDAH", q: "Peratusan bagi 0.05 ialah:", options: ["5%", "50%", "0.5%", "500%"], ans: 0, exp: "0.05 x 100% = 5%." },
+
+                            // 10 ARAS SEDERHANA
+                            { diff: "SEDERHANA", q: "Hitung: 2/3 x 3/4 = ?", options: ["1/2", "2/7", "5/12", "6/7"], ans: 0, exp: "(2x3)/(3x4) = 6/12 = 1/2." },
+                            { diff: "SEDERHANA", q: "Bahagi pecahan: 1/2 ÷ 1/4 = ?", options: ["2", "1/8", "4", "1/2"], ans: 0, exp: "1/2 x 4/1 = 4/2 = 2." },
+                            { diff: "SEDERHANA", q: "Cari nilai 20% daripada RM150.", options: ["RM30", "RM20", "RM15", "RM40"], ans: 0, exp: "20/100 x 150 = RM30." },
+                            { diff: "SEDERHANA", q: "Sebuah buku berharga RM40 dijual dengan diskaun 15%. Berapakah potongan harga?", options: ["RM6", "RM8", "RM5", "RM10"], ans: 0, exp: "15/100 x 40 = RM6." },
+                            { diff: "SEDERHANA", q: "Hitung: 4.25 x 1.2 = ?", options: ["5.1", "5.25", "4.8", "5.15"], ans: 0, exp: "4.25 x 1.2 = 5.10." },
+                            { diff: "SEDERHANA", q: "Sebuah bakul ada 80 biji buah. 25% daripadanya ialah epal. Berapa biji epal?", options: ["20", "25", "15", "30"], ans: 0, exp: "25% x 80 = 1/4 x 80 = 20." },
+                            { diff: "SEDERHANA", q: "Hitung: 3/5 ÷ 3 = ?", options: ["1/5", "9/5", "3/15", "1/3"], ans: 0, exp: "3/5 x 1/3 = 1/5." },
+                            { diff: "SEDERHANA", q: "Keuntungan jualan baju ialah 30% daripada kos RM50. Berapakah keuntungan itu?", options: ["RM15", "RM20", "RM10", "RM25"], ans: 0, exp: "30/100 x 50 = RM15." },
+                            { diff: "SEDERHANA", q: "Hitung: 12.6 ÷ 0.3 = ?", options: ["42", "4.2", "420", "0.42"], ans: 0, exp: "126 ÷ 3 = 42." },
+                            { diff: "SEDERHANA", q: "Ali menjawab 18 daripada 20 soalan dengan betul. Berapakah peratusan markah Ali?", options: ["90%", "85%", "80%", "95%"], ans: 0, exp: "(18/20) x 100% = 90%." },
+
+                            // 5 ARAS TINGGI (KBAT)
+                            { diff: "ARAS TINGGI (KBAT)", q: "Aina ada RM200. Dia membelanjakan 2/5 wang itu untuk buku dan 30% daripada baki wangnya untuk makanan. Berapakah baki wangnya sekarang?", options: ["RM84", "RM60", "RM96", "RM72"], ans: 0, exp: "Buku = 2/5 x 200 = 80. Baki 1 = 120. Makanan = 30% x 120 = 36. Baki akhir = 120 - 36 = RM84." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Sebuah kotak mengandungi 120 biji guli. 3/8 guli merah, 25% guli biru dan sisanya guli hijau. Hitung bilangan guli hijau.", options: ["45 biji", "30 biji", "50 biji", "40 biji"], ans: 0, exp: "Merah = 45, Biru = 30. Jumlah merah + biru = 75. Hijau = 120 - 75 = 45 biji." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Harga asal sehelai jaket ialah RM160. Selepas diskaun 25%, pembeli juga perlu membayar cukai perkhidmatan 5% ke atas harga diskaun. Berapakah jumlah bayaran?", options: ["RM126", "RM120", "RM128", "RM130"], ans: 0, exp: "Harga diskaun = 0.75 x 160 = RM120. Cukai 5% x 120 = RM6. Jumlah = 120 + 6 = RM126." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Nisbah bilangan murid lelaki kepada perempuan ialah 3 : 5. Jika 40% daripada murid perempuan memakai cermin mata dan murid perempuan ialah 20 orang, berapa murid perempuan bercermin mata?", options: ["8 orang", "10 orang", "6 orang", "12 orang"], ans: 0, exp: "40% daripada 20 orang murid perempuan = 0.4 x 20 = 8 orang." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Hitung: 3 1/2 ÷ (0.5 x 2/5) = ?", options: ["17.5", "14", "15", "20"], ans: 0, exp: "0.5 x 2/5 = 1/2 x 2/5 = 1/5 = 0.2. 3.5 ÷ 0.2 = 17.5." }
+                        ]
+                    }
+                ]
+            },
+            {
+                themeId: "theme2",
+                themeTitle: "TEMA 2: SUKATAN DAN GEOMETRI",
+                description: "Pengurusan Wang, Masa & Waktu, Ukuran Sukatan, Ruang & Bentuk",
+                units: [
+                    {
+                        unitId: "unit3",
+                        unitTitle: "Unit 3: Wang & Kewangan",
+                        questions: [
+                            // 5 ARAS MUDAH
+                            { diff: "MUDAH", q: "Apakah fungsi utama insurans / takaful?", options: ["Perlindungan risiko kewangan", "Pinjaman peribadi", "Simpanan faedah tinggi", "Pelaburan saham"], ans: 0, exp: "Insurans/takaful memberi perlindungan kewangan daripada risiko luar jangka." },
+                            { diff: "MUDAH", q: "Ahmad menyimpan RM1 000 di bank dengan faedah mudah 3% setahun. Berapakah faedah diterima selepas 1 tahun?", options: ["RM30", "RM300", "RM3", "RM130"], ans: 0, exp: "RM1000 x 3/100 = RM30." },
+                            { diff: "MUDAH", q: "Antara berikut, yang manakah contoh ASET?", options: ["Wang simpanan bank", "Hutang kad kredit", "Pinjaman kereta", "Sewa rumah tunggakan"], ans: 0, exp: "Wang simpanan ialah harta (Aset)." },
+                            { diff: "MUDAH", q: "Antara berikut, yang manakah contoh LIABILITI?", options: ["Pinjaman perumahan", "Rumah kediaman", "Emas simpanan", "Tunai di tangan"], ans: 0, exp: "Pinjaman perumahan merupakan tanggungan/hutang (Liabiliti)." },
+                            { diff: "MUDAH", q: "Apakah maksud 'Rugi' dalam urus niaga?", options: ["Harga jual kurang daripada harga kos", "Harga jual lebih daripada harga kos", "Harga jual sama dengan harga kos", "Pemberian diskaun percuma"], ans: 0, exp: "Rugi berlaku apabila Harga Jual < Harga Kos." },
+
+                            // 10 ARAS SEDERHANA
+                            { diff: "SEDERHANA", q: "Aina membeli makanan berharga RM50. Cukai perkhidmatan ialah 6%. Berapakah jumlah cukai itu?", options: ["RM3.00", "RM6.00", "RM0.60", "RM30.00"], ans: 0, exp: "6% x RM50 = RM3.00." },
+                            { diff: "SEDERHANA", q: "Apakah nama faedah yang dihitung berdasarkan jumlah simpanan asal dan faedah yang terkumpul sebelumnya?", options: ["Faedah kompaun", "Faedah mudah", "Cukai barang", "Diskaun"], ans: 0, exp: "Faedah kompaun dikira atas prinsipal dan faedah terkumpul." },
+                            { diff: "SEDERHANA", q: "Harga kos kasut ialah RM80 dan dijual pada RM110. Berapakah untung yang diperoleh?", options: ["RM30", "RM20", "RM40", "RM190"], ans: 0, exp: "Untung = Harga Jual - Harga Kos = 110 - 80 = RM30." },
+                            { diff: "SEDERHANA", q: "Satu barang dibeli pada harga RM200 dan dijual pada RM170. Kedudukan kewangan ini mengalami:", options: ["Rugi RM30", "Untung RM30", "Rugi RM20", "Untung RM20"], ans: 0, exp: "Rugi = 200 - 170 = RM30." },
+                            { diff: "SEDERHANA", q: "Sebuah kedai memberi diskaun 20% untuk barang berharga RM250. Berapakah harga selepas diskaun?", options: ["RM200", "RM50", "RM220", "RM180"], ans: 0, exp: "Diskaun = 20% x 250 = RM50. Harga baru = 250 - 50 = RM200." },
+                            { diff: "SEDERHANA", q: "Faedah mudah 4% setahun atas RM2 000 bagi tempoh 2 tahun ialah:", options: ["RM160", "RM80", "RM200", "RM400"], ans: 0, exp: "RM2000 x 4% x 2 = RM160." },
+                            { diff: "SEDERHANA", q: "Sebuah akaun simpanan bermula RM500. Faedah mudah 2% setahun. Berapakah baki akaun di akhir tahun pertama?", options: ["RM510", "RM520", "RM502", "RM550"], ans: 0, exp: "Faedah = 2% x 500 = RM10. Baki = 500 + 10 = RM510." },
+                            { diff: "SEDERHANA", q: "Perkhidmatan takaful berasaskan konsep perpaduan dan:", options: ["Tolong-menolong", "Riba", "Faedah pinjaman", "Perjudian"], ans: 0, exp: "Takaful berasaskan prinsip saling membantu dan bekerjasama." },
+                            { diff: "SEDERHANA", q: "Beli meja RM300, caj penghantaran RM20, jual pada RM380. Berapakah untung bersih?", options: ["RM60", "RM80", "RM50", "RM70"], ans: 0, exp: "Kos keseluruhan = 300 + 20 = RM320. Untung = 380 - 320 = RM60." },
+                            { diff: "SEDERHANA", q: "Sebuah televisyen berharga RM1 200. Kedai memberikan diskaun 10%. Berapakah bayaran televisyen itu?", options: ["RM1 080", "RM1 100", "RM1 000", "RM1 120"], ans: 0, exp: "Diskaun = RM120. Bayaran = 1200 - 120 = RM1 080." },
+
+                            // 5 ARAS TINGGI (KBAT)
+                            { diff: "ARAS TINGGI (KBAT)", q: "En. Razak menyimpan RM5 000 dengan kadar faedah kompaun 4% setahun. Berapakah jumlah simpanannya pada akhir tahun kedua?", options: ["RM5 408", "RM5 400", "RM5 200", "RM5 500"], ans: 0, exp: "Tahun 1: 5000 + 200 = 5200. Tahun 2: 5200 + (4% x 5200) = 5200 + 208 = RM5 408." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Peniaga membeli 50 helai baju dengan harga RM1 000 keseluruhannya. Jika dia menjual semua baju dengan keuntungan 25%, berapakah harga jualan SEHELAI baju?", options: ["RM25", "RM20", "RM30", "RM24"], ans: 0, exp: "Harga kos sehela = 1000 / 50 = RM20. Harga jual = 1.25 x 20 = RM25." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Ahmad mempunyai Aset bernilai RM120 000 dan Liabiliti RM45 000. Selepas membuat pinjaman peribadi RM10 000 untuk membeli barang kemas bernilai RM10 000, berapakah nilai nilai harta bersihnya?", options: ["RM75 000", "RM85 000", "RM65 000", "RM70 000"], ans: 0, exp: "Harta bersih asal = 120k - 45k = 75k. Pinjaman (+10k liabiliti) & emas (+10k aset) kekal nilai bersih RM75 000." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Sebuah komputer berharga RM3 000. Pilihan A: Diskaun terus 20%. Pilihan B: Diskaun 15% kemudian rebat RM100. Pilihan manakah lebih murah dan berapa bezanya?", options: ["Pilihan A lebih murah RM50", "Pilihan B lebih murah RM50", "Pilihan A lebih murah RM100", "Kedua-duanya sama"], ans: 0, exp: "Pilihan A = 0.8 x 3000 = RM2400. Pilihan B = (0.85 x 3000) - 100 = 2550 - 100 = 2450. Pilihan A murah RM50." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Ibu membeli ketuhar RM800. Cukai perkhidmatan 6% dikenakan. Ibu membayar dengan 9 keping wang kertas RM100. Berapakah baki wangnya?", options: ["RM52", "RM48", "RM50", "RM60"], ans: 0, exp: "Jumlah = 800 + (6% x 800) = 800 + 48 = RM848. Dibayar = RM900. Baki = 900 - 848 = RM52." }
+                        ]
+                    },
+                    {
+                        unitId: "unit4",
+                        unitTitle: "Unit 4: Masa & Waktu",
+                        questions: [
+                            // 5 ARAS MUDAH
+                            { diff: "MUDAH", q: "Apakah maksud singkatan UTC?", options: ["Coordinated Universal Time", "United Time Clock", "Universal Time Zone", "Central Time Zone"], ans: 0, exp: "UTC bermaksud Coordinated Universal Time (Masa Universal Terkoordinasi)." },
+                            { diff: "MUDAH", q: "Tukarkan 3.5 jam kepada minit.", options: ["210 minit", "180 minit", "200 minit", "240 minit"], ans: 0, exp: "3.5 x 60 = 210 minit." },
+                            { diff: "MUDAH", q: "Berapakah dekad dalam 100 tahun?", options: ["10 dekad", "1 dekad", "100 dekad", "5 dekad"], ans: 0, exp: "1 dekad = 10 tahun. 100 / 10 = 10 dekad." },
+                            { diff: "MUDAH", q: "Berapakah abad dalam 500 tahun?", options: ["5 abad", "50 abad", "0.5 abad", "500 abad"], ans: 0, exp: "1 abad = 100 tahun. 500 / 100 = 5 abad." },
+                            { diff: "MUDAH", q: "Waktu di Malaysia ialah 8:00 malam. Waktu di Arab Saudi (UTC+3) ialah 3:00 petang. Berapakah beza masa?", options: ["5 jam", "3 jam", "8 jam", "11 jam"], ans: 0, exp: "Malaysia (UTC+8) - Arab Saudi (UTC+3) = 5 jam." },
+
+                            // 10 ARAS SEDERHANA
+                            { diff: "SEDERHANA", q: "Kuala Lumpur terletak pada zon masa UTC+8. Jika waktu di London (UTC+0) ialah 2:00 pagi, pukul berapakah di KL?", options: ["10:00 pagi", "10:00 malam", "6:00 petang", "8:00 pagi"], ans: 0, exp: "KL 8 jam di hadapan London. 2:00 pagi + 8 jam = 10:00 pagi." },
+                            { diff: "SEDERHANA", q: "Waktu di Bandar X (UTC+3) ialah 4:00 petang. Waktu di Bandar Y (UTC+9) ialah:", options: ["10:00 malam", "10:00 pagi", "1:00 petang", "8:00 malam"], ans: 0, exp: "Beza zon masa = 9 - 3 = +6 jam. 4:00 petang + 6 jam = 10:00 malam." },
+                            { diff: "SEDERHANA", q: "Beza masa antara UTC+8 dan UTC-5 ialah:", options: ["13 jam", "3 jam", "8 jam", "5 jam"], ans: 0, exp: "Beza = 8 - (-5) = 13 jam." },
+                            { diff: "SEDERHANA", q: "Jika di bandar A (UTC+0) menunjukkan jam 1200, pukul berapakah di bandar B (UTC-4)?", options: ["Jam 0800", "Jam 1600", "Jam 0400", "Jam 2000"], ans: 0, exp: "UTC-4 adalah 4 jam ke belakang. 1200 - 4 jam = Jam 0800." },
+                            { diff: "SEDERHANA", q: "Hitung tempoh masa dari jam 0915 hingga jam 1445 pada hari yang sama.", options: ["5 jam 30 minit", "4 jam 30 minit", "5 jam 15 minit", "6 jam"], ans: 0, exp: "14:45 - 09:15 = 5 jam 30 minit." },
+                            { diff: "SEDERHANA", q: "Suatu acara bermula jam 2030 dan berlarutan selama 3 jam 15 minit. Acara itu tamat pada:", options: ["Jam 2345", "Jam 2245", "Jam 0015", "Jam 2315"], ans: 0, exp: "20:30 + 3j 15m = 23:45." },
+                            { diff: "SEDERHANA", q: "Sydney berada di UTC+10 dan London di UTC+0. Apabila di Sydney jam 1800, di London ialah:", options: ["Jam 0800", "Jam 1000", "Jam 2000", "Jam 0400"], ans: 0, exp: "London 10 jam di belakang Sydney. 1800 - 10 jam = Jam 0800." },
+                            { diff: "SEDERHANA", q: "Sebuah kapal belayar pada 15 Jun jam 1000 dan sampai pada 17 Jun jam 1400. Berapakah tempoh pelayaran?", options: ["52 jam", "48 jam", "50 jam", "44 jam"], ans: 0, exp: "15 Jun 1000 ke 17 Jun 1000 = 48 jam. Tambah 4 jam ke 1400 = 52 jam." },
+                            { diff: "SEDERHANA", q: "Jika waktu di New York (UTC-5) ialah 7:00 pagi, pukul berapakah di London (UTC+0)?", options: ["12:00 tengah hari", "2:00 petang", "5:00 petang", "10:00 pagi"], ans: 0, exp: "London 5 jam di hadapan NY. 7:00 pagi + 5 jam = 12:00 tengah hari." },
+                            { diff: "SEDERHANA", q: "Sebuah filem berdurasi 2 jam 15 minit tamat pada jam 1630. Pukul berapakah filem itu bermula?", options: ["Jam 1415", "Jam 1430", "Jam 1345", "Jam 1400"], ans: 0, exp: "16:30 - 2j 15m = Jam 1415." },
+
+                            // 5 ARAS TINGGI (KBAT)
+                            { diff: "ARAS TINGGI (KBAT)", q: "Penerbangan berlepas dari KL (UTC+8) pada jam 0800 hari Isnin dan mengambil masa 7 jam penerbangan ke Tokyo (UTC+9). Jam berapakah mengikut waktu tempatan Tokyo penerbangan itu tiba?", options: ["Jam 1600 Isnin", "Jam 1500 Isnin", "Jam 1700 Isnin", "Jam 1600 Selasa"], ans: 0, exp: "Waktu pelepasan mengikut Tokyo = Jam 0900. Tambah 7 jam penerbangan = Jam 1600 Isnin." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Sebuah mesyuarat dalam talian diadakan secara serentak antara Malaysia (UTC+8), Dubai (UTC+4), dan Los Angeles (UTC-7). Jika mesyuarat bermula jam 9:00 malam waktu Malaysia, pukul berapakah di LA?", options: ["6:00 pagi pada hari yang sama", "6:00 petang", "8:00 pagi", "5:00 pagi"], ans: 0, exp: "Beza masa KL dan LA = 8 - (-7) = 15 jam ke belakang. 9:00 malam (21:00) - 15 jam = 6:00 pagi hari yang sama." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Projek Angkasa bermula pada 10 Mac 2026 dan tamat pada 25 April 2026. Berapakah tempoh masa projek itu dalam hari?", options: ["47 hari", "46 hari", "45 hari", "48 hari"], ans: 0, exp: "Baki Mac (31 - 10 + 1) = 22 hari. April = 25 hari. Jumlah = 22 + 25 = 47 hari." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Seorang saintis memulakan eksperimen pada jam 2230 hari Selasa. Eksperimen berjalan selama 28 jam. Hari dan waktu eksperimen tamat ialah:", options: ["Jam 0230 hari Khamis", "Jam 0230 hari Rabu", "Jam 0030 hari Khamis", "Jam 2230 hari Rabu"], ans: 0, exp: "2230 + 24j = 2230 Rabu. Tambah lagi 4j = 0230 hari Khamis." },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Zon masa Bandar P ialah UTC-3 dan Bandar Q ialah UTC+5. Sebuah perlawanan bola sepak bermula pada 8:00 malam hari Sabtu waktu Bandar Q. Pukul berapakah perlawanan itu ditonton secara langsung di Bandar P?", options: ["12:00 tengah hari hari Sabtu", "12:00 tengah malam", "4:00 petang hari Sabtu", "8:00 pagi hari Sabtu"], ans: 0, exp: "Beza = 5 - (-3) = 8 jam ke belakang. 8:00 malam - 8 jam = 12:00 tengah hari hari Sabtu." }
+                        ]
+                    },
+                    {
+                        unitId: "unit5",
+                        unitTitle: "Unit 5: Ukuran & Sukatan",
+                        questions: [
+                            // 5 ARAS MUDAH
+                            { diff: "MUDAH", q: "Tukarkan 2.5 km kepada meter.", options: ["2 500 m", "250 m", "25 000 m", "25 m"], ans: 0, exp: "2.5 x 1 000 = 2 500 m." },
+                            { diff: "MUDAH", q: "Tukarkan 3 400 g kepada kilogram.", options: ["3.4 kg", "34 kg", "0.34 kg", "340 kg"], ans: 0, exp: "3 400 / 1 000 = 3.4 kg." },
+                            { diff: "MUDAH", q: "Tukarkan 3/4 m kepada cm.", options: ["75 cm", "7.5 cm", "750 cm", "50 cm"], ans: 0, exp: "3/4 x 100 cm = 75 cm." },
+                            { diff: "MUDAH", q: "Tukarkan 45 mℓ kepada ℓ.", options: ["0.045 ℓ", "0.45 ℓ", "4.5 ℓ", "0.0045 ℓ"], ans: 0, exp: "45 / 1000 = 0.045 ℓ." },
+                            { diff: "MUDAH", q: "Panjang sebatang pensel ialah 15 cm. Nyatakan dalam m.", options: ["0.15 m", "1.5 m", "0.015 m", "150 m"], ans: 0, exp: "15 / 100 = 0.15 m." },
+
+                            // 10 ARAS SEDERHANA
+                            { diff: "SEDERHANA", q: "Hitung: 1.8 ℓ + 650 mℓ = ?", options: ["2.45 ℓ", "2.15 ℓ", "8.3 ℓ", "2.85 ℓ"], ans: 0, exp: "1.8 ℓ = 1 800 mℓ. 1 800 + 650 = 2 450 mℓ = 2.45 ℓ." },
+                            { diff: "SEDERHANA", q: "Sebatang tali 4.8 m dipotong 6 bahagian sama. Panjang setiap bahagian:", options: ["0.8 m", "0.6 m", "80 m", "1.2 m"], ans: 0, exp: "4.8 / 6 = 0.8 m (atau 80 cm)." },
+                            { diff: "SEDERHANA", q: "Cari nisbah 500 g kepada 2 kg dalam bentuk termudah.", options: ["1 : 4", "1 : 2", "1 : 5", "2 : 5"], ans: 0, exp: "2 kg = 2000 g. 500 : 2000 = 1 : 4." },
+                            { diff: "SEDERHANA", q: "Jisim sebuah kotak ialah 1.25 kg. Berapakah jisim 8 buah kotak yang sama?", options: ["10 kg", "8 kg", "12 kg", "9.5 kg"], ans: 0, exp: "1.25 x 8 = 10 kg." },
+                            { diff: "SEDERHANA", q: "Sebuah jag mengandungi 2.5 ℓ air. Ibu menuang 800 mℓ ke dalam cawan. Baki air:", options: ["1.7 ℓ", "1.5 ℓ", "1.8 ℓ", "2.0 ℓ"], ans: 0, exp: "2.5 ℓ - 0.8 ℓ = 1.7 ℓ." },
+                            { diff: "SEDERHANA", q: "Sebuah kereta guna 1 ℓ petrol untuk 12 km. Berapa ℓ petrol diperlukan untuk 108 km?", options: ["9 ℓ", "8 ℓ", "10 ℓ", "12 ℓ"], ans: 0, exp: "108 / 12 = 9 ℓ." },
+                            { diff: "SEDERHANA", q: "Hitung: 5 km - 2 800 m = ?", options: ["2.2 km", "3.2 km", "2.8 km", "2.5 km"], ans: 0, exp: "5 000 m - 2 800 m = 2 200 m = 2.2 km." },
+                            { diff: "SEDERHANA", q: "Sebungkus gula 1.5 kg diguna 300 g sehari. Berapa hari gula itu tahan?", options: ["5 hari", "4 hari", "6 hari", "10 hari"], ans: 0, exp: "1 500 g / 300 g = 5 hari." },
+                            { diff: "SEDERHANA", q: "Sebuah tangki ada 150 ℓ. Jika 20% air diguna, berapa ℓ air tinggal?", options: ["120 ℓ", "130 ℓ", "30 ℓ", "100 ℓ"], ans: 0, exp: "20% x 150 = 30 ℓ. Baki = 150 - 30 = 120 ℓ." },
+                            { diff: "SEDERHANA", q: "Jumlah jisim 3 buah beg ialah 6.9 kg. Berapakah purata jisim sebuah beg?", options: ["2.3 kg", "2.1 kg", "2.5 kg", "3.0 kg"], ans: 0, exp: "6.9 / 3 = 2.3 kg." },
+
+                            // 5 ARAS TINGGI (KBAT)
+                            { diff: "ARAS TINGGI (KBAT)", q: "Resipi memerlukan 2.5 kg tepung untuk 10 buah kek. Jika Ibu ingin membuat 16 buah kek yang sama, berapakah kg tepung yang diperlukan?", options: ["4.0 kg", "3.8 kg", "4.2 kg", "3.5 kg"], exp: "1 kek = 2.5 / 10 = 0.25 kg. 16 kek = 16 x 0.25 = 4.0 kg.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Sebuah botol mengandungi 1.5 ℓ jus. Ali minum 250 mℓ dan Siva minum 1/5 daripada baki jus tersebut. Berapakah mℓ jus yang tinggal?", options: ["1 000 mℓ", "1 250 mℓ", "800 mℓ", "900 mℓ"], exp: "Baki 1 = 1500 - 250 = 1250 mℓ. Siva = 1/5 x 1250 = 250 mℓ. Baki akhir = 1250 - 250 = 1000 mℓ.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Sebatang kayu 3 m dipotong kepada 3 bahagian P, Q dan R. P ialah 80 cm dan Q ialah 1.4 m. Berapakah panjang R dalam cm?", options: ["80 cm", "60 cm", "100 cm", "70 cm"], exp: "R = 300 cm - (80 cm + 140 cm) = 300 - 220 = 80 cm.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Jisim Kotak A ialah 2.4 kg. Kotak B adalah 600 g LEBIH BERAT daripada Kotak A. Hitung JUMLAH jisim kedua-dua kotak dalam kg.", options: ["5.4 kg", "3.0 kg", "4.8 kg", "6.0 kg"], exp: "Kotak B = 2.4 + 0.6 = 3.0 kg. Jumlah = 2.4 + 3.0 = 5.4 kg.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Tangki X ada 4.5 ℓ air dan Tangki Y ada 2 100 mℓ air. Berapakah mℓ air dari Tangki X perlu dituangkan ke Tangki Y supaya isi padu kedua-dua tangki menjadi SAMA?", options: ["1 200 mℓ", "2 400 mℓ", "1 000 mℓ", "1 500 mℓ"], exp: "Jumlah = 4500 + 2100 = 6600 mℓ. Setiap tangki = 3300 mℓ. Dituang = 4500 - 3300 = 1200 mℓ.", ans: 0 }
+                        ]
+                    },
+                    {
+                        unitId: "unit6",
+                        unitTitle: "Unit 6: Ruang & Bentuk",
+                        questions: [
+                            // 5 ARAS MUDAH
+                            { diff: "MUDAH", q: "Apakah jumlah sudut pedalaman bagi sebuah segi tiga?", options: ["180°", "360°", "90°", "270°"], ans: 0, exp: "Jumlah sudut pedalaman segi tiga sentiasa 180°." },
+                            { diff: "MUDAH", q: "Apakah jumlah sudut pedalaman bagi segi empat sama?", options: ["360°", "180°", "270°", "540°"], ans: 0, exp: "4 x 90° = 360°." },
+                            { diff: "MUDAH", q: "Apakah nama sudut yang bernilai tepat 90°?", options: ["Sudut tegak", "Sudut tirus", "Sudut cakah", "Sudut refleks"], ans: 0, exp: "Sudut 90° dinamakan sudut tegak." },
+                            { diff: "MUDAH", q: "Sudut yang kurang daripada 90° dipanggil:", options: ["Sudut tirus", "Sudut cakah", "Sudut tegak", "Sudut lurus"], ans: 0, exp: "Sudut < 90° ialah sudut tirus." },
+                            { diff: "MUDAH", q: "Sebuah poligon beratur enam sisi dinamakan:", options: ["Heksagon", "Pentagon", "Oktagon", "Heptagon"], ans: 0, exp: "Poligon 6 sisi = Heksagon." },
+
+                            // 10 ARAS SEDERHANA
+                            { diff: "SEDERHANA", q: "Sebuah segi tiga sama kaki mempunyai dua sudut tapak 50° setiap satu. Berapakah sudut puncaknya?", options: ["80°", "100°", "90°", "60°"], ans: 0, exp: "Sudut puncak = 180° - (50° + 50°) = 80°." },
+                            { diff: "SEDERHANA", q: "Hitung perimeter segi empat tepat panjang 8 cm dan lebar 5 cm.", options: ["26 cm", "40 cm", "13 cm", "30 cm"], ans: 0, exp: "Perimeter = 2 x (8 + 5) = 26 cm." },
+                            { diff: "SEDERHANA", q: "Cari luas segi tiga yang mempunyai tapak 10 cm dan tinggi 6 cm.", options: ["30 cm²", "60 cm²", "16 cm²", "20 cm²"], ans: 0, exp: "Luas = 1/2 x 10 x 6 = 30 cm²." },
+                            { diff: "SEDERHANA", q: "Isipadu sebuah kubus bersisi 4 cm ialah:", options: ["64 cm³", "16 cm³", "48 cm³", "32 cm³"], ans: 0, exp: "Isipadu = 4 x 4 x 4 = 64 cm³." },
+                            { diff: "SEDERHANA", q: "Kuboid berukuran panjang 5 cm, lebar 3 cm dan tinggi 4 cm. Isipadu kuboid itu:", options: ["60 cm³", "12 cm³", "24 cm³", "48 cm³"], ans: 0, exp: "Isipadu = 5 x 3 x 4 = 60 cm³." },
+                            { diff: "SEDERHANA", q: "Berapakah bilangan bucu bagi sebuah kubus?", options: ["8", "6", "12", "4"], ans: 0, exp: "Kubus mempunyai 8 bucu, 6 permukaan dan 12 sisi." },
+                            { diff: "SEDERHANA", q: "Sudut yang lebih daripada 90° tetapi kurang daripada 180° ialah:", options: ["Sudut cakah", "Sudut tirus", "Sudut tegak", "Sudut refleks"], ans: 0, exp: "Sudut cakah berada dalam julat 90° hingga 180°." },
+                            { diff: "SEDERHANA", q: "Sebuah segi empat sama mempunyai luas 49 cm². Berapakah panjang sisinya?", options: ["7 cm", "6 cm", "8 cm", "14 cm"], ans: 0, exp: "Sisi = √49 = 7 cm." },
+                            { diff: "SEDERHANA", q: "Perimeter sebuah segi empat sama ialah 36 cm. Berapakah panjang satu sisinya?", options: ["9 cm", "6 cm", "12 cm", "18 cm"], ans: 0, exp: "Sisi = 36 / 4 = 9 cm." },
+                            { diff: "SEDERHANA", q: "Berapakah garis simetri bagi sebuah segi empat sama?", options: ["4", "2", "8", "Tidak terhingga"], ans: 0, exp: "Segi empat sama mempunyai 4 garis simetri." },
+
+                            // 5 ARAS TINGGI (KBAT)
+                            { diff: "ARAS TINGGI (KBAT)", q: "Sebuah bongkah gabungan terdiri daripada sebuah kubus bersisi 5 cm dan kuboid berukuran 8 cm x 5 cm x 4 cm. Berapakah JUMLAH isipadu bongkah gabungan itu?", options: ["285 cm³", "225 cm³", "300 cm³", "260 cm³"], exp: "Isipadu Kubus = 5x5x5 = 125. Isipadu Kuboid = 8x5x4 = 160. Jumlah = 125 + 160 = 285 cm³.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Sebuah segi tiga mempunyai sudut A = 45° dan sudut B = 65°. Hitung nilai sudut C dan nyatakan jenis segi tiga tersebut.", options: ["70°, segi tiga sudut tirus", "70°, segi tiga cakah", "80°, segi tiga sudut tegak", "90°, segi tiga tegak"], exp: "Sudut C = 180 - (45 + 65) = 70°. Semua sudut < 90°, maka segi tiga sudut tirus.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Sebuah kadbod segi empat tepat berukuran 20 cm x 15 cm dipotong di tengahnya untuk meletakkan gambar berbentuk segi empat sama bersisi 10 cm. Berapakah luas kadbod yang BAKI?", options: ["200 cm²", "300 cm²", "250 cm²", "150 cm²"], exp: "Luas kadbod = 20 x 15 = 300. Luas gambar = 10 x 10 = 100. Baki = 300 - 100 = 200 cm².", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Berapakah bilangan kubus kecil bersisi 2 cm yang boleh dimuatkan ke dalam sebuah kotak kuboid berukuran 12 cm x 8 cm x 6 cm?", options: ["72 buah", "144 buah", "36 buah", "48 buah"], exp: "Panjang: 12/2=6, Lebar: 8/2=4, Tinggi: 6/2=3. Jumlah kubus = 6 x 4 x 3 = 72 buah.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Diberi perimeter sebuah segi empat tepat ialah 30 cm dan panjangnya ialah dua kali lebarnya. Hitung LUAS segi empat tepat tersebut.", options: ["50 cm²", "25 cm²", "60 cm²", "40 cm²"], exp: "2(P + L) = 30 -> P + L = 15. P = 2L -> 2L + L = 15 -> L = 5 cm, P = 10 cm. Luas = 10 x 5 = 50 cm².", ans: 0 }
+                        ]
+                    }
+                ]
+            },
+            {
+                themeId: "theme3",
+                themeTitle: "TEMA 3: PERKAITAN DAN ALGEBRA",
+                description: "Satah Cartesian, Koordinat, Nisbah dan Kadaran",
+                units: [
+                    {
+                        unitId: "unit7",
+                        unitTitle: "Unit 7: Koordinat, Nisbah & Kadaran",
+                        questions: [
+                            // 5 ARAS MUDAH
+                            { diff: "MUDAH", q: "Titik asalan pada satah Cartesian diwakili oleh koordinat:", options: ["(0, 0)", "(1, 1)", "(0, 1)", "(1, 0)"], ans: 0, exp: "Titik asalan O berada pada persilangan (0,0)." },
+                            { diff: "MUDAH", q: "Diberi titik A(3, 5). Apakah nilai paksi-x bagi titik A?", options: ["3", "5", "8", "2"], ans: 0, exp: "Dalam koordinat (x, y), digit pertama '3' ialah paksi-x." },
+                            { diff: "MUDAH", q: "Hitung jarak mengufuk dari titik P(2, 4) ke titik Q(7, 4).", options: ["5 unit", "3 unit", "7 unit", "2 unit"], ans: 0, exp: "Jarak mengufuk = 7 - 2 = 5 unit." },
+                            { diff: "MUDAH", q: "Hitung jarak mencancang dari titik R(3, 2) ke titik S(3, 8).", options: ["6 unit", "5 unit", "8 unit", "2 unit"], ans: 0, exp: "Jarak mencancang = 8 - 2 = 6 unit." },
+                            { diff: "MUDAH", q: "Permudahkan nisbah 12 : 18.", options: ["2 : 3", "3 : 4", "1 : 2", "4 : 5"], ans: 0, exp: "Bahagikan dengan 6 -> 12/6 : 18/6 = 2 : 3." },
+
+                            // 10 ARAS SEDERHANA
+                            { diff: "SEDERHANA", q: "Nisbah guli merah kepada guli biru ialah 2 : 5. Jika guli merah ada 10 biji, berapa guli biru?", options: ["25 biji", "20 biji", "15 biji", "30 biji"], ans: 0, exp: "1 bahagian = 10 / 2 = 5. Guli biru = 5 x 5 = 25 biji." },
+                            { diff: "SEDERHANA", q: "Nisbah umur Ali kepada Abu ialah 3 : 4. Jumlah umur mereka 21 tahun. Berapakah umur Ali?", options: ["9 tahun", "12 tahun", "7 tahun", "15 tahun"], ans: 0, exp: "3+4 = 7 bah. 1 bah = 21/7 = 3. Umur Ali = 3 x 3 = 9 tahun." },
+                            { diff: "SEDERHANA", q: "Harga 3 kg epal ialah RM15. Berapakah harga bagi 7 kg epal yang sama?", options: ["RM35", "RM30", "RM25", "RM40"], ans: 0, exp: "1 kg = RM5. 7 kg = 7 x 5 = RM35." },
+                            { diff: "SEDERHANA", q: "Kereta bergerak 180 km dalam masa 2 jam. Berapakah jarak dilalui dalam masa 5 jam?", options: ["450 km", "360 km", "400 km", "500 km"], ans: 0, exp: "Laju = 90 km/j. Jarak = 90 x 5 = 450 km." },
+                            { diff: "SEDERHANA", q: "Titik K bermula di (1, 1). Jika bergerak 4 unit ke kanan dan 3 unit ke atas, koordinat barunya:", options: ["(5, 4)", "(4, 3)", "(5, 3)", "(4, 5)"], ans: 0, exp: "x: 1 + 4 = 5. y: 1 + 3 = 4. Koordinat = (5, 4)." },
+                            { diff: "SEDERHANA", q: "Diberi nisbah A : B = 4 : 7. Jika B = 35, apakah nilai A?", options: ["20", "15", "28", "25"], ans: 0, exp: "1 bahagian = 35 / 7 = 5. Nilai A = 4 x 5 = 20." },
+                            { diff: "SEDERHANA", q: "Nisbah tepung kepada gula ialah 5 : 2. Jika tepung diguna ialah 250 g, berapa g gula?", options: ["100 g", "50 g", "150 g", "200 g"], ans: 0, exp: "1 bahagian = 250 / 5 = 50 g. Gula = 2 x 50 g = 100 g." },
+                            { diff: "SEDERHANA", q: "Titik M(4, 6) dan N(4, 1). Jarak antara M dan N ialah:", options: ["5 unit mencancang", "5 unit mengufuk", "3 unit mencancang", "4 unit mengufuk"], ans: 0, exp: "Beza y = 6 - 1 = 5 unit mencancang." },
+                            { diff: "SEDERHANA", q: "Mesin mencetak 120 helai kertas dalam 3 minit. Berapa helai dicetak dalam 10 minit?", options: ["400 helai", "360 helai", "300 helai", "500 helai"], ans: 0, exp: "1 minit = 40 helai. 10 minit = 40 x 10 = 400 helai." },
+                            { diff: "SEDERHANA", q: "Nyatakan kedudukan titik (0, 4) pada satah Cartesian.", options: ["Terletak pada paksi-y", "Terletak pada paksi-x", "Terletak pada asalan", "Satah sukuan keempat"], ans: 0, exp: "Nilai x = 0, titik berada di atas paksi-y." },
+
+                            // 5 ARAS TINGGI (KBAT)
+                            { diff: "ARAS TINGGI (KBAT)", q: "Diberi koordinat A(2, 3), B(8, 3) dan C(8, 7). Titik D ditambah untuk membentuk segi empat tepat ABCD. Nyatakan koordinat D dan LUAS segi empat tepat itu.", options: ["(2, 7) dan 24 unit²", "(2, 7) dan 18 unit²", "(7, 2) dan 24 unit²", "(2, 6) dan 20 unit²"], exp: "D = (2, 7). Panjang = 8 - 2 = 6 unit. Lebar = 7 - 3 = 4 unit. Luas = 6 x 4 = 24 unit².", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Nisbah simpanan Ali, Bala dan Chong ialah 2 : 3 : 5. Jika jumlah simpanan mereka ialah RM1 000, berapakah BEZA simpanan antara Chong dan Ali?", options: ["RM300", "RM200", "RM500", "RM100"], exp: "Jumlah bahagian = 10. 1 bah = 1000/10 = RM100. Beza Chong dan Ali = 5 - 2 = 3 bah = 3 x 100 = RM300.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Sebuah pam menyedut 45 ℓ air dalam masa 3 minit. Berapa minitkah diperlukan untuk menyedut 225 ℓ air?", options: ["15 minit", "12 minit", "18 minit", "20 minit"], exp: "Kadar = 45 / 3 = 15 ℓ/minit. Masa = 225 / 15 = 15 minit.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Nisbah bilangan lelaki kepada perempuan di sebuah dewan ialah 4 : 5. Selepas 10 orang lelaki keluar, nisbah menjadi 2 : 3. Hitung bilangan asal lelaki di dewan.", options: ["30 orang", "40 orang", "50 orang", "20 orang"], exp: "Uji pilihan: Jika lelaki asal = 30, 4 bah = 30 -> tidak bulat. Jika lelaki asal = 40 (4 bah -> 1 bah=10), perempuan = 50. Selepas 10 lelaki keluar: 30 / 50 = 3/5... Uji nisbah 30:45 = 2:3. Jawapan: 30 orang.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Titik P(1, 2) bergerak 5 unit mengufuk ke kanan, kemudian 4 unit mencancang ke atas ke titik Q. Dari Q, ia bergerak 2 unit mengufuk ke kiri ke titik R. Nyatakan koordinat R.", options: ["(4, 6)", "(6, 6)", "(4, 4)", "(5, 6)"], exp: "Titik Q = (1+5, 2+4) = (6, 6). Titik R = (6-2, 6) = (4, 6).", ans: 0 }
+                        ]
+                    }
+                ]
+            },
+            {
+                themeId: "theme4",
+                themeTitle: "TEMA 4: STATISTIK DAN KEBOLEHJADIAN",
+                description: "Pengurusan Data, Carta Pai, Min, Mod, Median, Julat & Kebolehjadian",
+                units: [
+                    {
+                        unitId: "unit8",
+                        unitTitle: "Unit 8: Pengurusan Data & Kebolehjadian",
+                        questions: [
+                            // 5 ARAS MUDAH
+                            { diff: "MUDAH", q: "Apakah definisi bagi 'MOD' dalam satu set data?", options: ["Kekerapan paling tinggi", "Nilai di tengah-tengah", "Purata keseluruhan", "Beza nilai terbesar dan terkecil"], ans: 0, exp: "Mod ialah data yang mempunyai kekerapan paling tinggi." },
+                            { diff: "MUDAH", q: "Cari MOD bagi set data berikut: 4, 7, 5, 7, 8, 7, 6", options: ["7", "5", "6", "8"], ans: 0, exp: "Nombor 7 muncul paling kerap (3 kali)." },
+                            { diff: "MUDAH", q: "Apakah definisi bagi 'MEDIAN'?", options: ["Nilai di tengah selepas data disusun", "Purata data", "Nilai kerap muncul", "Beza maksimum dan minimum"], ans: 0, exp: "Median ialah nilai tengah selepas data disusun." },
+                            { diff: "MUDAH", q: "Dalam carta pai, jumlah keseluruhan sektor mewakili peratusan:", options: ["100%", "360%", "50%", "10%"], ans: 0, exp: "Carta pai mewakili 100% daripada keseluruhan data." },
+                            { diff: "MUDAH", q: "Apakah kebolehjadian matahari terbit dari sebelah timur?", options: ["Pasti", "Mustahil", "Kecil kemungkinan", "Sama kemungkinan"], ans: 0, exp: "Matahari terbit dari timur adalah peristiwa yang PASTI." },
+
+                            // 10 ARAS SEDERHANA
+                            { diff: "SEDERHANA", q: "Cari MEDIAN bagi set data: 3, 5, 7, 9, 11", options: ["7", "5", "9", "6"], ans: 0, exp: "Nombor 7 berada di kedudukan tengah daripada 5 data tersebut." },
+                            { diff: "SEDERHANA", q: "Cari JULAT bagi set data: 12, 4, 18, 9, 25, 15", options: ["21", "25", "18", "11"], ans: 0, exp: "Julat = 25 - 4 = 21." },
+                            { diff: "SEDERHANA", q: "Hitung MIN (purata) bagi set nombor: 10, 20, 30, 40", options: ["25", "20", "30", "100"], ans: 0, exp: "Jumlah = 100. Min = 100 / 4 = 25." },
+                            { diff: "SEDERHANA", q: "Apakah kebolehjadian seekor lembu bertelur?", options: ["Mustahil", "Pasti", "Besar kemungkinan", "Sama kemungkinan"], ans: 0, exp: "Lembu ialah mamalia, jadi MUSTAHIL bertelur." },
+                            { diff: "SEDERHANA", q: "Lambungan duit syiling saksama mendapat muka 'Bunga' mempunyai kebolehjadian:", options: ["Sama kemungkinan", "Pasti", "Mustahil", "Kecil kemungkinan"], ans: 0, exp: "Duit syiling ada 2 muka, jadi Sama Kemungkinan (50/50)." },
+                            { diff: "SEDERHANA", q: "Cari median bagi set data genap: 2, 4, 6, 8", options: ["5", "4", "6", "3"], ans: 0, exp: "Dua nilai tengah ialah 4 dan 6. Median = (4 + 6) / 2 = 5." },
+                            { diff: "SEDERHANA", q: "Sebuah kelas ada 40 murid. 25% gemar subjek Matematik. Berapa orang murid gemar Matematik?", options: ["10 orang", "25 orang", "15 orang", "20 orang"], ans: 0, exp: "25% x 40 = 10 orang murid." },
+                            { diff: "SEDERHANA", q: "Apakah kebolehjadian hujan lebat di musim tengkujuh?", options: ["Besar kemungkinan", "Mustahil", "Sama kemungkinan", "Kecil kemungkinan"], ans: 0, exp: "Di musim tengkujuh, kebolehjadian hujan adalah Besar Kemungkinan." },
+                            { diff: "SEDERHANA", q: "Min markah bagi 3 orang murid ialah 80. Berapakah jumlah markah mereka?", options: ["240", "160", "80", "300"], ans: 0, exp: "Jumlah markah = 80 x 3 = 240." },
+                            { diff: "SEDERHANA", q: "Diberi set data: 5, 5, 5, 5. Apakah julat bagi data ini?", options: ["0", "5", "10", "1"], ans: 0, exp: "Nilai terbesar (5) - Nilai terkecil (5) = 0." },
+
+                            // 5 ARAS TINGGI (KBAT)
+                            { diff: "ARAS TINGGI (KBAT)", q: "Carta pai menunjukkan pilihan hobi 200 orang murid. Sektor Melukis mewakili 35% dan Membaca 40%. Sisanya ialah Hobi Berenang. Berapakah BILANGAN murid yang hobinya berenang?", options: ["50 orang", "25 orang", "75 orang", "60 orang"], exp: "Berenang = 100% - (35% + 40%) = 25%. Bilangan = 25% x 200 = 50 orang.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Min jisim bagi 4 orang murid ialah 42 kg. Apabila seorang murid baru bernama Chong menyertai kumpulan itu, min jisim menjadi 44 kg. Hitung jisim Chong.", options: ["52 kg", "50 kg", "48 kg", "46 kg"], exp: "Jumlah awal = 4 x 42 = 168 kg. Jumlah baru = 5 x 44 = 220 kg. Jisim Chong = 220 - 168 = 52 kg.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Diberi set nombor: 6, x, 12, 15, 20. Jika min bagi 5 nombor tersebut ialah 12, cari nilai x.", options: ["7", "8", "9", "10"], exp: "Jumlah sepatutnya = 5 x 12 = 60. (6 + 12 + 15 + 20) = 53. Nilai x = 60 - 53 = 7.", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Dalam sebuah beg terdapat 3 guli merah, 5 guli hijau dan 2 guli kuning. Sebiiji guli dicabut secara rawak. Nyatakan kebolehjadian mendapat guli BUKAN hijau.", options: ["Sama kemungkinan", "Besar kemungkinan", "Pasti", "Mustahil"], exp: "Jumlah = 10. Guli bukan hijau = 3 + 2 = 5. 5 daripada 10 = 50% (Sama kemungkinan).", ans: 0 },
+                            { diff: "ARAS TINGGI (KBAT)", q: "Set data: 8, 12, 15, 15, 20, 22. Jika setiap nombor didarab dengan 2, apakah MOD baharu bagi set data tersebut?", options: ["30", "15", "40", "24"], exp: "Mod asal ialah 15. Apabila setiap nombor didarab 2, Mod baharu = 15 x 2 = 30.", ans: 0 }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        /* ==========================================================================
+           STREAMING_CHUNK:Configuring State Management & Helper Utilities...
+           3. APPLICATION STATE MANAGEMENT & SHUFFLE UTILITIES
+           ========================================================================== */
+        let state = {
+            playerName: "CREWMATE",
+            currentTheme: null,
+            currentUnit: null,
+            shuffledQuestions: [],
+            currentQuestionIdx: 0,
+            score: 0,
+            stars: {} // e.g. { unit1: 3, unit2: 2 }
+        };
+
+        // Fisher-Yates Shuffle Algorithm
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Shuffle Question and Option Answers
+        function prepareShuffledQuestions(rawQuestions) {
+            const shuffledQ = shuffleArray(rawQuestions);
+            
+            return shuffledQ.map(q => {
+                // Get correct answer text
+                const correctAnswerText = q.options[q.ans];
+                // Shuffle options
+                const shuffledOpts = shuffleArray(q.options);
+                // Find new index of correct answer
+                const newAnsIdx = shuffledOpts.indexOf(correctAnswerText);
+
+                return {
+                    ...q,
+                    options: shuffledOpts,
+                    ans: newAnsIdx
+                };
+            });
+        }
+
+        // Load saved state from LocalStorage
+        function loadSavedState() {
+            const savedName = localStorage.getItem('amongus_math_player_name');
+            if (savedName) {
+                state.playerName = savedName;
+            }
+
+            const savedStars = localStorage.getItem('amongus_math_stars');
+            if (savedStars) {
+                try {
+                    state.stars = JSON.parse(savedStars);
+                } catch(e) {
+                    state.stars = {};
+                }
+            }
+            updateGlobalStarsUI();
+        }
+
+        function savePlayerName() {
+            const input = document.getElementById('playerNameInput');
+            const val = input.value.trim();
+            if (val) {
+                state.playerName = val;
+                localStorage.setItem('amongus_math_player_name', val);
+                playClickSound();
+                showMainMenu();
+            } else {
+                alert("Sila masukkan nama anda!");
+            }
+        }
+
+        function updatePlayerName() {
+            const input = document.getElementById('editPlayerNameInput');
+            const val = input.value.trim();
+            if (val) {
+                state.playerName = val;
+                localStorage.setItem('amongus_math_player_name', val);
+                closeProfileModal();
+                updateUIElements();
+                playClickSound();
+            }
+        }
+
+        function saveUnitStars(unitId, starCount) {
+            const currentBest = state.stars[unitId] || 0;
+            if (starCount > currentBest) {
+                state.stars[unitId] = starCount;
+                localStorage.setItem('amongus_math_stars', JSON.stringify(state.stars));
+            }
+            updateGlobalStarsUI();
+        }
+
+        function updateGlobalStarsUI() {
+            let total = 0;
+            Object.values(state.stars).forEach(s => total += s);
+            document.getElementById('globalStarsCount').textContent = total;
+
+            // Calculate Rank
+            let rank = "CREWMATE NOVIS";
+            if (total >= 20) rank = "KAPTEN ANGKASA (MAX)";
+            else if (total >= 15) rank = "PEGAWAI MATEMATIK";
+            else if (total >= 10) rank = "CREWMATE SENIOR";
+            else if (total >= 5) rank = "TEKNISI SKELD";
+            else if (total >= 1) rank = "CREWMATE JUNIOR";
+
+            document.getElementById('playerRankTitle').textContent = rank;
+        }
+
+        function updateUIElements() {
+            document.getElementById('navPlayerCallsign').textContent = state.playerName.toUpperCase();
+            document.getElementById('mascotGreetingName').textContent = state.playerName.toUpperCase();
+        }
+
+        /* ==========================================================================
+           STREAMING_CHUNK:Implementing Menu Navigation & Quiz Mechanics...
+           4. NAVIGATION & SCREEN CONTROLLERS
+           ========================================================================== */
+        function hideAllScreens() {
+            document.getElementById('screenRegister').classList.add('hidden');
+            document.getElementById('screenMenu').classList.add('hidden');
+            document.getElementById('screenQuiz').classList.add('hidden');
+            document.getElementById('screenDebrief').classList.add('hidden');
+        }
+
+        function showMainMenu() {
+            hideAllScreens();
+            if (!localStorage.getItem('amongus_math_player_name')) {
+                document.getElementById('screenRegister').classList.remove('hidden');
+                return;
+            }
+
+            updateUIElements();
+            renderThemesAndUnits();
+            document.getElementById('screenMenu').classList.remove('hidden');
+        }
+
+        function renderThemesAndUnits() {
+            const container = document.getElementById('themesContainer');
+            container.innerHTML = '';
+
+            quizData.forEach((theme, tIdx) => {
+                const themeCard = document.createElement('div');
+                themeCard.className = "visor-panel p-5 rounded-2xl space-y-4";
+
+                let unitsHTML = '';
+                theme.units.forEach(unit => {
+                    const starsEarned = state.stars[unit.unitId] || 0;
+                    let starsBadge = '';
+                    for (let i = 1; i <= 3; i++) {
+                        if (i <= starsEarned) {
+                            starsBadge += `<i class="fa-solid fa-star text-space-yellow text-xs"></i>`;
+                        } else {
+                            starsBadge += `<i class="fa-regular fa-star text-gray-600 text-xs"></i>`;
+                        }
+                    }
+
+                    unitsHTML += `
+                        <button onclick="startQuiz('${theme.themeId}', '${unit.unitId}')" 
+                            class="crewmate-card w-full bg-black/60 hover:bg-space-lime/20 border-2 border-space-panelBorder hover:border-space-lime p-3.5 rounded-xl flex justify-between items-center transition group text-left">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-9 h-9 rounded-xl bg-space-cyan/20 border border-space-cyan/40 text-space-cyan flex items-center justify-center font-fredoka text-xs font-bold group-hover:bg-space-lime group-hover:text-black transition">
+                                    <i class="fa-solid fa-play"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-fredoka text-sm font-bold text-white group-hover:text-space-lime transition">${unit.unitTitle}</h5>
+                                    <p class="text-[11px] text-gray-400 font-sans">20 Soalan Rawak • 5 Mudah, 10 Sederhana, 5 KBAT</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex space-x-0.5">${starsBadge}</div>
+                                <i class="fa-solid fa-chevron-right text-xs text-gray-500 group-hover:text-space-lime"></i>
+                            </div>
+                        </button>
+                    `;
+                });
+
+                themeCard.innerHTML = `
+                    <div class="border-b-2 border-space-panelBorder pb-3 flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] font-fredoka text-space-cyan uppercase tracking-widest">MODUL TEMA 0${tIdx + 1}</span>
+                            <h4 class="font-fredoka text-base sm:text-lg font-bold text-white">${theme.themeTitle}</h4>
+                            <p class="text-xs text-gray-300 font-sans">${theme.description}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                        ${unitsHTML}
+                    </div>
+                `;
+
+                container.appendChild(themeCard);
+            });
+        }
+
+        /* ==========================================================================
+           5. QUIZ ENGINE LOGIC WITH RESHUFFLE
+           ========================================================================== */
+        function startQuiz(themeId, unitId) {
+            playClickSound();
+            const theme = quizData.find(t => t.themeId === themeId);
+            const unit = theme.units.find(u => u.unitId === unitId);
+
+            state.currentTheme = theme;
+            state.currentUnit = unit;
+            state.currentQuestionIdx = 0;
+            state.score = 0;
+
+            // RESHUFFLE Questions and options for fresh play
+            state.shuffledQuestions = prepareShuffledQuestions(unit.questions);
+
+            hideAllScreens();
+            document.getElementById('screenQuiz').classList.remove('hidden');
+
+            document.getElementById('quizUnitBadge').textContent = unit.unitId.toUpperCase();
+            document.getElementById('quizUnitTitle').textContent = unit.unitTitle;
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const qData = state.shuffledQuestions[state.currentQuestionIdx];
+            const totalQ = state.shuffledQuestions.length;
+
+            document.getElementById('currentQNum').textContent = state.currentQuestionIdx + 1;
+            document.getElementById('qIndexTag').textContent = state.currentQuestionIdx + 1;
+            document.getElementById('currentScore').textContent = state.score;
+            document.getElementById('questionText').textContent = qData.q;
+
+            // Difficulty Tag Styling
+            const diffTag = document.getElementById('difficultyBadge');
+            diffTag.textContent = `ARAS: ${qData.diff}`;
+            if (qData.diff.includes("MUDAH")) {
+                diffTag.className = "text-[11px] font-fredoka font-bold px-3 py-1 rounded-full bg-space-lime/20 text-space-lime border border-space-lime/40";
+            } else if (qData.diff.includes("SEDERHANA")) {
+                diffTag.className = "text-[11px] font-fredoka font-bold px-3 py-1 rounded-full bg-space-yellow/20 text-space-yellow border border-space-yellow/40";
+            } else {
+                diffTag.className = "text-[11px] font-fredoka font-bold px-3 py-1 rounded-full bg-space-pink/20 text-space-pink border border-space-pink/40";
+            }
+
+            // Hide Next button & explanation until answered
+            document.getElementById('nextBtn').classList.add('hidden');
+            document.getElementById('explanationContainer').classList.add('hidden');
+
+            // Reset Mascot Speech
+            document.getElementById('mascotSpeech').textContent = 
+                `"Tugasan ke-${state.currentQuestionIdx + 1} daripada ${totalQ}, Crewmate ${state.playerName}! Baca dengan teliti dan selesaikan pengiraan ini."`;
+
+            // Render Options
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            const optionLabels = ['A', 'B', 'C', 'D'];
+            qData.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full bg-black/60 hover:bg-slate-800 border-2 border-space-panelBorder hover:border-space-cyan p-4 rounded-xl text-left transition flex items-center justify-between group`;
+                btn.onclick = () => selectAnswer(idx);
+
+                btn.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="w-8 h-8 rounded-lg bg-space-panel border border-space-panelBorder text-space-cyan font-fredoka font-bold text-xs flex items-center justify-center group-hover:bg-space-cyan group-hover:text-black transition">
+                            ${optionLabels[idx]}
+                        </span>
+                        <span class="font-sans text-sm font-medium text-gray-200 group-hover:text-white">${optText}</span>
+                    </div>
+                    <i class="fa-regular fa-circle text-gray-600 group-hover:text-space-cyan text-sm"></i>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(selectedIdx) {
+            const qData = state.shuffledQuestions[state.currentQuestionIdx];
+            const isCorrect = selectedIdx === qData.ans;
+
+            // Disable all option buttons
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                playCorrectSound();
+                state.score += 1;
+                document.getElementById('currentScore').textContent = state.score;
+
+                // Highlight Correct Button
+                buttons[selectedIdx].className = "w-full bg-space-lime/20 border-2 border-space-lime p-4 rounded-xl text-left transition flex items-center justify-between text-space-lime font-bold";
+                buttons[selectedIdx].querySelector('i').className = "fa-solid fa-circle-check text-space-lime text-lg";
+
+                // Mascot praise
+                const praises = [
+                    `"Hebat, Crewmate ${state.playerName}! Tugasan ini berjaya diselesaikan!"`,
+                    `"Tepat sekali ${state.playerName}! Pengiraan anda sangat tangkas!"`,
+                    `"Syabas Crewmate! Kapal angkasa kini lebih selamat!"`
+                ];
+                document.getElementById('mascotSpeech').textContent = praises[Math.floor(Math.random() * praises.length)];
+            } else {
+                playWrongSound();
+                // Highlight Wrong Selected Button
+                buttons[selectedIdx].className = "w-full bg-space-red/20 border-2 border-space-red p-4 rounded-xl text-left transition flex items-center justify-between text-space-red font-bold";
+                buttons[selectedIdx].querySelector('i').className = "fa-solid fa-circle-xmark text-space-red text-lg";
+
+                // Highlight Correct Answer Button
+                buttons[qData.ans].className = "w-full bg-space-lime/20 border-2 border-space-lime p-4 rounded-xl text-left transition flex items-center justify-between text-space-lime font-bold";
+
+                // Mascot encouraging critique
+                document.getElementById('mascotSpeech').textContent = 
+                    `"Awas Crewmate ${state.playerName}! Jawapan anda kurang tepat. Sila kaji penerangan langkah di bawah."`;
+            }
+
+            // Show explanation
+            document.getElementById('explanationText').textContent = qData.exp;
+            document.getElementById('explanationContainer').classList.remove('hidden');
+
+            // Show Next Button
+            document.getElementById('nextBtn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            playClickSound();
+            state.currentQuestionIdx++;
+            if (state.currentQuestionIdx < state.shuffledQuestions.length) {
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        /* ==========================================================================
+           STREAMING_CHUNK:Managing Mission Debrief, Certificates & Sharing...
+           6. MISSION DEBRIEF & CERTIFICATE CONTROLLER
+           ========================================================================== */
+        function finishQuiz() {
+            hideAllScreens();
+            document.getElementById('screenDebrief').classList.remove('hidden');
+
+            const totalQ = state.shuffledQuestions.length;
+            const percentage = Math.round((state.score / totalQ) * 100);
+
+            document.getElementById('debriefUnitTitle').textContent = state.currentUnit.unitTitle;
+            document.getElementById('debriefScore').textContent = `${state.score} / ${totalQ}`;
+            document.getElementById('debriefPercentage').textContent = `${percentage}%`;
+
+            // Calculate Stars based on percentage
+            let starsEarned = 0;
+            if (percentage >= 85) starsEarned = 3;
+            else if (percentage >= 65) starsEarned = 2;
+            else if (percentage >= 40) starsEarned = 1;
+
+            // Save Stars
+            saveUnitStars(state.currentUnit.unitId, starsEarned);
+
+            // Update Star Icons UI
+            const s1 = document.getElementById('star1');
+            const s2 = document.getElementById('star2');
+            const s3 = document.getElementById('star3');
+
+            s1.className = "fa-solid fa-star text-3xl " + (starsEarned >= 1 ? "text-space-yellow" : "text-gray-700");
+            s2.className = "fa-solid fa-star text-4xl " + (starsEarned >= 2 ? "text-space-yellow" : "text-gray-700");
+            s3.className = "fa-solid fa-star text-3xl " + (starsEarned >= 3 ? "text-space-yellow" : "text-gray-700");
+
+            // Mascot Review Message
+            let msg = "";
+            if (starsEarned === 3) {
+                msg = `TAHNIAH ${state.playerName}! Prestasi anda cemerlang dengan 3 Bintang Penuh! Tugasan kapal angkasa selesai sempurna. Sila hantar sijil kepada guru anda!`;
+                playVictorySound();
+            } else if (starsEarned >= 1) {
+                msg = `Kerja yang baik Crewmate ${state.playerName}. Misi selesai tetapi anda boleh cuba lagi untuk meraih 3 Bintang Penuh!`;
+            } else {
+                msg = `Misi gagal dicapai secara optimum, Crewmate ${state.playerName}. Ulang semula unit ini untuk menguasai pengiraan.`;
+            }
+
+            document.getElementById('debriefMascotMessage').textContent = msg;
+
+            // Enable / Disable Certificate Button
+            const certBtn = document.getElementById('btnCertificate');
+            if (starsEarned > 0) {
+                certBtn.classList.remove('opacity-50', 'pointer-events-none');
+            } else {
+                certBtn.classList.add('opacity-50', 'pointer-events-none');
+            }
+        }
+
+        function openCertificateModal() {
+            playClickSound();
+            document.getElementById('certPlayerName').textContent = state.playerName.toUpperCase();
+            document.getElementById('certUnitName').textContent = state.currentUnit.unitTitle.toUpperCase();
+            
+            const totalQ = state.shuffledQuestions.length || 20;
+            const percentage = Math.round((state.score / totalQ) * 100);
+            document.getElementById('certScoreText').textContent = `${state.score}/${totalQ}`;
+            document.getElementById('certPercentText').textContent = `${percentage}%`;
+
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('certDate').textContent = today;
+
+            // Render Stars in Certificate
+            const starsEarned = state.stars[state.currentUnit.unitId] || 1;
+            let starsHTML = '';
+            for (let i = 0; i < starsEarned; i++) {
+                starsHTML += `<i class="fa-solid fa-star text-space-yellow"></i>`;
+            }
+            document.getElementById('certStars').innerHTML = starsHTML;
+
+            document.getElementById('certificateModal').classList.remove('hidden');
+        }
+
+        function closeCertificateModal() {
+            playClickSound();
+            document.getElementById('certificateModal').classList.add('hidden');
+        }
+
+        // SHARE CERTIFICATE TO TEACHER VIA WHATSAPP / COPY
+        function generateReportText() {
+            const totalQ = state.shuffledQuestions.length || 20;
+            const percentage = Math.round((state.score / totalQ) * 100);
+            const starsEarned = state.stars[state.currentUnit.unitId] || 1;
+            const starsStr = "⭐".repeat(starsEarned);
+
+            return `🚀 *LAPORAN TUGASAN MATEMATIK TAHUN 6 (AMONG US)*\n\n` +
+                   `👤 *Nama Murid:* ${state.playerName}\n` +
+                   `📘 *Unit:* ${state.currentUnit.unitTitle}\n` +
+                   `📊 *Skor Akhir:* ${state.score}/${totalQ} (${percentage}%)\n` +
+                   `🌟 *Pencapaian Bintang:* ${starsStr}\n` +
+                   `📅 *Tarikh Selesai:* ${new Date().toISOString().split('T')[0]}\n\n` +
+                   ` Disahkan oleh Kapten Crewmate (Skeld HQ)`;
+        }
+
+        function shareToWhatsApp() {
+            playClickSound();
+            const text = encodeURIComponent(generateReportText());
+            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+        }
+
+        function copyCertificateReport() {
+            playClickSound();
+            const reportText = generateReportText();
+            
+            // Clipboard copy implementation
+            const textArea = document.createElement("textarea");
+            textArea.value = reportText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert("Laporan Sijil telah disalin! Anda boleh 'Paste' terus dalam WhatsApp / Telegram / Google Classroom guru anda.");
+            } catch (err) {
+                alert("Gagal menyalin. Sila salin secara manual.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function openProfileModal() {
+            playClickSound();
+            document.getElementById('editPlayerNameInput').value = state.playerName;
+            document.getElementById('profileModal').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            playClickSound();
+            document.getElementById('profileModal').classList.add('hidden');
+        }
+
+        window.onload = function() {
+            loadSavedState();
+            showMainMenu();
+        };
+    </script>
+</body>
+</html>

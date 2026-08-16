@@ -479,9 +479,39 @@
         let score = 0;
         let answeredCurrent = false;
         let soundEnabled = true;
+        let activeQuestions = []; // Holds shuffled questions for active quiz session
 
         // Local storage score stars tracker
         let unitProgress = {};
+
+        /* ----------------------------------------------------
+           2.1 SHUFFLE / RANDOMIZATION HELPER FUNCTIONS
+        ---------------------------------------------------- */
+        // Fisher-Yates Shuffle Algorithm
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Shuffles both question order AND options order while adjusting correct answer index
+        function prepareShuffledQuestions(questions) {
+            const shuffledQs = shuffleArray(questions);
+            return shuffledQs.map(qObj => {
+                const correctText = qObj.a[qObj.correct];
+                const shuffledOptions = shuffleArray(qObj.a);
+                const newCorrectIndex = shuffledOptions.indexOf(correctText);
+                return {
+                    q: qObj.q,
+                    a: shuffledOptions,
+                    correct: newCorrectIndex,
+                    exp: qObj.exp
+                };
+            });
+        }
 
         /* ----------------------------------------------------
            3. SOUND EFFECT SYNTHESIZER (Web Audio API)
@@ -774,6 +804,8 @@
             currentUnitKey = unitKey;
             currentQuestionIdx = 0;
             score = 0;
+            // Generate newly randomized questions & options for this session
+            activeQuestions = prepareShuffledQuestions(quizData[unitKey].questions);
             showScreen('screen-quiz');
             loadQuestion();
         }
@@ -781,13 +813,13 @@
         function loadQuestion() {
             answeredCurrent = false;
             const unit = quizData[currentUnitKey];
-            const q = unit.questions[currentQuestionIdx];
+            const q = activeQuestions[currentQuestionIdx];
 
             // Header labels & Progress
             document.getElementById('quiz-unit-label').innerText = `${currentUnitKey}: ${unit.title}`;
-            document.getElementById('quiz-progress-text').innerText = `Soalan ${currentQuestionIdx + 1} / ${unit.questions.length}`;
+            document.getElementById('quiz-progress-text').innerText = `Soalan ${currentQuestionIdx + 1} / ${activeQuestions.length}`;
             
-            const progressPct = ((currentQuestionIdx) / unit.questions.length) * 100;
+            const progressPct = ((currentQuestionIdx) / activeQuestions.length) * 100;
             document.getElementById('quiz-progress-bar').style.width = `${progressPct}%`;
 
             // Question Text
@@ -824,8 +856,7 @@
             if (answeredCurrent) return;
             answeredCurrent = true;
 
-            const unit = quizData[currentUnitKey];
-            const q = unit.questions[currentQuestionIdx];
+            const q = activeQuestions[currentQuestionIdx];
             const allBtns = document.getElementById('options-container').children;
 
             // Disable all option buttons
@@ -866,14 +897,14 @@
             `;
 
             // Update bar to full progress for current step
-            const progressPct = ((currentQuestionIdx + 1) / unit.questions.length) * 100;
+            const progressPct = ((currentQuestionIdx + 1) / activeQuestions.length) * 100;
             document.getElementById('quiz-progress-bar').style.width = `${progressPct}%`;
 
             // Show Next / Finish Button
             const nextBtn = document.getElementById('next-btn');
             nextBtn.classList.remove('hidden');
             nextBtn.classList.add('flex');
-            if (currentQuestionIdx === unit.questions.length - 1) {
+            if (currentQuestionIdx === activeQuestions.length - 1) {
                 nextBtn.innerText = "Lihat Keputusan 🏆";
             } else {
                 nextBtn.innerText = "Soalan Seterusnya ➔";
@@ -882,10 +913,9 @@
 
         function nextQuestion() {
             playSynthesizedSound('pop');
-            const unit = quizData[currentUnitKey];
             currentQuestionIdx++;
 
-            if (currentQuestionIdx < unit.questions.length) {
+            if (currentQuestionIdx < activeQuestions.length) {
                 loadQuestion();
             } else {
                 finishQuiz();
@@ -904,7 +934,7 @@
         ---------------------------------------------------- */
         function finishQuiz() {
             showScreen('screen-result');
-            const totalQuestions = quizData[currentUnitKey].questions.length;
+            const totalQuestions = activeQuestions.length;
             const percentage = Math.round((score / totalQuestions) * 100);
 
             let stars = 1;

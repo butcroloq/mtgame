@@ -819,7 +819,7 @@
             document.getElementById('quiz-unit-label').innerText = `${currentUnitKey}: ${unit.title}`;
             document.getElementById('quiz-progress-text').innerText = `Soalan ${currentQuestionIdx + 1} / ${activeQuestions.length}`;
             
-            const progressPct = ((currentQuestionIdx) / activeQuestions.length) * 100;
+            const progressPct = ((currentQuestionIdx + 1) / activeQuestions.length) * 100;
             document.getElementById('quiz-progress-bar').style.width = `${progressPct}%`;
 
             // Question Text

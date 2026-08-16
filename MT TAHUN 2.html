@@ -3,194 +3,1001 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuiz Matematik Tahun 2 - Capy Game</title>
+    <title>Kuiz Matematik Tahun 2 - CapyMath Adventure</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @keyframes bounce-capy {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+    <!-- Google Fonts: Fredoka & Inter for friendly typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        capy: {
+                            light: '#EED9C4',
+                            DEFAULT: '#C18C5D',
+                            dark: '#8C5A33',
+                            accent: '#FFB703',
+                            orange: '#FB8500'
+                        }
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif']
+                    }
+                }
+            }
         }
-        .capy-animate { animation: bounce-capy 2s infinite; }
+    </script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #fef3c7 100%);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        .font-fredoka {
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+
+        /* Capybara animations */
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
+        }
+
+        @keyframes happy-bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            30% { transform: translateY(-18px) scale(1.08) rotate(-3deg); }
+            60% { transform: translateY(-8px) scale(0.95) rotate(3deg); }
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+        .capy-idle { animation: float-gentle 3.5s ease-in-out infinite; }
+        .capy-happy { animation: happy-bounce 0.8s ease-in-out; }
+        .capy-wiggle { animation: wiggle 0.5s ease-in-out; }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        /* Glassmorphism card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        /* Button click feedback */
+        .btn-press {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-press:active {
+            transform: scale(0.96) translateY(2px);
+        }
+
+        /* Confetti canvas overlay */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
     </style>
 </head>
-<body class="bg-blue-50 font-sans p-4 md:p-8">
+<body class="p-3 sm:p-6 text-slate-800 flex flex-col justify-between">
 
-    <div class="max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
-        <!-- Header & Capy -->
-        <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl font-bold text-blue-800">Matematik Tahun 2</h1>
-            <svg viewBox="0 0 100 100" width="60" height="60" class="capy-animate">
-                <circle cx="50" cy="50" r="40" fill="#D2B48C" />
-                <circle cx="35" cy="40" r="5" fill="black" />
-                <circle cx="65" cy="40" r="5" fill="black" />
-                <path d="M40 60 Q50 70 60 60" stroke="black" fill="transparent" stroke-width="3" />
-                <rect x="30" y="20" width="10" height="10" fill="#A0522D" />
-                <rect x="60" y="20" width="10" height="10" fill="#A0522D" />
-            </svg>
-        </div>
+    <canvas id="confetti-canvas"></canvas>
 
-        <div id="app">
-            <div id="unit-selection" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Unit buttons will be injected here -->
+    <div class="max-w-4xl mx-auto w-full">
+        <!-- Top App Bar -->
+        <header class="flex flex-wrap items-center justify-between bg-white/80 backdrop-blur-md p-4 rounded-3xl shadow-sm border border-slate-100 mb-6 gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center border-2 border-amber-300 shadow-inner">
+                    <span class="text-2xl">🦫</span>
+                </div>
+                <div>
+                    <h1 class="font-fredoka text-xl sm:text-2xl font-bold text-amber-900 tracking-wide flex items-center gap-2">
+                        CapyMath <span class="text-xs font-sans font-bold bg-amber-500 text-white px-2.5 py-0.5 rounded-full uppercase tracking-wider">Tahun 2</span>
+                    </h1>
+                    <p class="text-xs text-slate-500 font-medium">Belajar Matematik Bersama Capy!</p>
+                </div>
             </div>
 
-            <div id="quiz-container" class="hidden">
-                <h2 id="unit-title" class="text-xl font-semibold mb-4 text-blue-700"></h2>
-                <div id="question-box"></div>
-                <button onclick="showUnits()" class="mt-6 bg-gray-500 text-white px-4 py-2 rounded">Kembali ke Menu</button>
+            <!-- Profile Badge & Sound Toggle -->
+            <div class="flex items-center gap-2">
+                <button id="sound-btn" onclick="toggleSound()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl transition btn-press flex items-center gap-1.5 text-xs font-semibold" title="Buka/Tutup Bunyi">
+                    <span id="sound-icon">🔊</span>
+                </button>
+                <div id="user-pill" class="hidden items-center bg-amber-50 border border-amber-200 pl-3 pr-2 py-1.5 rounded-2xl gap-2">
+                    <span class="text-xs font-bold text-amber-900 truncate max-w-[120px]" id="pill-name">Adik</span>
+                    <button onclick="openNameModal()" class="text-xs text-amber-700 hover:text-amber-900 bg-amber-200/60 hover:bg-amber-200 px-2 py-1 rounded-xl transition font-semibold">Tukar</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="glass-card p-6 rounded-3xl shadow-lg border border-white/60 mb-6 transition-all duration-300">
+            <!-- Capybara & Speech Bubble Bar -->
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-4">
+                <!-- Capybara Dynamic Mascot SVG -->
+                <div class="relative flex-shrink-0 cursor-pointer group" onclick="petCapy()">
+                    <div id="capy-svg-container" class="w-28 h-28 sm:w-32 sm:h-32 capy-idle transition-transform">
+                        <!-- SVG Capybara with dynamic expression -->
+                        <svg viewBox="0 0 120 120" class="w-full h-full filter drop-shadow-md">
+                            <!-- Capybara Body -->
+                            <ellipse cx="60" cy="70" rx="42" ry="36" fill="#C18C5D" />
+                            <!-- Capybara Head -->
+                            <path d="M 35 50 Q 35 25 60 25 Q 85 25 85 50 Q 85 75 60 72 Q 35 75 35 50 Z" fill="#D29A6A" />
+                            <!-- Ears -->
+                            <circle cx="38" cy="28" r="7" fill="#8C5A33" />
+                            <circle cx="82" cy="28" r="7" fill="#8C5A33" />
+                            <circle cx="38" cy="28" r="4" fill="#6B4223" />
+                            <circle cx="82" cy="28" r="4" fill="#6B4223" />
+                            
+                            <!-- Snout / Nose area -->
+                            <ellipse cx="60" cy="58" rx="16" ry="12" fill="#A87449" />
+                            <ellipse cx="60" cy="53" rx="7" ry="4" fill="#422517" />
+
+                            <!-- Eyes (Dynamic path loaded by JS) -->
+                            <g id="capy-eyes">
+                                <circle cx="48" cy="42" r="3.5" fill="#22150C" />
+                                <circle cx="72" cy="42" r="3.5" fill="#22150C" />
+                                <circle cx="49" cy="41" r="1.2" fill="#FFFFFF" />
+                                <circle cx="73" cy="41" r="1.2" fill="#FFFFFF" />
+                            </g>
+
+                            <!-- Mouth (Dynamic) -->
+                            <path id="capy-mouth" d="M 55 62 Q 60 66 65 62" stroke="#422517" stroke-width="2.5" stroke-linecap="round" fill="none" />
+
+                            <!-- Cheeks -->
+                            <circle cx="42" cy="49" r="4" fill="#FF8A8A" opacity="0.4" />
+                            <circle cx="78" cy="49" r="4" fill="#FF8A8A" opacity="0.4" />
+
+                            <!-- Yuzu Citrus Fruit on head -->
+                            <circle cx="60" cy="18" r="9" fill="#FFB703" />
+                            <circle cx="60" cy="18" r="8" fill="#FB8500" />
+                            <path d="M 60 9 Q 62 6 64 8" stroke="#2D6A4F" stroke-width="2" fill="none" />
+                            <path d="M 60 10 C 56 6 52 10 60 10" fill="#52B788" />
+                        </svg>
+                    </div>
+                    <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-amber-200/90 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition shadow-sm pointer-events-none whitespace-nowrap">
+                        Usap Capy! ✨
+                    </span>
+                </div>
+
+                <!-- Speech Bubble -->
+                <div class="flex-1 w-full relative">
+                    <div class="bg-amber-50/90 border-2 border-amber-200 p-4 rounded-2xl shadow-sm relative text-slate-800">
+                        <!-- Speech Bubble Triangle Indicator -->
+                        <div class="hidden sm:block absolute -left-3 top-6 w-0 h-0 border-t-[8px] border-t-transparent border-r-[12px] border-r-amber-200 border-b-[8px] border-b-transparent"></div>
+                        
+                        <div id="greeting-box" class="space-y-1">
+                            <h2 id="greeting-title" class="font-fredoka text-lg sm:text-xl font-bold text-amber-900">
+                                Selamat Datang! 👋
+                            </h2>
+                            <p id="greeting-msg" class="text-sm sm:text-base text-slate-700 leading-relaxed">
+                                Jom kita belajar Matematik bersama-sama!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <main id="app-content">
+                <!-- SCREEN 1: Name Input Screen (Shown if no name registered) -->
+                <div id="screen-name-input" class="hidden py-4 text-center space-y-4 max-w-md mx-auto">
+                    <div class="bg-amber-100/60 p-4 rounded-2xl border border-amber-200">
+                        <label for="student-name-input" class="block font-fredoka text-lg font-bold text-amber-900 mb-2">
+                            Siapakah Nama Adik? ✏️
+                        </label>
+                        <p class="text-xs text-slate-600 mb-4">Masukkan nama anda untuk mula mengumpul bintang kejayaan!</p>
+                        <input type="text" id="student-name-input" placeholder="Contoh: Amir / Sarah" 
+                            class="w-full text-center px-4 py-3 rounded-xl border-2 border-amber-300 focus:border-amber-500 focus:outline-none font-bold text-lg text-slate-800 shadow-inner bg-white mb-4"
+                            onkeypress="if(event.key === 'Enter') saveNameAndStart()">
+                        <button onclick="saveNameAndStart()" class="w-full bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-fredoka font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition btn-press text-lg">
+                            Mula Belajar Sekarang! 🚀
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SCREEN 2: Unit Selection Menu Screen -->
+                <div id="screen-units" class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                        <h3 class="font-fredoka text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <span>📚</span> Pilih Unit Pelajaran
+                        </h3>
+                        <span class="text-xs font-semibold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full" id="total-stars-badge">
+                            ⭐ 0 Bintang
+                        </span>
+                    </div>
+
+                    <div id="unit-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                        <!-- Dynamic Unit Buttons generated by JS -->
+                    </div>
+                </div>
+
+                <!-- SCREEN 3: Active Quiz Screen -->
+                <div id="screen-quiz" class="hidden space-y-5">
+                    <!-- Quiz Header & Progress Bar -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-xs sm:text-sm font-bold text-slate-600">
+                            <span id="quiz-unit-label" class="text-amber-800 bg-amber-100 px-3 py-1 rounded-full font-fredoka">Unit 1</span>
+                            <span id="quiz-progress-text">Soalan 1 / 10</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden p-0.5 border border-slate-300/50">
+                            <div id="quiz-progress-bar" class="bg-gradient-to-r from-amber-400 to-amber-500 h-full rounded-full transition-all duration-300 w-0"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question Card Container -->
+                    <div class="bg-white p-5 sm:p-6 rounded-2xl border-2 border-amber-100 shadow-sm space-y-4">
+                        <h3 id="question-text" class="font-fredoka text-lg sm:text-xl text-slate-800 font-semibold leading-snug">
+                            Soalan akan dipaparkan di sini...
+                        </h3>
+
+                        <!-- Answer Options Grid -->
+                        <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                            <!-- Answer buttons injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Explanation / Feedback Box -->
+                    <div id="explanation-box" class="hidden p-4 rounded-2xl border-2 transition-all duration-200">
+                        <!-- Injected dynamic explanation -->
+                    </div>
+
+                    <!-- Bottom Nav Actions -->
+                    <div class="flex items-center justify-between pt-2">
+                        <button onclick="confirmExitQuiz()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2.5 rounded-xl transition text-sm btn-press flex items-center gap-1.5">
+                            ◀ Menu Utama
+                        </button>
+                        <button id="next-btn" onclick="nextQuestion()" class="hidden bg-amber-500 hover:bg-amber-600 text-white font-fredoka font-bold px-6 py-2.5 rounded-xl transition shadow-md btn-press text-base items-center gap-2">
+                            Seterusnya ➔
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SCREEN 4: Quiz Result Summary -->
+                <div id="screen-result" class="hidden text-center space-y-6 py-4">
+                    <div class="space-y-2">
+                        <div class="text-5xl animate-bounce mb-2" id="result-emoji">🎉</div>
+                        <h2 class="font-fredoka text-2xl sm:text-3xl font-bold text-amber-900" id="result-title">
+                            Tahniah Adik!
+                        </h2>
+                        <p class="text-slate-600 text-sm sm:text-base max-w-md mx-auto" id="result-subtext">
+                            Anda telah menyelesaikan kuiz unit ini dengan cemerlang!
+                        </p>
+                    </div>
+
+                    <!-- Score Card -->
+                    <div class="bg-gradient-to-b from-amber-50 to-orange-50 border-2 border-amber-200 rounded-3xl p-6 max-w-sm mx-auto shadow-inner space-y-4">
+                        <div class="text-xs uppercase font-extrabold tracking-wider text-amber-700">Keputusan Anda</div>
+                        <div class="text-4xl sm:text-5xl font-fredoka font-bold text-amber-900" id="result-score-text">
+                            0 / 10
+                        </div>
+
+                        <!-- Stars Earned -->
+                        <div class="flex justify-center gap-2 text-3xl" id="result-stars">
+                            <span>⭐</span><span>⭐</span><span>⭐</span>
+                        </div>
+
+                        <div class="text-xs font-bold text-slate-500 pt-2 border-t border-amber-200/80" id="result-percentage">
+                            Ketepatannya: 100%
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2 max-w-md mx-auto">
+                        <button onclick="retryCurrentUnit()" class="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold py-3 px-5 rounded-xl transition btn-press text-sm border border-amber-300">
+                            🔄 Cuba Lagi
+                        </button>
+                        <button onclick="showUnitsMenu()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-fredoka font-bold py-3 px-5 rounded-xl shadow-md transition btn-press text-sm">
+                            📚 Pilih Unit Lain
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center text-xs text-slate-500 py-2">
+            Kuiz Matematik Tahun 2 KSSR Semakan • Dihasilkan dengan ❤️ bersama Capy
+        </footer>
+    </div>
+
+    <!-- Edit Name Modal -->
+    <div id="name-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white p-6 rounded-3xl max-w-sm w-full shadow-2xl space-y-4 border-2 border-amber-200">
+            <h3 class="font-fredoka text-lg font-bold text-amber-900">Kemaskini Nama Adik ✏️</h3>
+            <input type="text" id="modal-name-input" class="w-full text-center px-4 py-2.5 rounded-xl border-2 border-amber-300 font-bold text-slate-800 focus:outline-none focus:border-amber-500">
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeNameModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition">Batal</button>
+                <button onclick="saveNameFromModal()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl transition shadow">Simpan</button>
             </div>
         </div>
     </div>
 
     <script>
+        /* ----------------------------------------------------
+           1. QUIZ DATA STRUCTURE (Year 2 SJK/SK Syllabus)
+        ---------------------------------------------------- */
         const quizData = {
-            "Unit 1": [
-                {q: "Apakah nilai tempat bagi 5 dalam 352?", a: ["Sa", "Puluh", "Ratus", "Ribu"], correct: 1},
-                {q: "Cerakinkan 489.", a: ["400+8+9", "40+8+9", "400+80+9", "4+8+9"], correct: 2},
-                {q: "Nombor manakah yang paling besar antara 234, 243, 239?", a: ["234", "243", "239", "Semua sama"], correct: 1},
-                {q: "Bundarkan 145 kepada puluh terdekat.", a: ["140", "150", "160", "100"], correct: 1},
-                {q: "Apakah pola nombor: 100, 110, 120, ...?", a: ["Tambah 5", "Tambah 10", "Tolak 10", "Tambah 20"], correct: 1},
-                {q: "Apakah nilai digit 7 dalam 765?", a: ["7", "70", "700", "7000"], correct: 2},
-                {q: "Susun 345, 321, 367 secara tertib menaik.", a: ["321, 345, 367", "367, 345, 321", "345, 367, 321", "321, 367, 345"], correct: 0},
-                {q: "Nombor sebelum 500 ialah?", a: ["499", "498", "501", "490"], correct: 0},
-                {q: "Tulis 'sembilan ratus empat puluh tiga' dalam angka.", a: ["943", "934", "843", "904"], correct: 0},
-                {q: "Bandingkan 678 dan 687. Mana yang lebih kecil?", a: ["678", "687", "Sama besar", "Tiada"], correct: 0}
-            ],
-            "Unit 2": [
-                {q: "245 + 130 = ?", a: ["375", "365", "385", "355"], correct: 0},
-                {q: "567 - 234 = ?", a: ["333", "334", "323", "343"], correct: 0},
-                {q: "4 x 5 = ?", a: ["18", "20", "22", "24"], correct: 1},
-                {q: "12 ÷ 2 = ?", a: ["5", "6", "7", "4"], correct: 1},
-                {q: "Jika 3 x ? = 15, apakah nombor itu?", a: ["4", "5", "6", "3"], correct: 1},
-                {q: "Ali ada 50 guli, beri kawan 20, tinggal berapa?", a: ["20", "30", "40", "25"], correct: 1},
-                {q: "Sifir 10: 10 x 8 = ?", a: ["80", "8", "800", "18"], correct: 0},
-                {q: "Bahagi 20 dengan 4.", a: ["4", "5", "6", "3"], correct: 1},
-                {q: "Tambah: 234 + 111 + 50 = ?", a: ["395", "385", "375", "405"], correct: 0},
-                {q: "Tolak: 888 - 444 = ?", a: ["444", "440", "454", "434"], correct: 0}
-            ],
-            "Unit 3": [
-                {q: "Apakah pecahan bagi 1 bahagian daripada 4?", a: ["1/2", "1/4", "1/3", "2/4"], correct: 1},
-                {q: "Manakah yang lebih besar: 1/2 atau 1/4?", a: ["1/2", "1/4", "Sama", "Tiada"], correct: 0},
-                {q: "Tulis 0.5 sebagai pecahan.", a: ["1/2", "1/4", "1/5", "5/100"], correct: 0},
-                {q: "Perpuluhan bagi 7/10 ialah?", a: ["0.7", "0.07", "7.0", "7.1"], correct: 0},
-                {q: "Jika ada 4 potong kek, 1 dimakan, pecahannya?", a: ["1/4", "3/4", "1/2", "4/1"], correct: 0},
-                {q: "Manakah setara dengan 1/2?", a: ["2/4", "1/3", "2/3", "3/4"], correct: 0},
-                {q: "0.2 + 0.3 = ?", a: ["0.5", "0.6", "0.4", "0.1"], correct: 0},
-                {q: "Manakah lebih besar: 0.8 atau 0.2?", a: ["0.8", "0.2", "Sama", "Tiada"], correct: 0},
-                {q: "Tulis 'sifar perpuluhan satu' dalam angka.", a: ["0.1", "0.01", "1.0", "0.11"], correct: 0},
-                {q: "Pecahan bagi 'suku' ialah?", a: ["1/4", "1/2", "3/4", "1/3"], correct: 0}
-            ],
-            "Unit 4": [
-                {q: "RM 25 + RM 10 = ?", a: ["RM 35", "RM 45", "RM 30", "RM 20"], correct: 0},
-                {q: "RM 50 - RM 20 = ?", a: ["RM 30", "RM 40", "RM 25", "RM 35"], correct: 0},
-                {q: "Beli pensel RM 2, beli 3 batang. Berapa?", a: ["RM 4", "RM 6", "RM 5", "RM 8"], correct: 1},
-                {q: "RM 20 bahagi 4 orang?", a: ["RM 4", "RM 5", "RM 6", "RM 3"], correct: 1},
-                {q: "Manakah nilai wang paling besar?", a: ["RM 10", "RM 50", "RM 20", "RM 5"], correct: 1},
-                {q: "Beli buku RM 15, bayar RM 20. Baki?", a: ["RM 5", "RM 10", "RM 2", "RM 3"], correct: 0},
-                {q: "RM 5 x 10 = ?", a: ["RM 50", "RM 500", "RM 15", "RM 55"], correct: 0},
-                {q: "Wang saku RM 2 sehari. 5 hari berapa?", a: ["RM 10", "RM 7", "RM 5", "RM 20"], correct: 0},
-                {q: "RM 80 - RM 35 = ?", a: ["RM 45", "RM 55", "RM 40", "RM 50"], correct: 0},
-                {q: "Tambah: RM 12 + RM 12 + RM 12 = ?", a: ["RM 36", "RM 34", "RM 32", "RM 38"], correct: 0}
-            ],
-            "Unit 5": [
-                {q: "1 jam ada berapa minit?", a: ["30", "45", "60", "100"], correct: 2},
-                {q: "Jarum panjang tunjuk 6, minit ke berapa?", a: ["15", "30", "6", "45"], correct: 1},
-                {q: "Pukul 2:00, jarum pendek di mana?", a: ["2", "12", "6", "3"], correct: 0},
-                {q: "1 hari ada berapa jam?", a: ["12", "24", "48", "60"], correct: 1},
-                {q: "Pukul berapa 30 minit selepas 3:00?", a: ["3:30", "3:15", "4:00", "3:06"], correct: 0},
-                {q: "Jarum pendek tunjuk 5, jarum panjang 12. Pukul?", a: ["5:00", "12:05", "5:12", "6:00"], correct: 0},
-                {q: "Setengah jam ialah?", a: ["15 minit", "30 minit", "45 minit", "60 minit"], correct: 1},
-                {q: "Suku jam ialah?", a: ["15 minit", "30 minit", "45 minit", "20 minit"], correct: 0},
-                {q: "Jika sekarang 1:00, 2 jam lagi pukul?", a: ["2:00", "3:00", "4:00", "1:30"], correct: 1},
-                {q: "Berapa minit dari 12:00 ke 12:15?", a: ["15", "5", "10", "20"], correct: 0}
-            ],
-            "Unit 6": [
-                {q: "Unit panjang untuk pensel?", a: ["m", "cm", "km", "kg"], correct: 1},
-                {q: "1 m = ? cm", a: ["10", "50", "100", "1000"], correct: 2},
-                {q: "Isi padu air diukur dalam?", a: ["liter", "gram", "meter", "cm"], correct: 0},
-                {q: "Jisim berat badan dalam?", a: ["kg", "g", "liter", "meter"], correct: 0},
-                {q: "Manakah lebih berat: 1kg atau 500g?", a: ["1kg", "500g", "Sama", "Tiada"], correct: 0},
-                {q: "Anggaran panjang buku teks?", a: ["20 cm", "20 m", "2 km", "2 mm"], correct: 0},
-                {q: "1 liter = ? ml", a: ["100", "500", "1000", "10"], correct: 2},
-                {q: "Ukur meja guna apa?", a: ["Pembaris", "Penimbang", "Penyukat", "Jam"], correct: 0},
-                {q: "2 kg + 3 kg = ?", a: ["5 kg", "6 kg", "4 kg", "3000 g"], correct: 0},
-                {q: "Botol air 500ml, jika 2 botol, jumlah?", a: ["10000ml", "500ml", "1500ml", "1 liter"], correct: 0}
-            ],
-            "Unit 7": [
-                {q: "Bentuk ada 6 muka rata (segi empat)?", a: ["Kubus", "Silinder", "Sfera", "Kon"], correct: 0},
-                {q: "Bentuk tiada bucu?", a: ["Sfera", "Kuboid", "Piramid", "Kubus"], correct: 0},
-                {q: "Berapa bucu bagi kubus?", a: ["6", "8", "12", "4"], correct: 1},
-                {q: "Bentuk 2D ada 3 sisi?", a: ["Segi tiga", "Segi empat", "Bulatan", "Pentagon"], correct: 0},
-                {q: "Silinder ada berapa permukaan melengkung?", a: ["1", "2", "3", "0"], correct: 0},
-                {q: "Bentuk permukaan tapak kon?", a: ["Bulatan", "Segi tiga", "Segi empat", "Tiada"], correct: 0},
-                {q: "Piramid mempunyai tapak bentuk?", a: ["Segi empat", "Bulatan", "Segi tiga", "Bujur"], correct: 0},
-                {q: "Bentuk yang boleh bergolek?", a: ["Sfera", "Kubus", "Kuboid", "Piramid"], correct: 0},
-                {q: "Berapa sisi segi empat tepat?", a: ["3", "4", "5", "6"], correct: 1},
-                {q: "Ciri-ciri kuboid?", a: ["6 muka", "Tiada bucu", "1 sisi", "Bulat"], correct: 0}
-            ],
-            "Unit 8": [
-                {q: "Data dikumpul dengan cara?", a: ["Membilang", "Meneka", "Melihat", "Melukis"], correct: 0},
-                {q: "Jika 5 orang suka epal, 3 orang suka oren. Total?", a: ["7", "8", "9", "6"], correct: 1},
-                {q: "Carta palang, palang tinggi bermaksud?", a: ["Paling banyak", "Paling sikit", "Sama", "Kosong"], correct: 0},
-                {q: "Cara paling senang tunjuk data?", a: ["Carta palang", "Gambar", "Tulisan", "Lakaran"], correct: 0},
-                {q: "Tally ||| bermaksud?", a: ["3", "4", "5", "2"], correct: 0},
-                {q: "Tally |||| dengan palang melintang?", a: ["5", "4", "6", "3"], correct: 0},
-                {q: "Tajuk carta palang penting untuk?", a: ["Tahu info", "Hiasan", "Suka-suka", "Tiada guna"], correct: 0},
-                {q: "Jika 10 orang suka bola, 5 suka badminton. Beza?", a: ["5", "10", "15", "2"], correct: 0},
-                {q: "Mentafsir data bermaksud?", a: ["Membaca info", "Menukar data", "Memadam data", "Melukis"], correct: 0},
-                {q: "Data carta palang paling tinggi ialah 20, paling rendah 5. Beza?", a: ["15", "25", "10", "5"], correct: 0}
-            ]
+            "Unit 1": {
+                title: "Nombor hingga 1000",
+                icon: "🔢",
+                questions: [
+                    { q: "Apakah nilai tempat bagi digit 5 dalam nombor 352?", a: ["Sa", "Puluh", "Ratus", "Ribu"], correct: 1, exp: "Digit 5 berada di kedudukan Puluh (3 Ratus, 5 Puluh, 2 Sa)." },
+                    { q: "Cerakinkan nombor 489 mengikut nilai digit.", a: ["400 + 8 + 9", "40 + 8 + 9", "400 + 80 + 9", "4 + 8 + 9"], correct: 2, exp: "489 = 400 (Ratus) + 80 (Puluh) + 9 (Sa)." },
+                    { q: "Nombor manakah yang paling besar nilainya?", a: ["234", "243", "239", "229"], correct: 1, exp: "243 adalah yang terbesar kerana digit puluhnya (4) paling tinggi." },
+                    { q: "Bundarkan 145 kepada puluh terdekat.", a: ["140", "150", "160", "100"], correct: 1, exp: "Digit sa ialah 5, jadi tambah 1 pada nilai puluh (140 ➔ 150)." },
+                    { q: "Apakah pola nombor ini: 100, 110, 120, 130...?", a: ["Menaik sepuluh-sepuluh", "Menurun sepuluh-sepuluh", "Menaik lima-lima", "Menaik dua-dua"], correct: 0, exp: "Nombor bertambah sebanyak 10 pada setiap langkah." },
+                    { q: "Apakah nilai digit bagi 7 dalam nombor 765?", a: ["7", "70", "700", "7000"], correct: 2, exp: "Digit 7 berada di tempat Ratus, nilainya ialah 700." },
+                    { q: "Susun nombor berikut secara tertib menaik: 345, 321, 367.", a: ["321, 345, 367", "367, 345, 321", "345, 367, 321", "321, 367, 345"], correct: 0, exp: "Tertib menaik bermula daripada nombor paling kecil (321) ke paling besar (367)." },
+                    { q: "Apakah nombor tepat sebelum 500?", a: ["499", "498", "501", "490"], correct: 0, exp: "Nombor sebelum 500 ialah 500 - 1 = 499." },
+                    { q: "Tuliskan 'Sembilan ratus empat puluh tiga' dalam angka.", a: ["943", "934", "843", "904"], correct: 0, exp: "9 ratus + 4 puluh + 3 sa = 943." },
+                    { q: "Bandingkan 678 dan 687. Nombor manakah yang LEBIH KECIL?", a: ["678", "687", "Sama besar", "Tiada jawapan"], correct: 0, exp: "678 lebih kecil daripada 687 kerana 7 puluh kurang daripada 8 puluh." }
+                ]
+            },
+            "Unit 2": {
+                title: "Tambah, Tolak, Darab & Bahagi",
+                icon: "➕",
+                questions: [
+                    { q: "Berapakah 245 + 130?", a: ["375", "365", "385", "355"], correct: 0, exp: "245 + 130 = 375." },
+                    { q: "Berapakah 567 - 234?", a: ["333", "334", "323", "343"], correct: 0, exp: "567 - 234 = 333." },
+                    { q: "Berapakah 4 × 5?", a: ["18", "20", "22", "24"], correct: 1, exp: "4 kumpulan 5 = 5 + 5 + 5 + 5 = 20." },
+                    { q: "Berapakah 12 ÷ 2?", a: ["5", "6", "7", "4"], correct: 1, exp: "12 dibahagi kepada 2 kumpulan sama banyak ialah 6." },
+                    { q: "Jika 3 × [ ? ] = 15, apakah nombor dalam [ ? ]?", a: ["4", "5", "6", "3"], correct: 1, exp: "3 × 5 = 15." },
+                    { q: "Ali ada 50 biji guli. Dia memberi 20 biji guli kepada adiknya. Berapa biji guli yang tinggal?", a: ["20", "30", "40", "25"], correct: 1, exp: "50 - 20 = 30 biji guli." },
+                    { q: "Hitungkan: 10 × 8 = ?", a: ["80", "8", "800", "18"], correct: 0, exp: "10 darab 8 ialah 80." },
+                    { q: "Bahagikan 20 keping biskut kepada 4 orang anak secara sama banyak.", a: ["4", "5", "6", "3"], correct: 1, exp: "20 ÷ 4 = 5 keping biskut seorang." },
+                    { q: "Tambah tiga nombor: 234 + 111 + 50 = ?", a: ["395", "385", "375", "405"], correct: 0, exp: "234 + 111 = 345, kemudian 345 + 50 = 395." },
+                    { q: "Tolak: 888 - 444 = ?", a: ["444", "440", "454", "434"], correct: 0, exp: "888 - 444 = 444." }
+                ]
+            },
+            "Unit 3": {
+                title: "Pecahan & Perpuluhan",
+                icon: "🍕",
+                questions: [
+                    { q: "Apakah nilai pecahan bagi 1 bahagian daripada 4 bahagian yang sama?", a: ["1/2", "1/4", "1/3", "2/4"], correct: 1, exp: "1 daripada 4 ditulis sebagai satu perempat (1/4)." },
+                    { q: "Manakah yang lebih besar nilainya: 1/2 atau 1/4?", a: ["1/2", "1/4", "Sama besar", "Tidak pasti"], correct: 0, exp: "Separuh (1/2) adalah lebih besar daripada suku (1/4)." },
+                    { q: "Tulis 0.5 dalam bentuk pecahan ringkas.", a: ["1/2", "1/4", "1/5", "5/100"], correct: 0, exp: "0.5 bersamaan dengan 5/10 atau 1/2 (separuh)." },
+                    { q: "Perpuluhan bagi pecahan 7/10 ialah?", a: ["0.7", "0.07", "7.0", "7.1"], correct: 0, exp: "7 per sepuluh ditulis sebagai 0.7." },
+                    { q: "Sebiji kek dipotong kepada 4 bahagian. Jika adik makan 1 bahagian, berapa pecahan kek yang dimakan?", a: ["1/4", "3/4", "1/2", "4/1"], correct: 0, exp: "1 bahagian daripada 4 dipanggil 1/4." },
+                    { q: "Pecahan manakah yang setara / sama nilai dengan 1/2?", a: ["2/4", "1/3", "2/3", "3/4"], correct: 0, exp: "2/4 adalah sama nilainya dengan 1/2." },
+                    { q: "Berapakah 0.2 + 0.3?", a: ["0.5", "0.6", "0.4", "0.1"], correct: 0, exp: "2 persepuluh + 3 persepuluh = 5 persepuluh (0.5)." },
+                    { q: "Manakah yang lebih besar: 0.8 atau 0.2?", a: ["0.8", "0.2", "Sama", "Tiada"], correct: 0, exp: "0.8 lebih besar kerana mempunyai nilai persepuluh yang lebih tinggi." },
+                    { q: "Tulis 'Sifar perpuluhan satu' dalam angka.", a: ["0.1", "0.01", "1.0", "0.11"], correct: 0, exp: "Sifar perpuluhan satu = 0.1." },
+                    { q: "Pecahan bagi kata nama 'suku' ialah?", a: ["1/4", "1/2", "3/4", "1/3"], correct: 0, exp: "Suku bermaksud 1/4." }
+                ]
+            },
+            "Unit 4": {
+                title: "Wang",
+                icon: "💰",
+                questions: [
+                    { q: "RM 25 + RM 10 = ?", a: ["RM 35", "RM 45", "RM 30", "RM 20"], correct: 0, exp: "25 + 10 = 35 ringgit." },
+                    { q: "RM 50 - RM 20 = ?", a: ["RM 30", "RM 40", "RM 25", "RM 35"], correct: 0, exp: "50 - 20 = 30 ringgit." },
+                    { q: "Harga sebatang pensel ialah RM 2. Berapakah harga bagi 3 batang pensel?", a: ["RM 4", "RM 6", "RM 5", "RM 8"], correct: 1, exp: "3 × RM 2 = RM 6." },
+                    { q: "RM 20 dibahagikan sama banyak kepada 4 orang. Seorang dapat berapa?", a: ["RM 4", "RM 5", "RM 6", "RM 3"], correct: 1, exp: "RM 20 ÷ 4 = RM 5." },
+                    { q: "Manakah nilai wang yang paling besar?", a: ["RM 10", "RM 50", "RM 20", "RM 5"], correct: 1, exp: "RM 50 ialah nilai wang terbesar dalam pilihan ini." },
+                    { q: "Adik beli buku harga RM 15 dan bayar RM 20. Berapakah baki wang adik?", a: ["RM 5", "RM 10", "RM 2", "RM 3"], correct: 0, exp: "RM 20 - RM 15 = RM 5." },
+                    { q: "Hitungkan: RM 5 × 10 = ?", a: ["RM 50", "RM 500", "RM 15", "RM 55"], correct: 0, exp: "5 × 10 = 50 ringgit." },
+                    { q: "Wang saku harian ialah RM 2. Berapakah jumlah wang disimpan dalam 5 hari?", a: ["RM 10", "RM 7", "RM 5", "RM 20"], correct: 0, exp: "5 hari × RM 2 = RM 10." },
+                    { q: "RM 80 - RM 35 = ?", a: ["RM 45", "RM 55", "RM 40", "RM 50"], correct: 0, exp: "80 - 35 = 45 ringgit." },
+                    { q: "Tambah: RM 12 + RM 12 + RM 12 = ?", a: ["RM 36", "RM 34", "RM 32", "RM 38"], correct: 0, exp: "12 + 12 + 12 = 36 ringgit." }
+                ]
+            },
+            "Unit 5": {
+                title: "Masa & Waktu",
+                icon: "⏰",
+                questions: [
+                    { q: "1 jam mempunyai berapa minit?", a: ["30 minit", "45 minit", "60 minit", "100 minit"], correct: 2, exp: "Satu pusingan lengkap jarum minit ialah 60 minit." },
+                    { q: "Apabila jarum panjang menunjuk ke angka 6, berapa minitkah itu?", a: ["15 minit", "30 minit", "6 minit", "45 minit"], correct: 1, exp: "Angka 6 mewakili 30 minit (setengah jam)." },
+                    { q: "Pukul 2:00, jarum pendek menunjuk ke nombor berapa?", a: ["Nombor 2", "Nombor 12", "Nombor 6", "Nombor 3"], correct: 0, exp: "Jarum pendek menunjukkan jam, iaitu nombor 2." },
+                    { q: "Dalam 1 hari ada berapa jam?", a: ["12 jam", "24 jam", "48 jam", "60 jam"], correct: 1, exp: "Satu hari semalam mempunyai 24 jam." },
+                    { q: "Pukul berapakah 30 minit selepas pukul 3:00?", a: ["3:30", "3:15", "4:00", "3:06"], correct: 0, exp: "3:00 + 30 minit = 3:30." },
+                    { q: "Jarum pendek menunjuk nombor 5, jarum panjang menunjuk 12. Pukul berapa?", a: ["5:00", "12:05", "5:12", "6:00"], correct: 0, exp: "Jam tepat 5:00." },
+                    { q: "Setengah jam bersamaan dengan berapa minit?", a: ["15 minit", "30 minit", "45 minit", "60 minit"], correct: 1, exp: "Setengah daripada 60 minit ialah 30 minit." },
+                    { q: "Suku jam bersamaan dengan berapa minit?", a: ["15 minit", "30 minit", "45 minit", "20 minit"], correct: 0, exp: "Satu perempat daripada 60 minit ialah 15 minit." },
+                    { q: "Jika sekarang pukul 1:00, pukul berapakah 2 jam lagi?", a: ["Pukul 2:00", "Pukul 3:00", "Pukul 4:00", "Pukul 1:30"], correct: 1, exp: "1:00 + 2 jam = 3:00." },
+                    { q: "Berapakah beza minit dari jam 12:00 ke 12:15?", a: ["15 minit", "5 minit", "10 minit", "20 minit"], correct: 0, exp: "15 minit - 0 minit = 15 minit." }
+                ]
+            },
+            "Unit 6": {
+                title: "Panjang, Jisim & Isi Padu",
+                icon: "📏",
+                questions: [
+                    { q: "Unit ukuran piawai yang sesuai untuk mengukur panjang sebatang pensel ialah?", a: ["Meter (m)", "Sentimeter (cm)", "Kilometer (km)", "Kilogram (kg)"], correct: 1, exp: "Objek kecil seperti pensel diukur menggunakan sentimeter (cm)." },
+                    { q: "1 meter (m) bersamaan dengan berapa sentimeter (cm)?", a: ["10 cm", "50 cm", "100 cm", "1000 cm"], correct: 2, exp: "1 m = 100 cm." },
+                    { q: "Isi padu cecair diukur dalam unit apa?", a: ["Liter (ℓ)", "Gram (g)", "Meter (m)", "Sentimeter (cm)"], correct: 0, exp: "Cecair diukur dalam unit Liter (ℓ) atau Mililiter (mℓ)." },
+                    { q: "Jisim berat badan kita diukur menggunakan unit?", a: ["Kilogram (kg)", "Gram (g)", "Liter (ℓ)", "Meter (m)"], correct: 0, exp: "Berat badan manusia diukur dalam Kilogram (kg)." },
+                    { q: "Manakah yang lebih berat: 1 kg atau 500 g?", a: ["1 kg", "500 g", "Sama berat", "Tidak pasti"], correct: 0, exp: "1 kg = 1000 g, jadi 1 kg lebih berat daripada 500 g." },
+                    { q: "Apakah anggaran panjang bagi sebuah buku teks sekolah?", a: ["20 cm", "20 m", "2 km", "2 mm"], correct: 0, exp: "Buku teks berukuran anggaran 20 hingga 30 cm." },
+                    { q: "1 Liter (ℓ) bersamaan dengan berapa mililiter (mℓ)?", a: ["100 mℓ", "500 mℓ", "1000 mℓ", "10 mℓ"], correct: 2, exp: "1 ℓ = 1000 mℓ." },
+                    { q: "Alat apakah yang paling sesuai untuk mengukur panjang meja?", a: ["Pembaris / Pita pengukur", "Penimbang", "Cawan penyukat", "Jam"], correct: 0, exp: "Pembaris atau pita pengukur digunakan untuk mengukur panjang." },
+                    { q: "Hitungkan: 2 kg + 3 kg = ?", a: ["5 kg", "6 kg", "4 kg", "3000 g"], correct: 0, exp: "2 + 3 = 5 kg." },
+                    { q: "Satu botol air mengandungi 500 mℓ. Jika ada 2 botol air, berapakah jumlah isi padu air?", a: ["1000 mℓ (1 Liter)", "500 mℓ", "1500 mℓ", "2 Liter"], correct: 0, exp: "500 mℓ + 500 mℓ = 1000 mℓ bersamaan 1 Liter." }
+                ]
+            },
+            "Unit 7": {
+                title: "Ruang (Bentuk 3D & 2D)",
+                icon: "🎲",
+                questions: [
+                    { q: "Bentuk 3D manakah yang mempunyai 6 muka rata berbentuk segi empat sama?", a: ["Kubus", "Silinder", "Sfera", "Kon"], correct: 0, exp: "Kubus mempunyai 6 muka rata yang sama saiz." },
+                    { q: "Bentuk 3D manakah yang TIADA bucu?", a: ["Sfera", "Kuboid", "Piramid", "Kubus"], correct: 0, exp: "Sfera adalah bulat sepenuhnya dan tiada bucu." },
+                    { q: "Berapakah bilangan bucu bagi sebuah kubus?", a: ["6", "8", "12", "4"], correct: 1, exp: "Kubus mempunyai 8 bucu." },
+                    { q: "Bentuk 2D yang mempunyai 3 sisi lurus dipanggil?", a: ["Segi tiga", "Segi empat", "Bulatan", "Pentagon"], correct: 0, exp: "Segi tiga mempunyai 3 sisi dan 3 bucu." },
+                    { q: "Berapakah permukaan melengkung yang ada pada silinder?", a: ["1", "2", "3", "0"], correct: 0, exp: "Silinder ada 1 permukaan melengkung dan 2 muka rata berbentuk bulatan." },
+                    { q: "Apakah bentuk permukaan tapak bagi sebuah kon?", a: ["Bulatan", "Segi tiga", "Segi empat", "Bujur"], correct: 0, exp: "Tapak kon berbentuk bulatan." },
+                    { q: "Piramid bertapak segi empat mempunyai berapa muka segi tiga?", a: ["4", "3", "5", "2"], correct: 0, exp: "Ia mempunyai 1 tapak dan 4 muka berbentuk segi tiga." },
+                    { q: "Bentuk manakah yang boleh bergolek dengan mudah?", a: ["Sfera", "Kubus", "Kuboid", "Piramid"], correct: 0, exp: "Sfera mudah bergolek kerana mempunyai permukaan melengkung sepenuhnya." },
+                    { q: "Berapa sisikah yang ada pada bentuk segi empat tepat?", a: ["3", "4", "5", "6"], correct: 1, exp: "Segi empat tepat mempunyai 4 sisi lurus." },
+                    { q: "Pilih ciri yang betul bagi sebuah kuboid.", a: ["Mempunyai 6 muka rata", "Tiada bucu", "Hanya 1 sisi", "Permukaan bulat"], correct: 0, exp: "Kuboid mempunyai 6 muka rata." }
+                ]
+            },
+            "Unit 8": {
+                title: "Pengurusan Data",
+                icon: "📊",
+                questions: [
+                    { q: "Data boleh dikumpul secara mudah dengan cara?", a: ["Membilang dan mengumpul", "Meneka", "Melihat sahaja", "Melukis gambar"], correct: 0, exp: "Membilang dan mencatat ialah cara kumpul data yang tepat." },
+                    { q: "Jika 5 orang murid suka epal dan 3 orang suka oren, berapakah jumlah murid?", a: ["7 orang", "8 orang", "9 orang", "6 orang"], correct: 1, exp: "5 + 3 = 8 orang murid." },
+                    { q: "Dalam carta palang, palang yang paling tinggi bermaksud?", a: ["Nilai paling banyak", "Nilai paling sedikit", "Sama nilai", "Tiada data"], correct: 0, exp: "Palang tinggi mewakili frekuensi/kuantiti paling banyak." },
+                    { q: "Garisan tally |||| bersama garisan melintang mewakili bilangan berapa?", a: ["5", "4", "6", "3"], correct: 0, exp: "Tally empat garisan tegak dan satu palang melintang mewakili 5." },
+                    { q: "Apakah kegunaan tajuk pada carta palang?", a: ["Memberi maklumat tentang carta", "Sebagai hiasan", "Suka-suka", "Tiada kegunaan"], correct: 0, exp: "Tajuk menerangkan maklumat data yang dipaparkan." },
+                    { q: "Jika 10 orang suka main bola dan 5 orang suka badminton, berapakah beza mereka?", a: ["5 orang", "10 orang", "15 orang", "2 orang"], correct: 0, exp: "10 - 5 = 5 orang beza." },
+                    { q: "Apakah maksud mentafsir data?", a: ["Membaca dan memahami maklumat", "Memadam data", "Melukis gambar", "Menukar tajuk"], correct: 0, exp: "Mentafsir data ialah mendapatkan maklumat daripada carta." },
+                    { q: "Tally ||| bermaksud bilangan berapa?", a: ["3", "4", "5", "2"], correct: 0, exp: "3 garisan tegak mewakili nombor 3." },
+                    { q: "Jika nilai tertinggi ialah 20 dan nilai terendah ialah 5, berapakah bezanya?", a: ["15", "25", "10", "5"], correct: 0, exp: "20 - 5 = 15." },
+                    { q: "Carta yang menggunakan simbol gambar dinamakan?", a: ["Piktograf", "Carta palang", "Jadual", "Carta pai"], correct: 0, exp: "Piktograf mewakili data menggunakan gambar." }
+                ]
+            }
         };
 
-        const selectionDiv = document.getElementById('unit-selection');
-        const container = document.getElementById('quiz-container');
-        const selectionScreen = document.getElementById('unit-selection');
-        const qBox = document.getElementById('question-box');
-        const unitTitle = document.getElementById('unit-title');
+        /* ----------------------------------------------------
+           2. APP STATE MANAGEMENT
+        ---------------------------------------------------- */
+        let studentName = "";
+        let currentUnitKey = "";
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let answeredCurrent = false;
+        let soundEnabled = true;
 
-        function showUnits() {
-            selectionScreen.classList.remove('hidden');
-            container.classList.add('hidden');
+        // Local storage score stars tracker
+        let unitProgress = {};
+
+        /* ----------------------------------------------------
+           3. SOUND EFFECT SYNTHESIZER (Web Audio API)
+        ---------------------------------------------------- */
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function playSynthesizedSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new AudioContext();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    // Cheerful Arpeggio (C5 -> E5 -> G5)
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+                    osc.start(now);
+                    osc.stop(now + 0.45);
+                } else if (type === 'wrong') {
+                    // Sad tone (F3 -> C#3)
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(349.23, now); // F3
+                    osc.frequency.setValueAtTime(277.18, now + 0.15); // C#3
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                } else if (type === 'pop') {
+                    // Short soft click/pop
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'fanfare') {
+                    // Major Win chord effect
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                        const subOsc = audioCtx.createOscillator();
+                        const subGain = audioCtx.createGain();
+                        subOsc.type = 'triangle';
+                        subOsc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                        subGain.gain.setValueAtTime(0.15, now + idx * 0.08);
+                        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8 + idx * 0.08);
+                        subOsc.connect(subGain);
+                        subGain.connect(audioCtx.destination);
+                        subOsc.start(now + idx * 0.08);
+                        subOsc.stop(now + 0.8 + idx * 0.08);
+                    });
+                }
+            } catch (e) {
+                console.log("Audio not supported or blocked", e);
+            }
         }
 
-        function loadUnit(unitName) {
-            selectionScreen.classList.add('hidden');
-            container.classList.remove('hidden');
-            unitTitle.innerText = unitName;
-            qBox.innerHTML = '';
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-icon').innerText = soundEnabled ? '🔊' : '🔇';
+            playSynthesizedSound('pop');
+        }
 
-            quizData[unitName].forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'mb-6 p-4 border rounded-lg';
-                div.innerHTML = `<p class="font-bold mb-2">${index + 1}. ${item.q}</p>`;
-                
-                item.a.forEach((opt, i) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'block w-full text-left p-2 border my-1 rounded hover:bg-blue-100';
-                    btn.innerText = opt;
-                    btn.onclick = () => {
-                        if(i === item.correct) {
-                            btn.className += ' bg-green-200';
-                            alert('Tahniah, betul!');
-                        } else {
-                            btn.className += ' bg-red-200';
-                            alert('Cuba lagi!');
-                        }
-                    };
-                    div.appendChild(btn);
-                });
-                qBox.appendChild(div);
+        /* ----------------------------------------------------
+           4. CAPYBARA EXPRESSIONS & MASCOT CONTROLLER
+        ---------------------------------------------------- */
+        function setCapyExpression(mood, speechText = "") {
+            const eyesGroup = document.getElementById('capy-eyes');
+            const mouthPath = document.getElementById('capy-mouth');
+            const capyContainer = document.getElementById('capy-svg-container');
+
+            if (!eyesGroup || !mouthPath) return;
+
+            // Reset class animation
+            capyContainer.className = 'w-28 h-28 sm:w-32 sm:h-32 transition-transform';
+
+            if (mood === 'happy') {
+                capyContainer.classList.add('capy-happy');
+                // Happy "^ ^" eyes
+                eyesGroup.innerHTML = `
+                    <path d="M 43 44 Q 48 38 53 44" stroke="#22150C" stroke-width="3" fill="none" stroke-linecap="round" />
+                    <path d="M 67 44 Q 72 38 77 44" stroke="#22150C" stroke-width="3" fill="none" stroke-linecap="round" />
+                `;
+                // Open big smile
+                mouthPath.setAttribute('d', 'M 53 60 Q 60 70 67 60 Z');
+                mouthPath.setAttribute('fill', '#8C3B3B');
+            } else if (mood === 'encouraging') {
+                capyContainer.classList.add('capy-wiggle');
+                // Gentle blink/wink eyes
+                eyesGroup.innerHTML = `
+                    <circle cx="48" cy="42" r="3.5" fill="#22150C" />
+                    <path d="M 67 43 Q 72 40 77 43" stroke="#22150C" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                `;
+                // Gentle smile
+                mouthPath.setAttribute('d', 'M 54 62 Q 60 67 66 62');
+                mouthPath.setAttribute('fill', 'none');
+            } else { // Normal idle
+                capyContainer.classList.add('capy-idle');
+                eyesGroup.innerHTML = `
+                    <circle cx="48" cy="42" r="3.5" fill="#22150C" />
+                    <circle cx="72" cy="42" r="3.5" fill="#22150C" />
+                    <circle cx="49" cy="41" r="1.2" fill="#FFFFFF" />
+                    <circle cx="73" cy="41" r="1.2" fill="#FFFFFF" />
+                `;
+                mouthPath.setAttribute('d', 'M 55 62 Q 60 66 65 62');
+                mouthPath.setAttribute('fill', 'none');
+            }
+
+            if (speechText) {
+                document.getElementById('greeting-msg').innerText = speechText;
+            }
+        }
+
+        function petCapy() {
+            playSynthesizedSound('pop');
+            const petPhrases = [
+                "Capy sayang adik! Jom teruskan belajar!",
+                "Kikiki! Geli la adik usap Capy! 😄",
+                "Limau Yuzu di atas kepala Capy ini harum sangat!",
+                "Matematik itu mudah dan menyeronokkan!"
+            ];
+            const randomPhrase = petPhrases[Math.floor(Math.random() * petPhrases.length)];
+            setCapyExpression('happy', randomPhrase);
+            setTimeout(() => {
+                if (!answeredCurrent) setCapyExpression('normal');
+            }, 3000);
+        }
+
+        /* ----------------------------------------------------
+           5. PROFILE & LOCALSTORAGE LOGIC
+        ---------------------------------------------------- */
+        function initUserProfile() {
+            const savedName = localStorage.getItem('capy_math_student_name');
+            const savedProgress = localStorage.getItem('capy_math_progress');
+
+            if (savedProgress) {
+                try { unitProgress = JSON.parse(savedProgress); } catch (e) { unitProgress = {}; }
+            }
+
+            if (savedName && savedName.trim() !== "") {
+                studentName = savedName.trim();
+                showStudentGreeting();
+                showUnitsMenu();
+            } else {
+                // Show Name Input Screen first
+                showScreen('screen-name-input');
+                document.getElementById('greeting-title').innerText = "Hai Kawan Baru! 👋";
+                document.getElementById('greeting-msg').innerText = "Sila masukkan nama anda di bawah untuk memulakan permainan!";
+            }
+            updateTotalStarsBadge();
+        }
+
+        function saveNameAndStart() {
+            const nameInput = document.getElementById('student-name-input').value.trim();
+            if (!nameInput) {
+                alert("Sila masukkan nama anda terlebih dahulu!");
+                return;
+            }
+            studentName = nameInput;
+            localStorage.setItem('capy_math_student_name', studentName);
+            playSynthesizedSound('correct');
+            showStudentGreeting();
+            showUnitsMenu();
+        }
+
+        function showStudentGreeting() {
+            document.getElementById('user-pill').classList.remove('hidden');
+            document.getElementById('user-pill').classList.add('flex');
+            document.getElementById('pill-name').innerText = studentName;
+
+            document.getElementById('greeting-title').innerText = `SELAMAT DATANG ADIK ${studentName.toUpperCase()}! 🌟`;
+            document.getElementById('greeting-msg').innerText = "JOM KITA BELAJAR SEKARANG!";
+        }
+
+        function openNameModal() {
+            document.getElementById('modal-name-input').value = studentName;
+            document.getElementById('name-modal').classList.remove('hidden');
+            document.getElementById('name-modal').classList.add('flex');
+        }
+
+        function closeNameModal() {
+            document.getElementById('name-modal').classList.add('hidden');
+            document.getElementById('name-modal').classList.remove('flex');
+        }
+
+        function saveNameFromModal() {
+            const newName = document.getElementById('modal-name-input').value.trim();
+            if (newName) {
+                studentName = newName;
+                localStorage.setItem('capy_math_student_name', studentName);
+                showStudentGreeting();
+            }
+            closeNameModal();
+        }
+
+        function saveProgress(unitKey, starCount) {
+            if (!unitProgress[unitKey] || starCount > unitProgress[unitKey]) {
+                unitProgress[unitKey] = starCount;
+                localStorage.setItem('capy_math_progress', JSON.stringify(unitProgress));
+                updateTotalStarsBadge();
+            }
+        }
+
+        function updateTotalStarsBadge() {
+            let totalStars = 0;
+            Object.values(unitProgress).forEach(stars => totalStars += stars);
+            document.getElementById('total-stars-badge').innerText = `⭐ ${totalStars} Bintang`;
+        }
+
+        /* ----------------------------------------------------
+           6. SCREEN NAVIGATION CONTROLLER
+        ---------------------------------------------------- */
+        function showScreen(screenId) {
+            ['screen-name-input', 'screen-units', 'screen-quiz', 'screen-result'].forEach(id => {
+                const el = document.getElementById(id);
+                if (id === screenId) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
             });
         }
 
-        // Initialize Menu
-        Object.keys(quizData).forEach(unit => {
-            const btn = document.createElement('button');
-            btn.className = 'bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 font-bold';
-            btn.innerText = unit;
-            btn.onclick = () => loadUnit(unit);
-            selectionDiv.appendChild(btn);
-        });
+        function showUnitsMenu() {
+            showScreen('screen-units');
+            setCapyExpression('normal', `Jom pilih mana-mana unit pembelajaran yang adik ${studentName} ingin cuba!`);
+            renderUnitCards();
+        }
+
+        /* ----------------------------------------------------
+           7. UNIT SELECTION MENU RENDERER
+        ---------------------------------------------------- */
+        function renderUnitCards() {
+            const container = document.getElementById('unit-cards-container');
+            container.innerHTML = '';
+
+            Object.keys(quizData).forEach((unitKey) => {
+                const unit = quizData[unitKey];
+                const starsEarned = unitProgress[unitKey] || 0;
+
+                let starsHtml = '';
+                for (let i = 1; i <= 3; i++) {
+                    starsHtml += `<span class="${i <= starsEarned ? 'text-amber-400' : 'text-slate-300'} text-lg">★</span>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = "bg-white/90 hover:bg-white p-4 rounded-2xl border-2 border-slate-200/80 hover:border-amber-400 shadow-sm hover:shadow-md transition cursor-pointer flex items-center justify-between group btn-press";
+                card.onclick = () => startQuiz(unitKey);
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 bg-amber-100 group-hover:bg-amber-200 rounded-2xl flex items-center justify-center text-2xl transition">
+                            ${unit.icon}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-fredoka text-sm font-bold text-amber-800">${unitKey}</span>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">${unit.title}</h4>
+                            <span class="text-[11px] text-slate-500 font-semibold">${unit.questions.length} Soalan</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-1">
+                        <div class="flex gap-0.5">${starsHtml}</div>
+                        <span class="text-xs font-bold text-amber-600 group-hover:translate-x-1 transition flex items-center gap-0.5">
+                            Mula ➔
+                        </span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        /* ----------------------------------------------------
+           8. QUIZ ENGINE LOGIC
+        ---------------------------------------------------- */
+        function startQuiz(unitKey) {
+            playSynthesizedSound('pop');
+            currentUnitKey = unitKey;
+            currentQuestionIdx = 0;
+            score = 0;
+            showScreen('screen-quiz');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answeredCurrent = false;
+            const unit = quizData[currentUnitKey];
+            const q = unit.questions[currentQuestionIdx];
+
+            // Header labels & Progress
+            document.getElementById('quiz-unit-label').innerText = `${currentUnitKey}: ${unit.title}`;
+            document.getElementById('quiz-progress-text').innerText = `Soalan ${currentQuestionIdx + 1} / ${unit.questions.length}`;
+            
+            const progressPct = ((currentQuestionIdx) / unit.questions.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progressPct}%`;
+
+            // Question Text
+            document.getElementById('question-text').innerText = `${currentQuestionIdx + 1}. ${q.q}`;
+
+            // Capy message
+            setCapyExpression('normal', `Fikirkan jawapan yang paling tepat untuk Soalan ${currentQuestionIdx + 1} ya, ${studentName}!`);
+
+            // Options container
+            const optionsDiv = document.getElementById('options-container');
+            optionsDiv.innerHTML = '';
+
+            // Hide explanation & next button
+            document.getElementById('explanation-box').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('next-btn').classList.remove('flex');
+
+            q.a.forEach((optText, i) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl border-2 border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-300 font-bold text-slate-700 text-sm sm:text-base transition btn-press flex items-center justify-between";
+                btn.innerHTML = `
+                    <span class="flex items-center gap-2">
+                        <span class="w-7 h-7 rounded-lg bg-white border border-slate-300 flex items-center justify-center text-xs text-slate-500 font-fredoka">${String.fromCharCode(65 + i)}</span>
+                        <span>${optText}</span>
+                    </span>
+                    <span class="status-icon"></span>
+                `;
+                btn.onclick = () => selectAnswer(i, btn);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(selectedIdx, selectedBtn) {
+            if (answeredCurrent) return;
+            answeredCurrent = true;
+
+            const unit = quizData[currentUnitKey];
+            const q = unit.questions[currentQuestionIdx];
+            const allBtns = document.getElementById('options-container').children;
+
+            // Disable all option buttons
+            Array.from(allBtns).forEach(b => {
+                b.disabled = true;
+                b.classList.remove('hover:bg-amber-50', 'hover:border-amber-300', 'btn-press');
+            });
+
+            const isCorrect = (selectedIdx === q.correct);
+
+            if (isCorrect) {
+                score++;
+                playSynthesizedSound('correct');
+                selectedBtn.className = "w-full text-left p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold text-sm sm:text-base flex items-center justify-between shadow-sm";
+                selectedBtn.querySelector('.status-icon').innerText = '✅';
+
+                setCapyExpression('happy', `TAHNIAH ADIK ${studentName.toUpperCase()}! Jawapan anda TEPAT skali! 🎉`);
+            } else {
+                playSynthesizedSound('wrong');
+                selectedBtn.className = "w-full text-left p-4 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-900 font-bold text-sm sm:text-base flex items-center justify-between shadow-sm";
+                selectedBtn.querySelector('.status-icon').innerText = '❌';
+
+                // Highlight correct answer in green
+                const correctBtn = allBtns[q.correct];
+                correctBtn.className = "w-full text-left p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold text-sm sm:text-base flex items-center justify-between";
+                correctBtn.querySelector('.status-icon').innerText = '✅';
+
+                setCapyExpression('encouraging', `Tak mengapa adik ${studentName}, teruskan berusaha! Jawapan yang betul dijelaskan di bawah.`);
+            }
+
+            // Show explanation box
+            const expBox = document.getElementById('explanation-box');
+            expBox.classList.remove('hidden');
+            expBox.className = `p-4 rounded-2xl border-2 ${isCorrect ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900' : 'bg-amber-50/80 border-amber-200 text-amber-900'}`;
+            expBox.innerHTML = `
+                <div class="font-bold text-xs uppercase tracking-wider mb-1">${isCorrect ? '💡 Syabas!' : '💡 Penjelasan / Nota:'}</div>
+                <div class="text-sm font-medium">${q.exp}</div>
+            `;
+
+            // Update bar to full progress for current step
+            const progressPct = ((currentQuestionIdx + 1) / unit.questions.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progressPct}%`;
+
+            // Show Next / Finish Button
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.classList.remove('hidden');
+            nextBtn.classList.add('flex');
+            if (currentQuestionIdx === unit.questions.length - 1) {
+                nextBtn.innerText = "Lihat Keputusan 🏆";
+            } else {
+                nextBtn.innerText = "Soalan Seterusnya ➔";
+            }
+        }
+
+        function nextQuestion() {
+            playSynthesizedSound('pop');
+            const unit = quizData[currentUnitKey];
+            currentQuestionIdx++;
+
+            if (currentQuestionIdx < unit.questions.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function confirmExitQuiz() {
+            if (confirm("Adakah anda pasti mahu kembali ke menu utama?")) {
+                playSynthesizedSound('pop');
+                showUnitsMenu();
+            }
+        }
+
+        /* ----------------------------------------------------
+           9. QUIZ COMPLETION & CONFETTI CELEBRATION
+        ---------------------------------------------------- */
+        function finishQuiz() {
+            showScreen('screen-result');
+            const totalQuestions = quizData[currentUnitKey].questions.length;
+            const percentage = Math.round((score / totalQuestions) * 100);
+
+            let stars = 1;
+            if (percentage >= 80) stars = 3;
+            else if (percentage >= 50) stars = 2;
+
+            saveProgress(currentUnitKey, stars);
+
+            document.getElementById('result-score-text').innerText = `${score} / ${totalQuestions}`;
+            document.getElementById('result-percentage').innerText = `Ketepatan: ${percentage}%`;
+
+            // Render stars
+            let starIcons = '';
+            for (let i = 1; i <= 3; i++) {
+                starIcons += `<span class="${i <= stars ? 'text-amber-400 scale-110' : 'text-slate-300'} transition transform inline-block">⭐</span>`;
+            }
+            document.getElementById('result-stars').innerHTML = starIcons;
+
+            if (stars === 3) {
+                playSynthesizedSound('fanfare');
+                triggerConfetti();
+                document.getElementById('result-emoji').innerText = '🏆';
+                document.getElementById('result-title').innerText = `Hebat Sungguh, Adik ${studentName}!`;
+                document.getElementById('result-subtext').innerText = "Anda mendapat 3 Bintang penuh! Capy sangat bangga dengan anda!";
+                setCapyExpression('happy', `WAU! ADIK ${studentName.toUpperCase()} MEMANG PAKAR MATEMATIK! 🌟🌟🌟`);
+            } else if (stars === 2) {
+                playSynthesizedSound('correct');
+                document.getElementById('result-emoji').innerText = '👏';
+                document.getElementById('result-title').innerText = `Bagus Sekali, Adik ${studentName}!`;
+                document.getElementById('result-subtext').innerText = "Keputusan yang baik! Cuba lagi untuk dapatkan 3 Bintang!";
+                setCapyExpression('happy', `Syabas adik ${studentName}! Sikit lagi nak dapat markah penuh! 👍`);
+            } else {
+                playSynthesizedSound('wrong');
+                document.getElementById('result-emoji').innerText = '💪';
+                document.getElementById('result-title').innerText = `Usaha Yang Bagus!`;
+                document.getElementById('result-subtext').innerText = "Jangan putus asa, mari cuba sekali lagi untuk kuasai tajuk ini!";
+                setCapyExpression('encouraging', `Jangan risau adik ${studentName}, amalan membawa kesempurnaan! Boleh cuba lagi!`);
+            }
+        }
+
+        function retryCurrentUnit() {
+            startQuiz(currentUnitKey);
+        }
+
+        /* Simple Canvas Confetti Effect */
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6'];
+
+            for (let i = 0; i < 80; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 4 + 2,
+                    angle: Math.random() * 360
+                });
+            }
+
+            let animationFrame;
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    ctx.save();
+                    ctx.fillStyle = p.color;
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.angle * Math.PI) / 180);
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+
+                    p.y += p.speed;
+                    p.angle += 3;
+                });
+
+                if (pieces.some(p => p.y < canvas.height)) {
+                    animationFrame = requestAnimationFrame(render);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            render();
+        }
+
+        /* Initialize App on Load */
+        window.onload = function() {
+            initUserProfile();
+        };
     </script>
 </body>
 </html>

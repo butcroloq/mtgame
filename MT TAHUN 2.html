@@ -234,7 +234,20 @@
                     </div>
                 </div>
 
-                <!-- SCREEN 3: Active Quiz Screen -->
+                <!-- SCREEN 3: Set Selection Screen -->
+                <div id="screen-set-selection" class="hidden space-y-5 py-2">
+                    <div class="text-center space-y-2">
+                        <div class="text-4xl">🦫🎯</div>
+                        <h3 class="font-fredoka text-xl sm:text-2xl font-bold text-amber-900">Pilih Set Cabaran</h3>
+                        <p id="set-selection-subtitle" class="text-sm text-slate-600">Pilih satu set untuk memulakan pengembaraan.</p>
+                    </div>
+                    <div id="set-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto"></div>
+                    <div class="text-center pt-1">
+                        <button onclick="showUnitsMenu()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-5 py-2.5 rounded-xl transition text-sm btn-press">◀ Kembali Pilih Unit</button>
+                    </div>
+                </div>
+
+                <!-- SCREEN 4: Active Quiz Screen -->
                 <div id="screen-quiz" class="hidden space-y-5">
                     <!-- Quiz Header & Progress Bar -->
                     <div class="space-y-2">
@@ -275,7 +288,7 @@
                     </div>
                 </div>
 
-                <!-- SCREEN 4: Quiz Result Summary -->
+                <!-- SCREEN 5: Quiz Result Summary -->
                 <div id="screen-result" class="hidden text-center space-y-6 py-4">
                     <div class="space-y-2">
                         <div class="text-5xl animate-bounce mb-2" id="result-emoji">🎉</div>
@@ -343,18 +356,40 @@
             "Unit 1": {
                 title: "Nombor hingga 1000",
                 icon: "🔢",
-                questions: [
-                    { q: "Apakah nilai tempat bagi digit 5 dalam nombor 352?", a: ["Sa", "Puluh", "Ratus", "Ribu"], correct: 1, exp: "Digit 5 berada di kedudukan Puluh (3 Ratus, 5 Puluh, 2 Sa)." },
-                    { q: "Cerakinkan nombor 489 mengikut nilai digit.", a: ["400 + 8 + 9", "40 + 8 + 9", "400 + 80 + 9", "4 + 8 + 9"], correct: 2, exp: "489 = 400 (Ratus) + 80 (Puluh) + 9 (Sa)." },
-                    { q: "Nombor manakah yang paling besar nilainya?", a: ["234", "243", "239", "229"], correct: 1, exp: "243 adalah yang terbesar kerana digit puluhnya (4) paling tinggi." },
-                    { q: "Bundarkan 145 kepada puluh terdekat.", a: ["140", "150", "160", "100"], correct: 1, exp: "Digit sa ialah 5, jadi tambah 1 pada nilai puluh (140 ➔ 150)." },
-                    { q: "Apakah pola nombor ini: 100, 110, 120, 130...?", a: ["Menaik sepuluh-sepuluh", "Menurun sepuluh-sepuluh", "Menaik lima-lima", "Menaik dua-dua"], correct: 0, exp: "Nombor bertambah sebanyak 10 pada setiap langkah." },
-                    { q: "Apakah nilai digit bagi 7 dalam nombor 765?", a: ["7", "70", "700", "7000"], correct: 2, exp: "Digit 7 berada di tempat Ratus, nilainya ialah 700." },
-                    { q: "Susun nombor berikut secara tertib menaik: 345, 321, 367.", a: ["321, 345, 367", "367, 345, 321", "345, 367, 321", "321, 367, 345"], correct: 0, exp: "Tertib menaik bermula daripada nombor paling kecil (321) ke paling besar (367)." },
-                    { q: "Apakah nombor tepat sebelum 500?", a: ["499", "498", "501", "490"], correct: 0, exp: "Nombor sebelum 500 ialah 500 - 1 = 499." },
-                    { q: "Tuliskan 'Sembilan ratus empat puluh tiga' dalam angka.", a: ["943", "934", "843", "904"], correct: 0, exp: "9 ratus + 4 puluh + 3 sa = 943." },
-                    { q: "Bandingkan 678 dan 687. Nombor manakah yang LEBIH KECIL?", a: ["678", "687", "Sama besar", "Tiada jawapan"], correct: 0, exp: "678 lebih kecil daripada 687 kerana 7 puluh kurang daripada 8 puluh." }
-                ]
+                sets: {
+                    setA: {
+                        name: "Set A — Capy Ceria",
+                        badge: "🌤️ Asas → Sederhana",
+                        questions: [
+                            { q: "Apakah nilai tempat bagi digit 6 dalam nombor 364?", a: ["Sa", "Puluh", "Ratus", "Ribu"], correct: 1, exp: "Dalam 364, digit 6 berada di tempat puluh." },
+                            { q: "Apakah nilai digit 8 dalam nombor 825?", a: ["8", "80", "800", "8000"], correct: 2, exp: "Digit 8 berada di tempat ratus, jadi nilainya ialah 800." },
+                            { q: "Cerakinkan nombor 572 mengikut nilai digit.", a: ["500 + 70 + 2", "50 + 70 + 2", "500 + 7 + 2", "5 + 7 + 2"], correct: 0, exp: "572 = 500 + 70 + 2." },
+                            { q: "Nombor manakah yang paling besar?", a: ["418", "481", "428", "438"], correct: 1, exp: "481 paling besar kerana digit puluhnya ialah 8." },
+                            { q: "Susun nombor 235, 253 dan 223 secara tertib menaik.", a: ["223, 235, 253", "253, 235, 223", "235, 223, 253", "223, 253, 235"], correct: 0, exp: "Tertib menaik bermula daripada nombor paling kecil." },
+                            { q: "Apakah nombor selepas 699?", a: ["698", "700", "709", "690"], correct: 1, exp: "Selepas 699 ialah 700." },
+                            { q: "Apakah nombor sebelum 450?", a: ["449", "451", "440", "459"], correct: 0, exp: "450 - 1 = 449." },
+                            { q: "Lengkapkan pola nombor: 120, 130, 140, ___.", a: ["145", "150", "160", "200"], correct: 1, exp: "Pola bertambah 10 setiap kali, jadi nombor seterusnya ialah 150." },
+                            { q: "Tuliskan 'Tujuh ratus dua puluh lima' dalam angka.", a: ["725", "752", "705", "275"], correct: 0, exp: "7 ratus + 2 puluh + 5 sa = 725." },
+                            { q: "Capy mengumpul 346 biji buah. Yuzu mengumpul 364 biji buah. Siapakah mengumpul lebih banyak?", a: ["Capy", "Yuzu", "Sama banyak", "Tidak boleh ditentukan"], correct: 1, exp: "364 lebih besar daripada 346, jadi Yuzu mengumpul lebih banyak." }
+                        ]
+                    },
+                    setB: {
+                        name: "Set B — Capy Bijak",
+                        badge: "🧠 Sederhana → Mencabar",
+                        questions: [
+                            { q: "Dalam nombor 683, apakah nilai digit 8?", a: ["8", "80", "800", "680"], correct: 1, exp: "Digit 8 berada di tempat puluh, jadi nilainya ialah 80." },
+                            { q: "Nombor manakah mempunyai 5 ratus, 2 puluh dan 9 sa?", a: ["529", "592", "259", "509"], correct: 0, exp: "5 ratus + 2 puluh + 9 sa = 529." },
+                            { q: "Manakah cerakinan yang betul bagi 907?", a: ["900 + 70", "900 + 7", "90 + 7", "900 + 0 + 70"], correct: 1, exp: "907 mempunyai 9 ratus, 0 puluh dan 7 sa." },
+                            { q: "Antara nombor berikut, yang manakah PALING KECIL?", a: ["671", "617", "761", "716"], correct: 1, exp: "617 paling kecil kerana digit ratus sama dengan 6 tetapi digit puluhnya paling kecil." },
+                            { q: "Susun 508, 580 dan 518 secara tertib menurun.", a: ["580, 518, 508", "508, 518, 580", "518, 580, 508", "580, 508, 518"], correct: 0, exp: "Tertib menurun bermula daripada nombor terbesar: 580, 518, 508." },
+                            { q: "Lengkapkan pola: 405, 415, 425, ___, 445.", a: ["430", "435", "440", "455"], correct: 1, exp: "Pola meningkat 10 setiap langkah. Selepas 425 ialah 435." },
+                            { q: "Capy berada pada nombor 599. Dia bergerak satu langkah ke hadapan pada garis nombor. Di nombor berapakah Capy berhenti?", a: ["598", "600", "609", "590"], correct: 1, exp: "Satu nombor selepas 599 ialah 600." },
+                            { q: "Nombor A ialah 742. Nombor B ialah 724. Apakah pernyataan yang betul?", a: ["A < B", "A > B", "A = B", "Kedua-duanya kurang daripada 700"], correct: 1, exp: "742 lebih besar daripada 724, maka A > B." },
+                            { q: "Aku ialah nombor tiga digit. Digit ratusku 6, digit puluhku 0 dan digit saku 4. Siapakah aku?", a: ["640", "604", "460", "406"], correct: 1, exp: "6 ratus, 0 puluh dan 4 sa membentuk nombor 604." },
+                            { q: "Capy mempunyai kad bernombor 3, 7 dan 5. Apakah nombor PALING BESAR yang boleh dibina menggunakan ketiga-tiga kad itu sekali sahaja?", a: ["357", "573", "735", "753"], correct: 3, exp: "Untuk membina nombor terbesar, susun digit daripada terbesar kepada terkecil: 7, 5, 3. Jawapannya 753." }
+                        ]
+                    }
+                }
             },
             "Unit 2": {
                 title: "Tambah, Tolak, Darab & Bahagi",
@@ -475,6 +510,7 @@
         ---------------------------------------------------- */
         let studentName = "";
         let currentUnitKey = "";
+        let currentSetKey = "";
         let currentQuestionIdx = 0;
         let score = 0;
         let answeredCurrent = false;
@@ -736,7 +772,7 @@
            6. SCREEN NAVIGATION CONTROLLER
         ---------------------------------------------------- */
         function showScreen(screenId) {
-            ['screen-name-input', 'screen-units', 'screen-quiz', 'screen-result'].forEach(id => {
+            ['screen-name-input', 'screen-units', 'screen-set-selection', 'screen-quiz', 'screen-result'].forEach(id => {
                 const el = document.getElementById(id);
                 if (id === screenId) {
                     el.classList.remove('hidden');
@@ -761,7 +797,7 @@
 
             Object.keys(quizData).forEach((unitKey) => {
                 const unit = quizData[unitKey];
-                const starsEarned = unitProgress[unitKey] || 0;
+                const starsEarned = unit.sets ? Math.max(unitProgress[unitKey + '_setA'] || 0, unitProgress[unitKey + '_setB'] || 0) : (unitProgress[unitKey] || 0);
 
                 let starsHtml = '';
                 for (let i = 1; i <= 3; i++) {
@@ -770,7 +806,7 @@
 
                 const card = document.createElement('div');
                 card.className = "bg-white/90 hover:bg-white p-4 rounded-2xl border-2 border-slate-200/80 hover:border-amber-400 shadow-sm hover:shadow-md transition cursor-pointer flex items-center justify-between group btn-press";
-                card.onclick = () => startQuiz(unitKey);
+                card.onclick = () => unit.sets ? openSetSelection(unitKey) : startQuiz(unitKey);
 
                 card.innerHTML = `
                     <div class="flex items-center gap-3.5">
@@ -782,7 +818,7 @@
                                 <span class="font-fredoka text-sm font-bold text-amber-800">${unitKey}</span>
                             </div>
                             <h4 class="font-bold text-slate-800 text-sm sm:text-base leading-tight">${unit.title}</h4>
-                            <span class="text-[11px] text-slate-500 font-semibold">${unit.questions.length} Soalan</span>
+                            <span class="text-[11px] text-slate-500 font-semibold">${unit.sets ? '2 Set • 20 Soalan' : unit.questions.length + ' Soalan'}</span>
                         </div>
                     </div>
                     <div class="flex flex-col items-end gap-1">
@@ -796,16 +832,56 @@
             });
         }
 
+        function openSetSelection(unitKey) {
+            playSynthesizedSound('pop');
+            currentUnitKey = unitKey;
+            const unit = quizData[unitKey];
+            showScreen('screen-set-selection');
+            document.getElementById('set-selection-subtitle').innerText = `${unitKey}: ${unit.title} — pilih satu set cabaran.`;
+            setCapyExpression('normal', `Adik ${studentName}, nak cuba Capy Ceria atau Capy Bijak? Pilih satu set ya!`);
+
+            const container = document.getElementById('set-cards-container');
+            container.innerHTML = '';
+
+            Object.entries(unit.sets).forEach(([setKey, setObj], index) => {
+                const savedStars = unitProgress[unitKey + '_' + setKey] || 0;
+                let starsHtml = '';
+                for (let i = 1; i <= 3; i++) {
+                    starsHtml += `<span class="${i <= savedStars ? 'text-amber-400' : 'text-slate-300'} text-xl">★</span>`;
+                }
+
+                const card = document.createElement('button');
+                card.className = "text-left bg-white hover:bg-amber-50 p-5 rounded-2xl border-2 border-slate-200 hover:border-amber-400 shadow-sm hover:shadow-md transition btn-press space-y-3";
+                card.onclick = () => startQuiz(unitKey, setKey);
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="text-3xl mb-2">${index === 0 ? '🌈' : '🚀'}</div>
+                            <h4 class="font-fredoka text-lg font-bold text-amber-900">${setObj.name}</h4>
+                            <p class="text-xs font-semibold text-slate-500 mt-1">${setObj.badge}</p>
+                        </div>
+                        <div class="flex gap-0.5">${starsHtml}</div>
+                    </div>
+                    <div class="text-sm text-slate-600 font-medium">10 soalan • Soalan dan jawapan diacak</div>
+                    <div class="font-bold text-amber-600 text-sm">Mula Set ${setKey === 'setA' ? 'A' : 'B'} ➔</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
         /* ----------------------------------------------------
            8. QUIZ ENGINE LOGIC
         ---------------------------------------------------- */
-        function startQuiz(unitKey) {
+        function startQuiz(unitKey, setKey = "") {
             playSynthesizedSound('pop');
             currentUnitKey = unitKey;
+            currentSetKey = setKey;
             currentQuestionIdx = 0;
             score = 0;
-            // Generate newly randomized questions & options for this session
-            activeQuestions = prepareShuffledQuestions(quizData[unitKey].questions);
+
+            const unit = quizData[unitKey];
+            const sourceQuestions = unit.sets && setKey ? unit.sets[setKey].questions : unit.questions;
+            activeQuestions = prepareShuffledQuestions(sourceQuestions);
             showScreen('screen-quiz');
             loadQuestion();
         }
@@ -816,10 +892,10 @@
             const q = activeQuestions[currentQuestionIdx];
 
             // Header labels & Progress
-            document.getElementById('quiz-unit-label').innerText = `${currentUnitKey}: ${unit.title}`;
+            document.getElementById('quiz-unit-label').innerText = unit.sets && currentSetKey ? `${currentUnitKey} • Set ${currentSetKey === 'setA' ? 'A' : 'B'}: ${unit.title}` : `${currentUnitKey}: ${unit.title}`;
             document.getElementById('quiz-progress-text').innerText = `Soalan ${currentQuestionIdx + 1} / ${activeQuestions.length}`;
             
-            const progressPct = ((currentQuestionIdx + 1) / activeQuestions.length) * 100;
+            const progressPct = ((currentQuestionIdx) / activeQuestions.length) * 100;
             document.getElementById('quiz-progress-bar').style.width = `${progressPct}%`;
 
             // Question Text
@@ -941,7 +1017,7 @@
             if (percentage >= 80) stars = 3;
             else if (percentage >= 50) stars = 2;
 
-            saveProgress(currentUnitKey, stars);
+            saveProgress(currentSetKey ? currentUnitKey + '_' + currentSetKey : currentUnitKey, stars);
 
             document.getElementById('result-score-text').innerText = `${score} / ${totalQuestions}`;
             document.getElementById('result-percentage').innerText = `Ketepatan: ${percentage}%`;
@@ -976,7 +1052,7 @@
         }
 
         function retryCurrentUnit() {
-            startQuiz(currentUnitKey);
+            startQuiz(currentUnitKey, currentSetKey);
         }
 
         /* Simple Canvas Confetti Effect */

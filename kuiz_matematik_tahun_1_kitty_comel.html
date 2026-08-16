@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuiz Matematik Tahun 1 - Kitty Comel</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Kawaii / Cute Aesthetic -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        kitty: {
+                            bg: '#fcf2f7',
+                            pink: '#f472b6',
+                            pinkLight: '#fbcfe8',
+                            pinkSoft: '#fdf2f8',
+                            purple: '#c084fc',
+                            purpleLight: '#f3e8ff',
+                            rose: '#fb7185',
+                            yellow: '#fde047',
+                            yellowLight: '#fef9c3',
+                            mint: '#4ade80',
+                            mintLight: '#dcfce7',
+                            card: '#ffffff',
+                            dark: '#475569'
+                        }
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #fcf2f7;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(244, 114, 182, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(192, 132, 252, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(253, 224, 71, 0.1) 0%, transparent 60%);
+            font-family: 'Quicksand', sans-serif;
+            min-height: 100vh;
+            color: #334155;
+        }
+
+        .font-fredoka { font-family: 'Fredoka', cursive, sans-serif; }
+
+        /* Kawaii Card & Frame Styling */
+        .kitty-card {
+            background: rgba(255, 255, 255, 0.92);
+            border: 3px solid #fbcfe8;
+            box-shadow: 0 10px 25px -5px rgba(244, 114, 182, 0.2), 0 8px 10px -6px rgba(244, 114, 182, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+        }
+
+        .kitty-btn-primary {
+            background: linear-gradient(135deg, #f472b6 0%, #e11d48 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(244, 114, 182, 0.4);
+        }
+        .kitty-btn-primary:hover {
+            background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+            transform: translateY(-2px);
+        }
+
+        .kitty-option {
+            background: #ffffff;
+            border: 2px solid #f3e8ff;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .kitty-option:hover:not(:disabled) {
+            border-color: #f472b6;
+            background: #fdf2f8;
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 6px 15px rgba(244, 114, 182, 0.2);
+        }
+
+        /* Cute Float & Pulse Animations */
+        @keyframes float-kitty {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+
+        @keyframes wiggle-ear {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+        .animate-kitty { animation: float-kitty 3.5s ease-in-out infinite; }
+        .animate-ear { animation: wiggle-ear 2s ease-in-out infinite; }
+
+        .btn-press {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-press:active {
+            transform: scale(0.95);
+        }
+
+        /* Custom Canvas Confetti */
+        #confetti-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fcf2f7; }
+        ::-webkit-scrollbar-thumb { background: #fbcfe8; border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f472b6; }
+    </style>
+</head>
+<body class="p-3 sm:p-6 flex flex-col justify-between min-h-screen">
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="max-w-4xl mx-auto w-full">
+        <!-- TOP APP BAR / KITTY HEADER -->
+        <header class="flex flex-wrap items-center justify-between bg-white/90 border-2 border-pink-200 p-4 rounded-3xl shadow-lg mb-6 gap-3 relative overflow-hidden">
+            <div class="absolute -top-6 -right-6 w-24 h-24 bg-pink-100 rounded-full blur-xl pointer-events-none"></div>
+
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-300 to-purple-300 p-0.5 shadow-md flex items-center justify-center text-2xl">
+                    🐱
+                </div>
+                <div>
+                    <h1 class="font-fredoka text-lg sm:text-2xl font-bold text-pink-500 tracking-wide flex items-center gap-1.5">
+                        KUIZ MATEMATIK TAHUN 1 🐾
+                    </h1>
+                    <p class="text-xs font-quicksand font-bold text-purple-400 tracking-wider">
+                        Siri Buku Teks KSSR Semakan • Kitty Comel
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sound Controller & User Status -->
+            <div class="flex items-center gap-2.5">
+                <button id="sound-btn" onclick="toggleSound()" class="p-2.5 bg-pink-50 hover:bg-pink-100 text-pink-500 rounded-2xl border border-pink-200 transition btn-press flex items-center gap-1.5 text-xs font-bold" title="Kesan Audio">
+                    <span id="sound-icon">🔊</span>
+                </button>
+                <div id="user-pill" class="hidden items-center bg-pink-50 border border-pink-200 pl-3 pr-2 py-1.5 rounded-2xl gap-2">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-fredoka font-bold text-pink-600 truncate max-w-[110px]" id="pill-name">KITTY HERO</span>
+                        <span class="text-[10px] font-bold text-purple-500 uppercase" id="pill-rank">KITTY TRAINEE 🐾</span>
+                    </div>
+                    <button onclick="openNameModal()" class="text-[11px] text-pink-600 hover:bg-pink-200 bg-pink-100 px-2 py-1 rounded-xl transition font-bold border border-pink-200">Tukar</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTAINER / KITTY ARENA FRAME -->
+        <div class="kitty-card p-5 sm:p-7 shadow-2xl mb-6 transition-all duration-300">
+            <!-- ANNOUNCER & KITTY MASCOT HEADER -->
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-6">
+                <!-- Cute Kitty SVG Avatar -->
+                <div class="relative flex-shrink-0 cursor-pointer group" onclick="triggerKittyVoice()">
+                    <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-gradient-to-tr from-pink-200 via-purple-100 to-yellow-100 p-1 animate-kitty shadow-md">
+                        <div class="w-full h-full bg-white rounded-2xl flex items-center justify-center overflow-hidden relative border border-pink-200">
+                            <!-- SVG Kitty Mascot -->
+                            <svg viewBox="0 0 100 100" class="w-full h-full p-1">
+                                <!-- Kitty Ears -->
+                                <polygon points="20,35 12,12 38,22" fill="#fbcfe8" stroke="#f472b6" stroke-width="2" class="animate-ear"/>
+                                <polygon points="23,32 17,16 34,23" fill="#f472b6" />
+                                <polygon points="80,35 88,12 62,22" fill="#fbcfe8" stroke="#f472b6" stroke-width="2" class="animate-ear"/>
+                                <polygon points="77,32 83,16 66,23" fill="#f472b6" />
+                                
+                                <!-- Head Base -->
+                                <ellipse cx="50" cy="52" rx="38" ry="32" fill="#ffffff" stroke="#f472b6" stroke-width="2.5"/>
+                                
+                                <!-- Cute Eyes -->
+                                <ellipse cx="36" cy="48" rx="4.5" ry="6" fill="#334155" />
+                                <circle cx="38" cy="46" r="1.8" fill="#ffffff" />
+                                <ellipse cx="64" cy="48" rx="4.5" ry="6" fill="#334155" />
+                                <circle cx="66" cy="46" r="1.8" fill="#ffffff" />
+                                
+                                <!-- Blushing Cheeks -->
+                                <ellipse cx="28" cy="56" rx="6" ry="3.5" fill="#f472b6" opacity="0.5" />
+                                <ellipse cx="72" cy="56" rx="6" ry="3.5" fill="#f472b6" opacity="0.5" />
+                                
+                                <!-- Nose & Mouth -->
+                                <polygon points="50,53 47,50 53,50" fill="#fb7185" />
+                                <path d="M 46 56 Q 50 59 50 56 Q 50 59 54 56" fill="none" stroke="#334155" stroke-width="1.8" stroke-linecap="round" />
+                                
+                                <!-- Whiskers -->
+                                <line x1="16" y1="48" x2="28" y2="50" stroke="#f472b6" stroke-width="1.8" stroke-linecap="round"/>
+                                <line x1="14" y1="56" x2="27" y2="55" stroke="#f472b6" stroke-width="1.8" stroke-linecap="round"/>
+                                <line x1="84" y1="48" x2="72" y2="50" stroke="#f472b6" stroke-width="1.8" stroke-linecap="round"/>
+                                <line x1="86" y1="56" x2="73" y2="55" stroke="#f472b6" stroke-width="1.8" stroke-linecap="round"/>
+                                
+                                <!-- Cute Ribbon Bow -->
+                                <circle cx="28" cy="24" r="4" fill="#f472b6"/>
+                                <path d="M 28 24 C 18 16 16 30 28 24 Z" fill="#fb7185"/>
+                                <path d="M 28 24 C 38 16 40 30 28 24 Z" fill="#fb7185"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-pink-500 text-white font-fredoka text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-md whitespace-nowrap">
+                        KITTY MASCOT 🐾
+                    </span>
+                </div>
+
+                <!-- Kitty Speech Box -->
+                <div class="flex-1 w-full relative">
+                    <div class="bg-gradient-to-r from-pink-50 to-purple-50 border-2 border-pink-200 p-4 rounded-3xl shadow-inner relative text-slate-700">
+                        <div class="hidden sm:block absolute -left-3 top-6 w-0 h-0 border-t-[8px] border-t-transparent border-r-[12px] border-r-pink-200 border-b-[8px] border-b-transparent"></div>
+                        
+                        <div id="greeting-box" class="space-y-1">
+                            <h2 id="greeting-title" class="font-fredoka text-base sm:text-lg font-bold text-pink-600 flex items-center gap-2">
+                                🎀 MEOW! SELAMAT DATANG KE KUIZ TAHUN 1!
+                            </h2>
+                            <p id="greeting-msg" class="text-xs sm:text-sm text-slate-600 leading-relaxed font-semibold">
+                                Selesaikan soalan matematik Tahun 1, kumpul Bintang Comel dan capai gelaran Mythic Kitty Champion!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APP NAVIGATION SCREENS CONTAINER -->
+            <main id="app-content">
+                <!-- SCREEN 1: Name & Registration -->
+                <div id="screen-name-input" class="hidden py-4 text-center space-y-4 max-w-md mx-auto">
+                    <div class="bg-white/80 p-6 rounded-3xl border-2 border-pink-200 shadow-md">
+                        <label for="student-name-input" class="block font-fredoka text-base font-bold text-pink-600 mb-2">
+                            MASUKKAN NAMA ANDA 🎀
+                        </label>
+                        <p class="text-xs text-slate-500 mb-4 font-bold">Nama ini akan dipaparkan dalam Sijil Pangkat & Bintang Kitty!</p>
+                        <input type="text" id="student-name-input" placeholder="Contoh: Adam / Sofia" 
+                            class="w-full text-center px-4 py-3 rounded-2xl border-2 border-pink-300 focus:border-pink-500 focus:outline-none font-bold text-lg text-pink-600 bg-pink-50/50 shadow-inner mb-4 tracking-wide"
+                            onkeypress="if(event.key === 'Enter') saveNameAndStart()">
+                        <button onclick="saveNameAndStart()" class="w-full kitty-btn-primary font-fredoka font-bold py-3.5 px-6 rounded-2xl shadow-lg transition btn-press text-base tracking-wider uppercase">
+                            MULA KUIZ KITTY! 🐾
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SCREEN 2: Topic / Unit Selection Menu -->
+                <div id="screen-units" class="space-y-5">
+                    <div class="flex flex-wrap items-center justify-between border-b-2 border-pink-100 pb-3 gap-2">
+                        <div>
+                            <h3 class="font-fredoka text-base sm:text-lg font-bold text-pink-600 flex items-center gap-2">
+                                📜 PILIH TOPIK BUKU TEKS TAHUN 1 (UNIT 1 - 8)
+                            </h3>
+                            <p class="text-xs text-slate-500 font-bold">Buku Teks Matematik Tahun 1 KSSR Semakan</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-fredoka font-bold bg-pink-100 border border-pink-300 text-pink-600 px-3 py-1.5 rounded-2xl shadow-sm" id="total-stars-badge">
+                                ⭐ 0/24 BINTANG
+                            </span>
+                            <span class="text-xs font-fredoka font-bold bg-purple-100 border border-purple-300 text-purple-600 px-3 py-1.5 rounded-2xl shadow-sm" id="rank-badge-text">
+                                RANK: KITTY TRAINEE 🐾
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Filter Tabs Jilid 1 / Jilid 2 -->
+                    <div class="flex gap-2">
+                        <button id="tab-all" onclick="filterUnits('all')" class="px-4 py-2 rounded-2xl text-xs font-fredoka font-bold bg-pink-500 text-white shadow-md">SEMUA UNIT</button>
+                        <button id="tab-j1" onclick="filterUnits('j1')" class="px-4 py-2 rounded-2xl text-xs font-fredoka font-bold bg-white text-slate-600 border border-pink-200 hover:border-pink-400">JILID 1 (U1-U4)</button>
+                        <button id="tab-j2" onclick="filterUnits('j2')" class="px-4 py-2 rounded-2xl text-xs font-fredoka font-bold bg-white text-slate-600 border border-pink-200 hover:border-pink-400">JILID 2 (U5-U8)</button>
+                    </div>
+
+                    <div id="unit-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                        <!-- Dynamic Unit Cards Injected Here -->
+                    </div>
+                </div>
+
+                <!-- SCREEN 3: Active Quiz Arena -->
+                <div id="screen-quiz" class="hidden space-y-5">
+                    <!-- Quiz Progress Bar Header -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-xs font-fredoka font-bold text-slate-600">
+                            <span id="quiz-unit-label" class="text-pink-600 bg-pink-100 border border-pink-300 px-3 py-1 rounded-2xl">Unit 1</span>
+                            <span id="quiz-progress-text" class="text-purple-600">SOALAN 1 / 10</span>
+                        </div>
+                        <div class="w-full bg-pink-100 h-3.5 rounded-full overflow-hidden p-0.5 border border-pink-200 shadow-inner">
+                            <div id="quiz-progress-bar" class="bg-gradient-to-r from-pink-400 to-purple-400 h-full rounded-full transition-all duration-300 w-0"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question Card Container -->
+                    <div class="bg-white p-5 sm:p-6 rounded-3xl border-2 border-pink-200 shadow-sm space-y-4">
+                        <h3 id="question-text" class="font-fredoka text-base sm:text-lg text-slate-800 font-bold leading-relaxed">
+                            Soalan akan dipaparkan di sini...
+                        </h3>
+
+                        <!-- Answer Options Grid -->
+                        <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                            <!-- Options injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Explanation Box -->
+                    <div id="explanation-box" class="hidden p-4 rounded-3xl border-2 transition-all duration-200">
+                        <!-- Injected explanation -->
+                    </div>
+
+                    <!-- Navigation Controls -->
+                    <div class="flex items-center justify-between pt-2">
+                        <button onclick="confirmExitQuiz()" class="bg-white hover:bg-slate-100 border-2 border-slate-200 text-slate-600 font-bold px-4 py-2.5 rounded-2xl transition text-xs font-fredoka btn-press flex items-center gap-1">
+                            ◀ KEMBALI
+                        </button>
+                        <button id="next-btn" onclick="nextQuestion()" class="hidden kitty-btn-primary font-fredoka font-bold px-6 py-2.5 rounded-2xl transition shadow-md btn-press text-sm items-center gap-2 tracking-wider">
+                            SETERUSNYA ➔
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SCREEN 4: Quiz Completion Summary -->
+                <div id="screen-result" class="hidden text-center space-y-6 py-4">
+                    <div class="space-y-2">
+                        <div class="text-5xl animate-bounce mb-2" id="result-emoji">👑</div>
+                        <h2 class="font-fredoka text-2xl sm:text-3xl font-bold text-pink-600 uppercase tracking-wide" id="result-title">
+                            TAHNIAH MEOW!
+                        </h2>
+                        <p class="text-slate-600 text-xs sm:text-sm max-w-md mx-auto font-bold" id="result-subtext">
+                            Kuiz selesai! Anda telah menunjukkan kehebatan matematik Tahun 1!
+                        </p>
+                    </div>
+
+                    <!-- Score Card -->
+                    <div class="bg-white border-2 border-pink-300 rounded-3xl p-6 max-w-sm mx-auto shadow-xl space-y-4">
+                        <div class="text-xs font-fredoka font-bold tracking-wider text-pink-500 uppercase">KEPUTUSAN KUIZ TAHUN 1</div>
+                        <div class="text-4xl sm:text-5xl font-fredoka font-bold text-pink-600" id="result-score-text">
+                            0 / 10
+                        </div>
+
+                        <!-- Stars Earned -->
+                        <div class="flex justify-center gap-2 text-3xl" id="result-stars">
+                            <span>⭐</span><span>⭐</span><span>⭐</span>
+                        </div>
+
+                        <div class="text-xs font-fredoka font-bold text-purple-600 pt-2 border-t border-pink-100" id="result-percentage">
+                            KETEPATAN JAWAPAN: 100%
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2 max-w-md mx-auto">
+                        <button onclick="retryCurrentUnit()" class="flex-1 bg-white hover:bg-pink-50 text-pink-600 font-fredoka font-bold py-3 px-5 rounded-2xl transition btn-press text-xs border-2 border-pink-200">
+                            🔄 CUBA LAGI (RE-MATCH)
+                        </button>
+                        <button onclick="showUnitsMenu()" class="flex-1 kitty-btn-primary font-fredoka font-bold py-3 px-5 rounded-2xl shadow-md transition btn-press text-xs tracking-wider">
+                            📜 PILIH TOPIK LAIN
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="text-center text-[11px] text-slate-500 py-2 font-bold">
+            Kuiz Matematik Tahun 1 • KSSR Semakan (Buku Teks Jilid 1 & Jilid 2) • Maskot Kitty Comel 🐾
+        </footer>
+    </div>
+
+    <!-- EDIT NAME MODAL -->
+    <div id="name-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white p-6 rounded-3xl max-w-sm w-full shadow-2xl space-y-4 border-2 border-pink-300">
+            <h3 class="font-fredoka text-base font-bold text-pink-600">KEMASKINI NAMA ✏️</h3>
+            <input type="text" id="modal-name-input" class="w-full text-center px-4 py-2.5 rounded-2xl border-2 border-pink-300 font-bold text-pink-600 bg-pink-50/50 focus:outline-none focus:border-pink-500">
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeNameModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-fredoka font-bold rounded-2xl transition">BATAL</button>
+                <button onclick="saveNameFromModal()" class="px-4 py-2 kitty-btn-primary text-xs font-fredoka font-bold rounded-2xl transition shadow">SIMPAN</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ----------------------------------------------------
+           1. YEAR 1 MATH SYLLABUS DATA (JILID 1 & JILID 2)
+           10 Questions per Unit = 80 Total Questions
+        ---------------------------------------------------- */
+        const quizData = {
+            "Unit 1": {
+                title: "Nombor hingga 100",
+                jilid: "Jilid 1",
+                icon: "🔢",
+                questions: [
+                    { q: "Apakah nilai tempat bagi digit 5 dalam nombor 52?", a: ["Sa", "Puluh", "Ratus", "Ribu"], correct: 1, exp: "Dalam nombor 52, 5 berada di tempat Puluh dan 2 berada di tempat Sa." },
+                    { q: "Apakah nilai digit bagi 7 dalam nombor 37?", a: ["7", "70", "30", "3"], correct: 0, exp: "Digit 7 berada di tempat Sa, jadi nilai digitnya ialah 7." },
+                    { q: "Cerakinkan nombor 49 mengikut nilai digit.", a: ["40 + 9", "4 + 9", "40 + 90", "4 + 90"], correct: 0, exp: "49 = 40 (Puluh) + 9 (Sa)." },
+                    { q: "Bundarkan nombor 68 kepada puluh terdekat.", a: ["60", "65", "70", "80"], correct: 2, exp: "Digit sa ialah 8 (5 atau lebih), jadi tambah 1 pada puluh menjadi 70." },
+                    { q: "Antara nombor berikut, manakah yang PALING BESAR?", a: ["48", "84", "45", "80"], correct: 1, exp: "84 adalah yang paling besar kerana digit puluh (8) dan sa (4) paling tinggi." },
+                    { q: "Apakah pola nombor ini: 10, 20, 30, 40, 50...?", a: ["Menaik sepuluh-sepuluh", "Menurun sepuluh-sepuluh", "Menaik dua-dua", "Menaik lima-lima"], correct: 0, exp: "Nombor bertambah 10 pada setiap langkah." },
+                    { q: "Tuliskan 'Tujuh puluh lapan' dalam bentuk angka.", a: ["78", "87", "70", "80"], correct: 0, exp: "7 Puluh + 8 Sa = 78." },
+                    { q: "Apakah nombor tepat SEBELUM nombor 100?", a: ["90", "98", "99", "91"], correct: 2, exp: "100 tolak 1 ialah 99." },
+                    { q: "Bilang dua-dua selepas nombor 12 ialah?", a: ["13", "14", "15", "16"], correct: 1, exp: "12 + 2 = 14." },
+                    { q: "Susun nombor berikut secara TERTIB MENAIK: 15, 12, 18.", a: ["12, 15, 18", "18, 15, 12", "15, 12, 18", "12, 18, 15"], correct: 0, exp: "Tertib menaik bermula daripada nombor terkecil (12, 15, 18)." }
+                ]
+            },
+            "Unit 2": {
+                title: "Tambah dan Tolak (Hingga 100)",
+                jilid: "Jilid 1",
+                icon: "➕",
+                questions: [
+                    { q: "Hitungkan: 24 + 13 = ?", a: ["37", "35", "27", "47"], correct: 0, exp: "24 + 13 = 37." },
+                    { q: "Hitungkan: 50 - 20 = ?", a: ["30", "20", "40", "10"], correct: 0, exp: "50 - 20 = 30." },
+                    { q: "Ayat matematik 4 + 4 + 4 mewakili tambah berulang bagi?", a: ["3 kumpulan 4", "4 kumpulan 3", "2 kumpulan 4", "3 kumpulan 3"], correct: 0, exp: "Ada 3 kali angka 4, iaitu 3 kumpulan 4." },
+                    { q: "Jika 15 ditolak 5 secara berturut-turut 3 kali, bakinya ialah?", a: ["0", "5", "10", "1"], correct: 0, exp: "15 - 5 - 5 - 5 = 0." },
+                    { q: "Hitungkan: 35 + 12 = ?", a: ["47", "45", "37", "57"], correct: 0, exp: "35 + 12 = 47." },
+                    { q: "Hitungkan: 80 - 15 = ?", a: ["65", "75", "55", "70"], correct: 0, exp: "80 - 15 = 65." },
+                    { q: "Ali ada 8 biji guli. Abang bagi 5 biji lagi. Berapakah jumlah guli Ali?", a: ["13 biji", "12 biji", "14 biji", "15 biji"], correct: 0, exp: "8 + 5 = 13 biji guli." },
+                    { q: "Siti ada 12 belon. 4 belon telah pecah. Berapakah baki belon Siti?", a: ["8 belon", "6 belon", "7 belon", "9 belon"], correct: 0, exp: "12 - 4 = 8 belon." },
+                    { q: "Hitungkan: 40 + 50 = ?", a: ["90", "80", "100", "70"], correct: 0, exp: "4 puluh + 5 puluh = 9 puluh (90)." },
+                    { q: "Apakah kombinasi nombor 6 dan 4?", a: ["10", "9", "8", "12"], correct: 0, exp: "6 + 4 menjadikan 10." }
+                ]
+            },
+            "Unit 3": {
+                title: "Pecahan (Satu per dua & Satu per empat)",
+                jilid: "Jilid 1",
+                icon: "🍕",
+                questions: [
+                    { q: "Satu daripada dua bahagian yang sama besar dinamakan?", a: ["Satu per dua (Separuh)", "Satu per empat (Suku)", "Tiga per empat", "Dua per dua"], correct: 0, exp: "1 daripada 2 bahagian yang sama dinamakan Satu per dua (Separuh/Setengah)." },
+                    { q: "Satu daripada empat bahagian yang sama besar dinamakan?", a: ["Satu per empat (Suku)", "Satu per dua", "Tiga per empat", "Dua per empat"], correct: 0, exp: "1 daripada 4 bahagian yang sama dinamakan Satu per empat (Suku)." },
+                    { q: "Dua daripada empat bahagian yang sama besar dinamakan?", a: ["Dua per empat", "Satu per empat", "Tiga per empat", "Satu per tiga"], correct: 0, exp: "2 daripada 4 bahagian ialah Dua per empat (sama nilainya dengan separuh)." },
+                    { q: "Tiga daripada empat bahagian yang sama besar dinamakan?", a: ["Tiga per empat", "Satu per empat", "Dua per empat", "Empat per empat"], correct: 0, exp: "3 daripada 4 bahagian ialah Tiga per empat." },
+                    { q: "Sebiji kek dipotong 2 bahagian sama besar. Setiap bahagian dipanggil?", a: ["Separuh / Setengah", "Suku", "Tiga per empat", "Satu kek"], correct: 0, exp: "Dua bahagian sama besar setiap satu ialah separuh (1/2)." },
+                    { q: "Sebiji pizza dipotong 4 bahagian sama besar. 1 bahagian ialah?", a: ["Suku (1/4)", "Separuh (1/2)", "Tiga per empat", "Penuh"], correct: 0, exp: "1 daripada 4 bahagian ialah suku (1/4)." },
+                    { q: "Perkataan 'Separuh' juga bermaksud pecahan?", a: ["Satu per dua", "Satu per empat", "Tiga per empat", "Satu per satu"], correct: 0, exp: "Separuh atau setengah ialah 1/2." },
+                    { q: "Perkataan 'Suku' juga bermaksud pecahan?", a: ["Satu per empat", "Satu per dua", "Dua per tiga", "Tiga per empat"], correct: 0, exp: "Suku ialah 1/4." },
+                    { q: "Yang manakah menunjukkan lipatan 1/2 yang betul?", a: ["2 bahagian sama saiz", "2 bahagian tidak sama saiz", "3 bahagian", "4 bahagian"], correct: 0, exp: "Pecahan mesti dibahagikan kepada bahagian yang SAMA saiz." },
+                    { q: "Jika kita makan 3 bahagian daripada 4 bahagian pai, kita makan?", a: ["Tiga per empat", "Satu per empat", "Satu per dua", "Empat per empat"], correct: 0, exp: "3 daripada 4 bahagian ialah 3/4." }
+                ]
+            },
+            "Unit 4": {
+                title: "Wang (Hingga RM10 & Syiling)",
+                jilid: "Jilid 1",
+                icon: "💰",
+                questions: [
+                    { q: "Syiling 50 sen boleh ditukar dengan berapa keping syiling 20 sen dan 10 sen?", a: ["2 keping 20 sen + 1 keping 10 sen", "1 keping 20 sen + 1 keping 10 sen", "3 keping 20 sen", "5 keping 20 sen"], correct: 0, exp: "20 sen + 20 sen + 10 sen = 50 sen." },
+                    { q: "Hitungkan: RM 5 + RM 2 = ?", a: ["RM 7", "RM 6", "RM 8", "RM 10"], correct: 0, exp: "5 + 2 = RM 7." },
+                    { q: "Hitungkan: RM 10 - RM 4 = ?", a: ["RM 6", "RM 5", "RM 7", "RM 4"], correct: 0, exp: "10 - 4 = RM 6." },
+                    { q: "Aina beli pemadam 50 sen dan bayar dengan RM 1 (100 sen). Berapakah baki wangnya?", a: ["50 sen", "20 sen", "10 sen", "40 sen"], correct: 0, exp: "100 sen - 50 sen = 50 sen." },
+                    { q: "Apakah warna wang kertas RM 1?", a: ["Biru", "Hijau", "Merah", "Kuning"], correct: 0, exp: "Wang kertas RM 1 berwarna biru." },
+                    { q: "Apakah warna wang kertas RM 5?", a: ["Hijau", "Biru", "Merah", "Jingga"], correct: 0, exp: "Wang kertas RM 5 berwarna hijau." },
+                    { q: "Apakah warna wang kertas RM 10?", a: ["Merah", "Hijau", "Biru", "Coklat"], correct: 0, exp: "Wang kertas RM 10 berwarna merah." },
+                    { q: "Mengapakah kita perlu menyimpan wang saku?", a: ["Untuk kegunaan masa depan", "Untuk dihabiskan segera", "Untuk beli semua gula-gula", "Tiada sebab"], correct: 0, exp: "Amalan menabung penting untuk masa depan." },
+                    { q: "2 keping wang RM 5 mempunyai nilai yang sama dengan?", a: ["RM 10", "RM 5", "RM 15", "RM 20"], correct: 0, exp: "RM 5 + RM 5 = RM 10." },
+                    { q: "5 keping syiling 10 sen bersamaan dengan?", a: ["50 sen", "20 sen", "40 sen", "RM 1"], correct: 0, exp: "5 × 10 sen = 50 sen." }
+                ]
+            },
+            "Unit 5": {
+                title: "Masa dan Waktu",
+                jilid: "Jilid 2",
+                icon: "⏰",
+                questions: [
+                    { q: "Kita biasanya bersarapan pada waktu?", a: ["Pagi", "Malam", "Tengah hari", "Petang"], correct: 0, exp: "Sarapan dilakukan pada waktu pagi." },
+                    { q: "Kita biasanya tidur malam pada waktu?", a: ["Malam", "Pagi", "Tengah hari", "Petang"], correct: 0, exp: "Tidur malam pada waktu malam." },
+                    { q: "Apakah hari selepas hari Isnin?", a: ["Selasa", "Ahad", "Rabu", "Khamis"], correct: 0, exp: "Urutan hari: Isnin ➔ Selasa." },
+                    { q: "Terdapat berapa hari dalam satu minggu?", a: ["7 hari", "5 hari", "6 hari", "10 hari"], correct: 0, exp: "1 minggu ada 7 hari (Ahad hingga Sabtu)." },
+                    { q: "Terdapat berapa bulan dalam satu tahun?", a: ["12 bulan", "10 bulan", "7 bulan", "24 bulan"], correct: 0, exp: "1 tahun ada 12 bulan (Januari hingga Disember)." },
+                    { q: "Jarum pendek tunjuk nombor 3, jarum panjang tunjuk nombor 12. Pukul berapa?", a: ["Pukul 3", "Pukul 12", "Pukul 6", "Pukul 9"], correct: 0, exp: "Jarum pendek tunjuk 3 = Pukul 3 tepat." },
+                    { q: "Jarum panjang menunjuk ke nombor 6 mewakili waktu?", a: ["Setengah jam", "Suku jam", "Satu jam", "Tepat"], correct: 0, exp: "Nombor 6 pada muka jam mewakili setengah jam (30 minit)." },
+                    { q: "Jarum panjang menunjuk ke nombor 3 mewakili waktu?", a: ["Suku jam", "Setengah jam", "Satu jam", "Tiga jam"], correct: 0, exp: "Nombor 3 pada muka jam mewakili suku jam (15 minit)." },
+                    { q: "Apakah bulan PERTAMA dalam setahun?", a: ["Januari", "Februari", "Mac", "Disember"], correct: 0, exp: "Bulan pertama ialah Januari." },
+                    { q: "Apakah bulan TERAKHIR dalam setahun?", a: ["Disember", "November", "Januari", "Ogos"], correct: 0, exp: "Bulan ke-12 ialah Disember." }
+                ]
+            },
+            "Unit 6": {
+                title: "Ukuran dan Sukatan (Unit Bukan Piawai)",
+                jilid: "Jilid 2",
+                icon: "📏",
+                questions: [
+                    { q: "Mengukur panjang guna selebar jengkal jari tangan dinamakan?", a: ["Jengkal", "Tapak", "Langkah", "Depa"], correct: 0, exp: "Jengkal ialah ukuran dari hujung ibu jari ke hujung jari kelingking." },
+                    { q: "Mengukur panjang guna jarak langkah kaki dinamakan?", a: ["Langkah / Tapak", "Jengkal", "Hasta", "Cawan"], correct: 0, exp: "Menggunakan kaki dinamakan Langkah atau Tapak." },
+                    { q: "Antara gajah dan kucing, manakah yang LEBIH BERAT?", a: ["Gajah", "Kucing", "Sama berat", "Tidak pasti"], correct: 0, exp: "Gajah jauh lebih berat daripada kucing." },
+                    { q: "Antara bulu ayam dan batu, manakah yang LEBIH RINGAN?", a: ["Bulu ayam", "Batu", "Sama berat", "Tidak pasti"], correct: 0, exp: "Bulu ayam sangat ringan berbanding batu." },
+                    { q: "Gelas A berisi air penuh, Gelas B berisi separuh air. Gelas manakah BANYAK air?", a: ["Gelas A", "Gelas B", "Sama banyak", "Tiada air"], correct: 0, exp: "Gelas berisi penuh mempunyai air yang lebih banyak." },
+                    { q: "Cawan yang tidak ada air langsung dinamakan cawan?", a: ["Kosong", "Penuh", "Separuh", "Banyak"], correct: 0, exp: "Tiada isi bermaksud kosong." },
+                    { q: "Pokok kelapa adalah lebih _____ daripada pokok renek.", a: ["Tinggi", "Rendah", "Pendek", "Kecil"], correct: 0, exp: "Pokok kelapa tinggi." },
+                    { q: "Pensel kontot adalah lebih _____ daripada pembaris panjang.", a: ["Pendek", "Panjang", "Tinggi", "Tehal"], correct: 0, exp: "Pensel kontot adalah pendek." },
+                    { q: "Penimbang meletakkan buku dan pemadam. Piring buku turun ke bawah. Ini bermakna buku lebih?", a: ["Berat", "Ringan", "Sama", "Kecil"], correct: 0, exp: "Piring yang turun ke bawah menandakan objek lebih berat." },
+                    { q: "Menyukat isi padu air menggunakan cawan ialah ukuran unit?", a: ["Bukan piawai", "Piawai", "Meter", "Kilogram"], correct: 0, exp: "Cawan, klip kertas, jengkal ialah contoh unit bukan piawai." }
+                ]
+            },
+            "Unit 7": {
+                title: "Ruang (Bentuk 2D & 3D)",
+                jilid: "Jilid 2",
+                icon: "🎲",
+                questions: [
+                    { q: "Bentuk 3D yang ada 6 muka segi empat sama dipanggil?", a: ["Kubus", "Kuboid", "Piramid", "Sfera"], correct: 0, exp: "Kubus mempunyai 6 muka rata segi empat sama." },
+                    { q: "Bentuk 3D yang bulat seperti bola dinamakan?", a: ["Sfera", "Kubus", "Silinder", "Kon"], correct: 0, exp: "Bola berbentuk Sfera." },
+                    { q: "Bentuk 3D seperti tin minuman dinamakan?", a: ["Silinder", "Kon", "Kubus", "Piramid"], correct: 0, exp: "Tin minuman berbentuk Silinder." },
+                    { q: "Bentuk 2D yang ada 3 sisi lurus dan 3 bucu dipanggil?", a: ["Segi tiga", "Segi empat sama", "Bulatan", "Kubus"], correct: 0, exp: "Segi tiga ada 3 sisi dan 3 bucu." },
+                    { q: "Bentuk 2D yang tiada bucu dan ada 1 sisi melengkung ialah?", a: ["Bulatan", "Segi tiga", "Segi empat tepat", "Piramid"], correct: 0, exp: "Bulatan tidak mempunyai bucu." },
+                    { q: "Topi hari lahir berbentuk 3D apakah?", a: ["Kon", "Silinder", "Kuboid", "Sfera"], correct: 0, exp: "Topi hari lahir berbentuk Kon." },
+                    { q: "Kotak kasut biasanya berbentuk 3D apakah?", a: ["Kuboid", "Kubus", "Sfera", "Kon"], correct: 0, exp: "Kotak kasut berbentuk Kuboid." },
+                    { q: "Bentuk 2D yang ada 4 sisi lurus SAMA PANJANG ialah?", a: ["Segi empat sama", "Segi empat tepat", "Segi tiga", "Bulatan"], correct: 0, exp: "Segi empat sama mempunyai 4 sisi sama panjang." },
+                    { q: "Piramid mempunyai tapak berbentuk?", a: ["Segi empat / Segi tiga", "Bulatan", "Sfera", "Tiada tapak"], correct: 0, exp: "Piramid mempunyai tapak rata segi empat atau segi tiga." },
+                    { q: "Berapakah bilangan bucu bagi sebuah Sfera?", a: ["0 (Tiada bucu)", "1 bucu", "4 bucu", "8 bucu"], correct: 0, exp: "Sfera bulat sepenuhnya dan tiada bucu." }
+                ]
+            },
+            "Unit 8": {
+                title: "Data (Pengurusan Data Asas)",
+                jilid: "Jilid 2",
+                icon: "📊",
+                questions: [
+                    { q: "Cara mengumpul maklumat objek dinamakan?", a: ["Mengumpul data", "Melukis gambar", "Mewarna", "Kira nombor"], correct: 0, exp: "Proses mencari dan mencatat maklumat dipanggil mengumpul data." },
+                    { q: "Piktograf menggunakan _____ untuk mewakili data.", a: ["Gambar / Simbol", "Nombor sahaja", "Garisan lurus", "Warna"], correct: 0, exp: "Piktograf ialah carta yang menggunakan gambar atau simbol." },
+                    { q: "Jika 1 gambar epal mewakili 1 biji epal, 4 gambar epal bermaksud?", a: ["4 biji epal", "1 biji epal", "5 biji epal", "8 biji epal"], correct: 0, exp: "4 gambar × 1 = 4 biji epal." },
+                    { q: "Mengasingkan mainan mengikut warna dipanggil?", a: ["Mengelas data", "Membaca data", "Membuang data", "Menulis"], correct: 0, exp: "Mengelompokkan mengikut ciri dinamakan mengelas data." },
+                    { q: "Jadual data membantu kita membaca maklumat dengan lebih?", a: ["Mudah dan teratur", "Sukar", "Lambat", "Keliru"], correct: 0, exp: "Jadual menyusun data supaya senang dibaca." },
+                    { q: "Jika 1 simbol bintang mewakili 2 orang, 3 simbol bintang bermaksud?", a: ["6 orang", "3 orang", "5 orang", "2 orang"], correct: 0, exp: "3 × 2 orang = 6 orang." },
+                    { q: "Gambar dalam piktograf boleh disusun secara?", a: ["Baris atau lajur", "Pusingan", "Senget", "Acak"], correct: 0, exp: "Piktograf disusun secara menegak (lajur) atau melintang (baris)." },
+                    { q: "Petunjuk dalam piktograf berfungsi untuk?", a: ["Memberitahu nilai setiap gambar", "Mencantikkan carta", "Mewarna gambar", "Tiada guna"], correct: 0, exp: "Petunjuk menjelaskan maksud nilai bagi sesuatu simbol/gambar." },
+                    { q: "Mengira bilangan lembu di padang ialah proses?", a: ["Mengumpul data", "Mengukur panjang", "Menimbang berat", "Membeli lembu"], correct: 0, exp: "Mengira dan mencatat bilangan ialah pengumpulan data." },
+                    { q: "Tajuk piktograf menerangkan tentang?", a: ["Kandungan maklumat data", "Nama pelukis", "Warna gambar", "Harga kertas"], correct: 0, exp: "Tajuk memberitahu perkara yang digambarkan oleh piktograf." }
+                ]
+            }
+        };
+
+        /* ----------------------------------------------------
+           2. APP STATE & CUTE KITTY RANK TIERS
+        ---------------------------------------------------- */
+        let studentName = "";
+        let currentUnitKey = "";
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let answeredCurrent = false;
+        let soundEnabled = true;
+        let activeQuestions = [];
+        let unitProgress = {};
+        let activeFilter = 'all';
+
+        // Cute Kitty Rank Tiers based on total stars earned
+        const rankTiers = [
+            { minStars: 0, name: "KITTY TRAINEE 🐾", color: "text-slate-500" },
+            { minStars: 4, name: "CUTE PAWS 🐾🐾", color: "text-pink-500" },
+            { minStars: 8, name: "WHISKERS 🐱", color: "text-purple-500" },
+            { minStars: 12, name: "KITTY EXPLORER 🌟", color: "text-amber-500" },
+            { minStars: 16, name: "MAGICAL NEKO ✨", color: "text-emerald-500" },
+            { minStars: 20, name: "PRINCESS KITTY 👑", color: "text-rose-500" },
+            { minStars: 24, name: "MYTHIC KITTY CHAMPION 🏆", color: "text-pink-600 font-extrabold" }
+        ];
+
+        /* ----------------------------------------------------
+           2.1 SHUFFLE ENGINE (QUESTION & OPTIONS RANDOMIZER)
+        ---------------------------------------------------- */
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function prepareShuffledQuestions(questions) {
+            const shuffledQs = shuffleArray(questions);
+            return shuffledQs.map(qObj => {
+                const correctText = qObj.a[qObj.correct];
+                const shuffledOptions = shuffleArray(qObj.a);
+                const newCorrectIndex = shuffledOptions.indexOf(correctText);
+                return {
+                    q: qObj.q,
+                    a: shuffledOptions,
+                    correct: newCorrectIndex,
+                    exp: qObj.exp
+                };
+            });
+        }
+
+        /* ----------------------------------------------------
+           3. WEB AUDIO SYNTHESIZER (KAWAII KITTY SOUND FX)
+        ---------------------------------------------------- */
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function playSynthesizedSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new AudioContext();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'select') {
+                    // Kawaii Bubble Pop
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'correct') {
+                    // Kitty Meow Synth Chime (G5 -> C6 -> E6)
+                    [783.99, 1046.50, 1318.51].forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                        gain.gain.setValueAtTime(0.25, now + idx * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4 + idx * 0.08);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.08);
+                        osc.stop(now + 0.4 + idx * 0.08);
+                    });
+                } else if (type === 'wrong') {
+                    // Low Boop
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(250, now);
+                    osc.frequency.exponentialRampToValueAtTime(120, now + 0.25);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'victory') {
+                    // Happy Fanfare Chord
+                    const freqs = [523.25, 659.25, 783.99, 1046.50];
+                    freqs.forEach((f, i) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(f, now + i * 0.1);
+                        gain.gain.setValueAtTime(0.2, now + i * 0.1);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8 + i * 0.1);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + i * 0.1);
+                        osc.stop(now + 0.8 + i * 0.1);
+                    });
+                }
+            } catch (e) {
+                console.log("Audio play prevented", e);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-icon').innerText = soundEnabled ? '🔊' : '🔇';
+            playSynthesizedSound('select');
+        }
+
+        /* ----------------------------------------------------
+           4. ANNOUNCER & KITTY MASCOT SPEECH CONTROLLER
+        ---------------------------------------------------- */
+        function setAnnouncerMsg(title, msg) {
+            document.getElementById('greeting-title').innerText = title;
+            document.getElementById('greeting-msg').innerText = msg;
+        }
+
+        function triggerKittyVoice() {
+            playSynthesizedSound('select');
+            const kittyQuotes = [
+                "\"Meow! Jom selesaikan soalan matematik Tahun 1 ini bersama Kitty! 🐾\"",
+                "\"Purr-fect! Matematik Tahun 1 sangat mudah dan menyeronokkan! ✨\"",
+                "\"Kumpul semua Bintang Comel dan capai Mythic Kitty Champion! 🎀\"",
+                "\"Kitty gembira dapat belajar bersama anda hari ini! 💖\""
+            ];
+            const quote = kittyQuotes[Math.floor(Math.random() * kittyQuotes.length)];
+            setAnnouncerMsg("🎀 KITTY MASCOT MEOW:", quote);
+        }
+
+        /* ----------------------------------------------------
+           5. PROFILE & LOCALSTORAGE MANAGEMENT
+        ---------------------------------------------------- */
+        function initUserProfile() {
+            const savedName = localStorage.getItem('kitty_math_student_name');
+            const savedProgress = localStorage.getItem('kitty_math_progress');
+
+            if (savedProgress) {
+                try { unitProgress = JSON.parse(savedProgress); } catch (e) { unitProgress = {}; }
+            }
+
+            if (savedName && savedName.trim() !== "") {
+                studentName = savedName.trim();
+                showStudentGreeting();
+                showUnitsMenu();
+            } else {
+                showScreen('screen-name-input');
+                setAnnouncerMsg("🎀 MEOW! SELAMAT DATANG!", "Sila masukkan nama anda di bawah untuk memulakan cabaran kuiz Tahun 1!");
+            }
+            updateTotalStarsBadge();
+        }
+
+        function saveNameAndStart() {
+            const nameInput = document.getElementById('student-name-input').value.trim();
+            if (!nameInput) return;
+            studentName = nameInput;
+            localStorage.setItem('kitty_math_student_name', studentName);
+            playSynthesizedSound('select');
+            showStudentGreeting();
+            showUnitsMenu();
+        }
+
+        function showStudentGreeting() {
+            document.getElementById('user-pill').classList.remove('hidden');
+            document.getElementById('user-pill').classList.add('flex');
+            document.getElementById('pill-name').innerText = studentName.toUpperCase();
+
+            setAnnouncerMsg(`🎀 HAI ${studentName.toUpperCase()}! MEOW!`, "Pilih mana-mana Unit Buku Teks Tahun 1 di bawah untuk memulakan kuiz!");
+        }
+
+        function openNameModal() {
+            document.getElementById('modal-name-input').value = studentName;
+            document.getElementById('name-modal').classList.remove('hidden');
+            document.getElementById('name-modal').classList.add('flex');
+        }
+
+        function closeNameModal() {
+            document.getElementById('name-modal').classList.add('hidden');
+            document.getElementById('name-modal').classList.remove('flex');
+        }
+
+        function saveNameFromModal() {
+            const newName = document.getElementById('modal-name-input').value.trim();
+            if (newName) {
+                studentName = newName;
+                localStorage.setItem('kitty_math_student_name', studentName);
+                showStudentGreeting();
+            }
+            closeNameModal();
+        }
+
+        function saveProgress(unitKey, starCount) {
+            if (!unitProgress[unitKey] || starCount > unitProgress[unitKey]) {
+                unitProgress[unitKey] = starCount;
+                localStorage.setItem('kitty_math_progress', JSON.stringify(unitProgress));
+                updateTotalStarsBadge();
+            }
+        }
+
+        function updateTotalStarsBadge() {
+            let totalStars = 0;
+            Object.values(unitProgress).forEach(stars => totalStars += stars);
+            
+            document.getElementById('total-stars-badge').innerText = `⭐ ${totalStars}/24 BINTANG`;
+
+            // Determine Kitty Rank
+            let currentRank = rankTiers[0];
+            for (let i = rankTiers.length - 1; i >= 0; i--) {
+                if (totalStars >= rankTiers[i].minStars) {
+                    currentRank = rankTiers[i];
+                    break;
+                }
+            }
+
+            const rankPill = document.getElementById('pill-rank');
+            const rankBadgeText = document.getElementById('rank-badge-text');
+            if (rankPill) rankPill.innerText = currentRank.name;
+            if (rankBadgeText) rankBadgeText.innerText = `RANK: ${currentRank.name}`;
+        }
+
+        /* ----------------------------------------------------
+           6. SCREEN CONTROLLER & UNIT FILTERS
+        ---------------------------------------------------- */
+        function showScreen(screenId) {
+            ['screen-name-input', 'screen-units', 'screen-quiz', 'screen-result'].forEach(id => {
+                const el = document.getElementById(id);
+                if (id === screenId) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+        }
+
+        function filterUnits(filter) {
+            activeFilter = filter;
+            playSynthesizedSound('select');
+
+            ['all', 'j1', 'j2'].forEach(f => {
+                const btn = document.getElementById(`tab-${f}`);
+                if (f === filter) {
+                    btn.className = "px-4 py-2 rounded-2xl text-xs font-fredoka font-bold bg-pink-500 text-white shadow-md";
+                } else {
+                    btn.className = "px-4 py-2 rounded-2xl text-xs font-fredoka font-bold bg-white text-slate-600 border border-pink-200 hover:border-pink-400";
+                }
+            });
+
+            renderUnitCards();
+        }
+
+        function showUnitsMenu() {
+            showScreen('screen-units');
+            setAnnouncerMsg(`🎀 SENARAI ARENA TAHUN 1 - ${studentName.toUpperCase()}`, "Pilih mana-mana topik untuk memulakan cabaran kuiz comel!");
+            renderUnitCards();
+        }
+
+        /* ----------------------------------------------------
+           7. UNIT CARDS RENDERER
+        ---------------------------------------------------- */
+        function renderUnitCards() {
+            const container = document.getElementById('unit-cards-container');
+            container.innerHTML = '';
+
+            Object.keys(quizData).forEach((unitKey) => {
+                const unit = quizData[unitKey];
+
+                if (activeFilter === 'j1' && unit.jilid !== 'Jilid 1') return;
+                if (activeFilter === 'j2' && unit.jilid !== 'Jilid 2') return;
+
+                const starsEarned = unitProgress[unitKey] || 0;
+
+                let starsHtml = '';
+                for (let i = 1; i <= 3; i++) {
+                    starsHtml += `<span class="${i <= starsEarned ? 'text-amber-400' : 'text-slate-300'} text-base">★</span>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = "kitty-option p-4 rounded-3xl border-2 border-pink-100 hover:border-pink-400 shadow-sm cursor-pointer flex items-center justify-between group btn-press";
+                card.onclick = () => startQuiz(unitKey);
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 bg-pink-50 border border-pink-200 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-pink-100 transition">
+                            ${unit.icon}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-fredoka text-xs font-bold text-pink-500">${unitKey}</span>
+                                <span class="text-[10px] font-bold bg-purple-100 text-purple-600 border border-purple-200 px-2 py-0.5 rounded-full uppercase">${unit.jilid}</span>
+                            </div>
+                            <h4 class="font-fredoka font-bold text-slate-700 text-sm sm:text-base leading-tight mt-0.5">${unit.title}</h4>
+                            <span class="text-[11px] text-slate-400 font-bold">10 Soalan Cabaran</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-1">
+                        <div class="flex gap-0.5">${starsHtml}</div>
+                        <span class="text-xs font-fredoka font-bold text-pink-500 group-hover:translate-x-1 transition flex items-center gap-0.5">
+                            MULA ➔
+                        </span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        /* ----------------------------------------------------
+           8. KUIZ ENGINE LOGIC (SHUFFLED QUESTIONS & OPTIONS)
+        ---------------------------------------------------- */
+        function startQuiz(unitKey) {
+            playSynthesizedSound('select');
+            currentUnitKey = unitKey;
+            currentQuestionIdx = 0;
+            score = 0;
+            // Prepare freshly shuffled questions & option choices!
+            activeQuestions = prepareShuffledQuestions(quizData[unitKey].questions);
+            showScreen('screen-quiz');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answeredCurrent = false;
+            const unit = quizData[currentUnitKey];
+            const q = activeQuestions[currentQuestionIdx];
+
+            // Header Labels
+            document.getElementById('quiz-unit-label').innerText = `${currentUnitKey}: ${unit.title} (${unit.jilid})`;
+            document.getElementById('quiz-progress-text').innerText = `SOALAN ${currentQuestionIdx + 1} / ${activeQuestions.length}`;
+            
+            const progressPct = ((currentQuestionIdx) / activeQuestions.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progressPct}%`;
+
+            // Question Text
+            document.getElementById('question-text').innerText = `${currentQuestionIdx + 1}. ${q.q}`;
+
+            // Kitty Mascot guidance
+            setAnnouncerMsg(`🐾 CABARAN ${currentQuestionIdx + 1} / ${activeQuestions.length}`, `Baca soalan dengan teliti dan pilih jawapan terbaik, ${studentName}!`);
+
+            // Options container
+            const optionsDiv = document.getElementById('options-container');
+            optionsDiv.innerHTML = '';
+
+            document.getElementById('explanation-box').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('next-btn').classList.remove('flex');
+
+            q.a.forEach((optText, i) => {
+                const btn = document.createElement('button');
+                btn.className = "kitty-option w-full text-left p-4 rounded-2xl font-bold text-slate-700 text-sm sm:text-base flex items-center justify-between btn-press";
+                btn.innerHTML = `
+                    <span class="flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-xl bg-pink-100 border border-pink-300 flex items-center justify-center text-xs font-fredoka text-pink-600 font-bold">${String.fromCharCode(65 + i)}</span>
+                        <span>${optText}</span>
+                    </span>
+                    <span class="status-icon font-bold"></span>
+                `;
+                btn.onclick = () => selectAnswer(i, btn);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(selectedIdx, selectedBtn) {
+            if (answeredCurrent) return;
+            answeredCurrent = true;
+
+            const q = activeQuestions[currentQuestionIdx];
+            const allBtns = document.getElementById('options-container').children;
+
+            Array.from(allBtns).forEach(b => {
+                b.disabled = true;
+                b.classList.remove('btn-press');
+            });
+
+            const isCorrect = (selectedIdx === q.correct);
+
+            if (isCorrect) {
+                score++;
+                playSynthesizedSound('correct');
+                selectedBtn.className = "w-full text-left p-4 rounded-2xl border-2 border-emerald-400 bg-emerald-50 text-emerald-800 font-bold text-sm sm:text-base flex items-center justify-between shadow-md";
+                selectedBtn.querySelector('.status-icon').innerText = '✅';
+
+                const praises = ["MEOW-VELOUS! 🐾", "PURR-FECT! ✨", "MEOW-TASTIC! 💖", "TAHNIAH! TEPAT! 🎯"];
+                const msg = praises[Math.floor(Math.random() * praises.length)];
+                setAnnouncerMsg(`🎀 ${msg}`, `Jawapan anda tepat sekali! Teruskan usaha cemerlang anda!`);
+            } else {
+                playSynthesizedSound('wrong');
+                selectedBtn.className = "w-full text-left p-4 rounded-2xl border-2 border-rose-400 bg-rose-50 text-rose-800 font-bold text-sm sm:text-base flex items-center justify-between shadow-md";
+                selectedBtn.querySelector('.status-icon').innerText = '❌';
+
+                // Highlight correct answer
+                const correctBtn = allBtns[q.correct];
+                correctBtn.className = "w-full text-left p-4 rounded-2xl border-2 border-emerald-400 bg-emerald-50 text-emerald-800 font-bold text-sm sm:text-base flex items-center justify-between";
+                correctBtn.querySelector('.status-icon').innerText = '✅';
+
+                setAnnouncerMsg("🐾 ALAMAK, CUBA LAGI!", "Tak mengapa! Semak penerangan di bawah untuk faham jawapan betul!");
+            }
+
+            // Explanation box
+            const expBox = document.getElementById('explanation-box');
+            expBox.classList.remove('hidden');
+            expBox.className = `p-4 rounded-2xl border-2 ${isCorrect ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-amber-50 border-amber-200 text-amber-800'}`;
+            expBox.innerHTML = `
+                <div class="font-fredoka font-bold text-xs uppercase tracking-wider mb-1">${isCorrect ? '💡 PENERANGAN FORMULA:' : '💡 CARA PENYELESAIAN:'}</div>
+                <div class="text-xs sm:text-sm font-semibold leading-relaxed">${q.exp}</div>
+            `;
+
+            // Update Progress bar
+            const progressPct = ((currentQuestionIdx + 1) / activeQuestions.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progressPct}%`;
+
+            // Show Next Button
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.classList.remove('hidden');
+            nextBtn.classList.add('flex');
+            if (currentQuestionIdx === activeQuestions.length - 1) {
+                nextBtn.innerText = "LIHAT KEPUTUSAN 👑";
+            } else {
+                nextBtn.innerText = "SETERUSNYA ➔";
+            }
+        }
+
+        function nextQuestion() {
+            playSynthesizedSound('select');
+            currentQuestionIdx++;
+
+            if (currentQuestionIdx < activeQuestions.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function confirmExitQuiz() {
+            showUnitsMenu();
+        }
+
+        /* ----------------------------------------------------
+           9. QUIZ COMPLETION & CONFETTI CELEBRATION
+        ---------------------------------------------------- */
+        function finishQuiz() {
+            showScreen('screen-result');
+            const totalQuestions = activeQuestions.length;
+            const percentage = Math.round((score / totalQuestions) * 100);
+
+            let stars = 1;
+            if (percentage >= 80) stars = 3;
+            else if (percentage >= 50) stars = 2;
+
+            saveProgress(currentUnitKey, stars);
+
+            document.getElementById('result-score-text').innerText = `${score} / ${totalQuestions}`;
+            document.getElementById('result-percentage').innerText = `KETEPATAN JAWAPAN: ${percentage}%`;
+
+            let starIcons = '';
+            for (let i = 1; i <= 3; i++) {
+                starIcons += `<span class="${i <= stars ? 'text-amber-400 scale-110' : 'text-slate-300'} transition transform inline-block">⭐</span>`;
+            }
+            document.getElementById('result-stars').innerHTML = starIcons;
+
+            if (stars === 3) {
+                playSynthesizedSound('victory');
+                triggerConfetti();
+                document.getElementById('result-emoji').innerText = '👑';
+                document.getElementById('result-title').innerText = 'TAHNIAH MEOW!';
+                document.getElementById('result-subtext').innerText = `3 BINTANG PENUH! ${studentName} memang Bintang Matematik Tahun 1!`;
+                setAnnouncerMsg("🎀 EXCELLENT PURR-FECT!", `Kejayaan yang sangat membanggakan! Anda memang hebat dalam Matematik Tahun 1!`);
+            } else if (stars === 2) {
+                playSynthesizedSound('correct');
+                document.getElementById('result-emoji').innerText = '🐾';
+                document.getElementById('result-title').innerText = 'SYABAS MEOW!';
+                document.getElementById('result-subtext').innerText = `Keputusan yang bagus! Sikit sahaja lagi untuk dapatkan 3 Bintang penuh!`;
+                setAnnouncerMsg("🎀 HEBAT MATEMATIK!", `Perlawanan yang amat baik! Teruskan berlatih bersama Kitty!`);
+            } else {
+                playSynthesizedSound('wrong');
+                document.getElementById('result-emoji').innerText = '🐱';
+                document.getElementById('result-title').innerText = 'CUBA LAGI MEOW!';
+                document.getElementById('result-subtext').innerText = `Jangan putus asa! Jalankan re-match untuk menguasai tajuk ini!`;
+                setAnnouncerMsg("🐾 JANGAN PUTUS ASA!", `Usaha tangga kejayaan! Cuba sekali lagi untuk dapatkan bintang!`);
+            }
+        }
+
+        function retryCurrentUnit() {
+            startQuiz(currentUnitKey);
+        }
+
+        /* Canvas Confetti Animation */
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const colors = ['#f472b6', '#c084fc', '#fde047', '#4ade80', '#fb7185'];
+
+            for (let i = 0; i < 90; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 4 + 2,
+                    angle: Math.random() * 360
+                });
+            }
+
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    ctx.save();
+                    ctx.fillStyle = p.color;
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.angle * Math.PI) / 180);
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+
+                    p.y += p.speed;
+                    p.angle += 3;
+                });
+
+                if (pieces.some(p => p.y < canvas.height)) {
+                    requestAnimationFrame(render);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            render();
+        }
+
+        /* Initialize App on Window Load */
+        window.onload = function() {
+            initUserProfile();
+        };
+    </script>
+</body>
+</html>

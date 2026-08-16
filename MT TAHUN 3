@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Misi Matematik Ejen Ali - Tahun 3</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Orbitron & Rajdhani -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tekno: '#00f3ff',
+                        inviso: '#ff0055',
+                        kombat: '#ff9900',
+                        neuro: '#00ff66',
+                        iris: '#ffe600',
+                        hudBg: '#080d1a',
+                        panelBg: 'rgba(12, 23, 42, 0.85)'
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                        cinzel: ['Cinzel', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050811;
+            color: #e2e8f0;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .hud-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(8, 13, 26, 0.98) 100%);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .hud-btn {
+            background: linear-gradient(180deg, rgba(0, 243, 255, 0.2) 0%, rgba(0, 150, 200, 0.4) 100%);
+            border: 1px solid #00f3ff;
+            text-shadow: 0 0 8px #00f3ff;
+            transition: all 0.2s ease;
+        }
+
+        .hud-btn:hover:not(:disabled) {
+            background: rgba(0, 243, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .hud-btn:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        .iris-glow {
+            filter: drop-shadow(0 0 8px #ffe600);
+        }
+
+        #scratchCanvas {
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        /* Certificate Print Layout Rules */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableCertificateContainer, #printableCertificateContainer * {
+                visibility: visible;
+            }
+            #printableCertificateContainer {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #080d1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00f3ff;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative bg-slate-950">
+
+    <!-- TOP HUD HEADER -->
+    <header class="w-full bg-slate-900/90 border-b border-cyan-500/40 px-4 py-2.5 sticky top-0 z-30 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center iris-glow">
+                    <i class="fa-solid fa-microchip text-cyan-400 text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-orbitron font-extrabold text-base sm:text-lg text-cyan-300 tracking-wider flex items-center gap-2">
+                        EJEN ALI <span class="text-[10px] bg-cyan-500/20 text-cyan-300 border border-cyan-400/50 px-2 py-0.5 rounded">AKADEMI M.A.T.O.</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-400 font-rajdhani">Matematik Tahun 3 KSSR Semakan</p>
+                </div>
+            </div>
+
+            <!-- Agent Info Badge Header -->
+            <div id="headerAgentInfo" class="hidden flex items-center gap-3 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-cyan-500/30">
+                <div class="flex items-center gap-2">
+                    <span id="headerTerasBadge" class="text-xs font-bold px-2 py-0.5 rounded text-black bg-cyan-400 font-orbitron">TEKNO</span>
+                    <span id="headerAgentName" class="font-bold text-cyan-200 text-sm">Ejen Ali</span>
+                </div>
+                <div class="h-4 w-px bg-slate-600"></div>
+                <!-- Gems & Stars Header -->
+                <div class="text-xs flex items-center gap-2 font-orbitron">
+                    <span class="text-cyan-300 flex items-center gap-1" title="Permata IRIS">
+                        <i class="fa-solid fa-gem text-cyan-400"></i> <span id="headerGemsCount">0</span>
+                    </span>
+                    <span class="text-amber-300 flex items-center gap-1" title="Bintang Misi">
+                        <i class="fa-solid fa-star text-amber-400"></i> <span id="headerStarsCount">0</span>
+                    </span>
+                </div>
+                <button id="btnSwitchAgent" class="text-xs text-slate-400 hover:text-cyan-300 ml-1" title="Tukar Ejen">
+                    <i class="fa-solid fa-user-pen"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="w-full max-w-7xl mx-auto p-3 sm:p-4 flex-grow flex flex-col justify-center relative z-10 transition-all duration-300">
+        
+        <!-- SCREEN 1: EJEN PROFILE REGISTRATION -->
+        <section id="screenRegister" class="w-full max-w-lg mx-auto hud-card p-6 rounded-xl text-center space-y-6 my-auto">
+            <div class="space-y-2">
+                <div class="inline-block p-3 rounded-full bg-cyan-500/10 border border-cyan-400/30 mb-2">
+                    <i class="fa-solid fa-id-card-clip text-4xl text-cyan-400"></i>
+                </div>
+                <h2 class="font-orbitron text-2xl font-bold text-cyan-300">DAFTAR EJEN MUDA</h2>
+                <p class="text-slate-300 text-sm">Sila masukkan identiti dan pilih Teras Ejen anda sebelum memulakan misi Matematik.</p>
+            </div>
+
+            <form id="formRegister" class="space-y-5 text-left">
+                <div>
+                    <label class="block text-xs font-orbitron text-cyan-400 mb-1">NAMA EJEN / MURID</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-cyan-500">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </span>
+                        <input type="text" id="inputAgentName" required maxlength="20" placeholder="Cth: Ejen Ali / Ejen Alicia" 
+                            class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-cyan-500/50 rounded-lg text-cyan-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 font-orbitron tracking-wide">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-orbitron text-cyan-400 mb-2">PILIH TERAS EJEN</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="teras-option cursor-pointer p-3 border border-cyan-500/40 rounded-lg bg-slate-900/60 hover:bg-cyan-950/40 flex items-center gap-3 transition">
+                            <input type="radio" name="terasChoice" value="Tekno" checked class="text-cyan-400 focus:ring-0">
+                            <div>
+                                <p class="font-orbitron font-bold text-cyan-400 text-sm">TEKNO</p>
+                                <p class="text-[10px] text-slate-400">Pakar Gajet & Alatan</p>
+                            </div>
+                        </label>
+                        <label class="teras-option cursor-pointer p-3 border border-emerald-500/40 rounded-lg bg-slate-900/60 hover:bg-emerald-950/40 flex items-center gap-3 transition">
+                            <input type="radio" name="terasChoice" value="Neuro" class="text-emerald-400 focus:ring-0">
+                            <div>
+                                <p class="font-orbitron font-bold text-emerald-400 text-sm">NEURO</p>
+                                <p class="text-[10px] text-slate-400">Pakar Analisis & Strategi</p>
+                            </div>
+                        </label>
+                        <label class="teras-option cursor-pointer p-3 border border-rose-500/40 rounded-lg bg-slate-900/60 hover:bg-rose-950/40 flex items-center gap-3 transition">
+                            <input type="radio" name="terasChoice" value="Inviso" class="text-rose-400 focus:ring-0">
+                            <div>
+                                <p class="font-orbitron font-bold text-rose-400 text-sm">INVISO</p>
+                                <p class="text-[10px] text-slate-400">Pakar Penyamaran & Agiliti</p>
+                            </div>
+                        </label>
+                        <label class="teras-option cursor-pointer p-3 border border-amber-500/40 rounded-lg bg-slate-900/60 hover:bg-amber-950/40 flex items-center gap-3 transition">
+                            <input type="radio" name="terasChoice" value="Kombat" class="text-amber-400 focus:ring-0">
+                            <div>
+                                <p class="font-orbitron font-bold text-amber-400 text-sm">KOMBAT</p>
+                                <p class="text-[10px] text-slate-400">Pakar Pertempuran Berani</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3 hud-btn font-orbitron font-bold text-cyan-300 rounded-lg tracking-wider text-base">
+                    <i class="fa-solid fa-lock-open mr-2"></i> SAHKAN AKSES EJEN
+                </button>
+            </form>
+        </section>
+
+        <!-- SCREEN 2: UNIT MENU SELECTION -->
+        <section id="screenUnitMenu" class="hidden space-y-5 py-2">
+            <!-- Agent Dashboard Card -->
+            <div class="hud-card p-4 sm:p-5 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div id="badgeAvatar" class="w-14 h-14 rounded-full bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center text-2xl text-cyan-300 font-orbitron font-bold">
+                        A
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 id="dashAgentName" class="font-orbitron text-xl font-bold text-cyan-200">Ejen Ali</h2>
+                            <span id="dashTerasBadge" class="px-2 py-0.5 rounded text-xs font-bold font-orbitron bg-cyan-400 text-black">TEKNO</span>
+                        </div>
+                        <p id="dashRank" class="text-xs text-amber-400 font-orbitron mt-0.5"><i class="fa-solid fa-medal mr-1"></i> PANGKAT: EJEN PERCUBAAN</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 sm:gap-6 bg-slate-900/80 px-4 py-2.5 rounded-lg border border-slate-700">
+                    <div class="text-center">
+                        <p class="text-[10px] text-slate-400 font-orbitron">JUMLAH SKOR</p>
+                        <p id="dashTotalScore" class="font-orbitron text-lg font-extrabold text-cyan-300">0</p>
+                    </div>
+                    <div class="h-7 w-px bg-slate-700"></div>
+                    <div class="text-center">
+                        <p class="text-[10px] text-slate-400 font-orbitron">PERMATA IRIS</p>
+                        <p id="dashGems" class="font-orbitron text-lg font-extrabold text-cyan-400 flex items-center justify-center gap-1"><i class="fa-solid fa-gem text-xs"></i> <span>0</span></p>
+                    </div>
+                    <div class="h-7 w-px bg-slate-700"></div>
+                    <div class="text-center">
+                        <p class="text-[10px] text-slate-400 font-orbitron">BINTANG</p>
+                        <p id="dashStars" class="font-orbitron text-lg font-extrabold text-amber-400 flex items-center justify-center gap-1"><i class="fa-solid fa-star text-xs"></i> <span>0</span></p>
+                    </div>
+                </div>
+
+                <!-- Certificate Quick Button -->
+                <button id="btnOpenCertFromMenu" class="px-4 py-2.5 hud-btn text-xs font-orbitron font-bold text-amber-300 rounded-lg flex items-center gap-2 hover:bg-amber-400/20">
+                    <i class="fa-solid fa-certificate text-base text-amber-400"></i>
+                    <span>LIHAT SIJIL AKADEMI</span>
+                </button>
+            </div>
+
+            <!-- Unit Selection Grid -->
+            <div>
+                <h3 class="font-orbitron text-base sm:text-lg font-bold text-cyan-300 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-cyan-400"></i> PILIH MISI UNIT (15 SOALAN SEUNIT)
+                </h3>
+                <div id="unitGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Dynamic Units populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: GAME ARENA & DWI WINDOW WHITEBOARD -->
+        <section id="screenGame" class="hidden space-y-3 py-1">
+            
+            <!-- Game Top Control Bar -->
+            <div class="hud-card p-3 rounded-xl flex items-center justify-between flex-wrap gap-2">
+                <button id="btnBackToMenu" class="px-3 py-1.5 text-xs font-orbitron bg-slate-800 text-slate-300 border border-slate-600 rounded hover:bg-slate-700 flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-left"></i> MENU MISI
+                </button>
+                <div class="text-center">
+                    <span id="gameUnitTitle" class="font-orbitron font-bold text-cyan-300 text-xs sm:text-sm">UNIT 1: NOMBOR HINGGA 10 000</span>
+                </div>
+                <div class="flex items-center gap-2 font-orbitron text-xs">
+                    <div class="bg-slate-900 px-2.5 py-1 rounded border border-cyan-500/40">
+                        SOALAN: <span id="gameQIndex" class="text-cyan-300 font-bold">1</span> / 15
+                    </div>
+                    <div class="bg-slate-900 px-2.5 py-1 rounded border border-amber-500/40">
+                        SKOR: <span id="gameCurrentScore" class="text-amber-400 font-bold">0</span>
+                    </div>
+                    <!-- Toggle Whiteboard Button in Arena Header -->
+                    <button id="btnToggleWhiteboard" class="px-3 py-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-orbitron font-bold rounded flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-pen-ruler"></i>
+                        <span id="wbToggleText">PAPAN MENGIRA</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
+                <div id="gameProgressBar" class="bg-cyan-400 h-full transition-all duration-300" style="width: 6.66%;"></div>
+            </div>
+
+            <!-- DWI WINDOW MAIN WRAPPER (Split-Screen Flex Layout) -->
+            <div id="gameSplitWrapper" class="flex flex-col lg:flex-row gap-4 items-stretch w-full">
+                
+                <!-- LEFT WINDOW: Question Card Container -->
+                <div id="gameQuestionCol" class="w-full transition-all duration-300 flex flex-col">
+                    <div class="hud-card p-5 rounded-xl space-y-4 flex-grow flex flex-col justify-between">
+                        <div>
+                            <!-- Header Info -->
+                            <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2 mb-3">
+                                <span id="gameDifficultyBadge" class="text-[11px] font-orbitron px-2.5 py-0.5 rounded font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
+                                    ARAS RENDAH
+                                </span>
+                                <span class="text-xs text-slate-400 font-orbitron flex items-center gap-1">
+                                    <i class="fa-solid fa-brain text-cyan-400"></i> MODUL IRIS
+                                </span>
+                            </div>
+
+                            <!-- Question Prompt -->
+                            <div class="min-h-[90px] flex items-center justify-center text-center p-2">
+                                <div id="gameQuestionPrompt" class="text-base sm:text-lg font-medium text-slate-100 leading-relaxed">
+                                    <!-- Dynamic Question Text -->
+                                </div>
+                            </div>
+
+                            <!-- Answer Options / Input Area -->
+                            <div id="gameAnswerArea" class="pt-2">
+                                <!-- Dynamic Answer Options -->
+                            </div>
+                        </div>
+
+                        <!-- Bottom Feedback & Action Button -->
+                        <div class="space-y-3 pt-2">
+                            <!-- Feedback Banner -->
+                            <div id="gameFeedback" class="hidden p-3 rounded-lg font-orbitron text-center text-xs sm:text-sm font-bold tracking-wide">
+                                <!-- Dynamic Feedback Message -->
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button id="btnSubmitAnswer" class="w-full sm:w-auto px-6 py-2.5 hud-btn font-orbitron font-bold text-cyan-300 rounded-lg tracking-wider text-sm">
+                                    HANTAR JAWAPAN <i class="fa-solid fa-paper-plane ml-2"></i>
+                                </button>
+                                <button id="btnNextQuestion" class="hidden w-full sm:w-auto px-6 py-2.5 hud-btn font-orbitron font-bold text-amber-300 rounded-lg tracking-wider text-sm">
+                                    SOALAN SETERUSNYA <i class="fa-solid fa-forward ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT WINDOW: Papan Mengira HUD (Whiteboard Panel) -->
+                <div id="whiteboardPanel" class="hidden w-full lg:w-1/2 transition-all duration-300 flex flex-col">
+                    <div class="hud-card p-3 rounded-xl border-2 border-cyan-400/80 flex flex-col h-full min-h-[380px] bg-slate-950">
+                        
+                        <!-- Whiteboard Header & Controls Toolbar -->
+                        <div class="bg-slate-900/90 px-3 py-2 rounded-lg border border-cyan-500/40 flex flex-wrap items-center justify-between gap-2 mb-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-calculator text-cyan-400 text-sm"></i>
+                                <span class="font-orbitron font-bold text-cyan-300 text-xs">PAPAN MENGIRA</span>
+                            </div>
+
+                            <!-- Palm Rejection Toggle Switch Button -->
+                            <button id="wbTogglePalm" class="text-[10px] bg-slate-800 text-emerald-400 border border-emerald-500/40 px-2 py-1 rounded font-orbitron flex items-center gap-1 hover:bg-slate-700 transition" title="Tukar Mod Sentuhan Pen/Jari">
+                                <i class="fa-solid fa-hand text-[9px]"></i>
+                                <span>PALM REJECTION: <strong id="palmStatusText" class="text-emerald-300">ON</strong></span>
+                            </button>
+
+                            <!-- Tool Selectors & Actions -->
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <button id="wbToolPen" class="px-2 py-1 bg-cyan-500 text-black font-bold rounded text-xs font-orbitron flex items-center gap-1">
+                                    <i class="fa-solid fa-pen"></i> Pen
+                                </button>
+                                <button id="wbToolEraser" class="px-2 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700 rounded text-xs font-orbitron flex items-center gap-1 border border-slate-600">
+                                    <i class="fa-solid fa-eraser"></i> Padam
+                                </button>
+
+                                <!-- Color Options -->
+                                <div class="flex items-center gap-1 bg-slate-900 p-1 rounded border border-slate-700">
+                                    <button class="wb-color-btn w-3.5 h-3.5 rounded-full bg-cyan-400 ring-2 ring-cyan-300" data-color="#00f3ff"></button>
+                                    <button class="wb-color-btn w-3.5 h-3.5 rounded-full bg-yellow-400 hover:scale-110" data-color="#facc15"></button>
+                                    <button class="wb-color-btn w-3.5 h-3.5 rounded-full bg-rose-500 hover:scale-110" data-color="#f43f5e"></button>
+                                    <button class="wb-color-btn w-3.5 h-3.5 rounded-full bg-white hover:scale-110" data-color="#ffffff"></button>
+                                </div>
+
+                                <button id="wbUndo" class="p-1 text-slate-300 hover:text-cyan-300 text-xs bg-slate-800 rounded border border-slate-700" title="Undo (Batal)">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                </button>
+                                <button id="wbRedo" class="p-1 text-slate-300 hover:text-cyan-300 text-xs bg-slate-800 rounded border border-slate-700" title="Redo (Semula)">
+                                    <i class="fa-solid fa-rotate-right"></i>
+                                </button>
+                                <button id="wbClear" class="px-2 py-1 bg-rose-950/80 text-rose-300 hover:bg-rose-900 border border-rose-500/40 rounded text-xs font-orbitron">
+                                    <i class="fa-solid fa-trash mr-1"></i> Padam Semua
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Container -->
+                        <div class="flex-grow relative bg-slate-950 w-full rounded-lg overflow-hidden border border-slate-800 min-h-[300px]">
+                            <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#00f3ff 1px, transparent 1px); background-size: 20px 20px;"></div>
+                            <canvas id="scratchCanvas" class="w-full h-full block relative z-10"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SCREEN 4: MISSION RESULT REPORT -->
+        <section id="screenResult" class="hidden w-full max-w-xl mx-auto hud-card p-6 rounded-xl text-center space-y-6 my-auto">
+            <div class="space-y-2">
+                <div id="resultIcon" class="w-20 h-20 mx-auto rounded-full bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center text-4xl text-cyan-300 iris-glow">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h2 id="resultTitle" class="font-orbitron text-2xl font-extrabold text-cyan-300">MISI SELESAI!</h2>
+                <p id="resultSubtitle" class="text-sm text-slate-300">Laporan prestasi Ejen oleh Sistem IRIS M.A.T.O.</p>
+            </div>
+
+            <!-- Stars & Gems Earned Display -->
+            <div class="flex justify-center items-center gap-6 py-2 bg-slate-900/90 rounded-lg border border-cyan-500/30">
+                <div class="text-center">
+                    <p class="text-[10px] text-slate-400 font-orbitron">BINTANG DICAPAI</p>
+                    <div id="resStarsContainer" class="flex gap-1 text-2xl text-amber-400 justify-center mt-1">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+                <div class="h-8 w-px bg-slate-700"></div>
+                <div class="text-center">
+                    <p class="text-[10px] text-slate-400 font-orbitron">PERMATA IRIS</p>
+                    <p id="resGemsEarned" class="font-orbitron text-xl font-extrabold text-cyan-300 flex items-center justify-center gap-1 mt-1">
+                        <i class="fa-solid fa-gem text-cyan-400"></i> +120
+                    </p>
+                </div>
+            </div>
+
+            <!-- Stats breakdown -->
+            <div class="grid grid-cols-3 gap-3 bg-slate-900/80 p-3.5 rounded-lg border border-cyan-500/20 font-orbitron">
+                <div>
+                    <p class="text-[10px] text-slate-400">BETUL</p>
+                    <p id="resCorrect" class="text-lg font-bold text-emerald-400">12 / 15</p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-400">SKOR MISI</p>
+                    <p id="resScore" class="text-lg font-bold text-amber-400">120 PTS</p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-400">PERATUSAN</p>
+                    <p id="resPercentage" class="text-lg font-bold text-cyan-300">80%</p>
+                </div>
+            </div>
+
+            <!-- Iris Evaluation Comment -->
+            <div class="p-3.5 bg-cyan-950/40 border border-cyan-500/30 rounded-lg text-left text-sm text-cyan-200 font-rajdhani space-y-1">
+                <p class="font-orbitron font-bold text-xs text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-eye text-cyan-300"></i> ULASAN IRIS:
+                </p>
+                <p id="resIrisComment" class="leading-relaxed">Syabas Ejen! Penguasaan konsep matematik anda amat cemerlang dalam unit ini.</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-2.5 pt-1">
+                <button id="btnViewCertFromRes" class="flex-1 py-2.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400 rounded-lg font-orbitron text-xs font-bold text-amber-300 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-certificate"></i> LIHAT SIJIL
+                </button>
+                <button id="btnShareGC" class="flex-1 py-2.5 bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-400 rounded-lg font-orbitron text-xs font-bold text-emerald-300 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-share-nodes text-emerald-400"></i> KONGSI KE GC
+                </button>
+                <button id="btnRetryUnit" class="flex-1 py-2.5 bg-slate-800 border border-slate-600 rounded-lg font-orbitron text-xs font-bold text-slate-200 hover:bg-slate-700">
+                    <i class="fa-solid fa-rotate-left mr-1"></i> CUBA LAGI
+                </button>
+                <button id="btnResultToMenu" class="flex-1 py-2.5 hud-btn font-orbitron text-xs font-bold text-cyan-300 rounded-lg">
+                    MENU UTAMA <i class="fa-solid fa-house ml-1"></i>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="hudToast" class="hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-emerald-950 border-2 border-emerald-400 text-emerald-200 px-5 py-3 rounded-xl shadow-2xl font-orbitron text-xs flex items-center gap-3 transition-all">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="hudToastMsg">Laporan telah disalin! Sedia untuk dihantar ke Google Classroom.</span>
+    </div>
+
+    <!-- SIJIL PENGHARGAAN MODAL -->
+    <div id="modalCertificate" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div class="w-full max-w-3xl bg-slate-900 border-4 border-amber-400/80 rounded-2xl shadow-2xl overflow-hidden relative p-6 sm:p-10 text-center text-slate-100 font-rajdhani space-y-6" id="printableCertificateContainer">
+            
+            <!-- Certificate Futuristic Border Frame Decor -->
+            <div class="absolute top-2 left-2 w-8 h-8 border-t-2 border-l-2 border-amber-400"></div>
+            <div class="absolute top-2 right-2 w-8 h-8 border-t-2 border-r-2 border-amber-400"></div>
+            <div class="absolute bottom-2 left-2 w-8 h-8 border-b-2 border-l-2 border-amber-400"></div>
+            <div class="absolute bottom-2 right-2 w-8 h-8 border-b-2 border-r-2 border-amber-400"></div>
+
+            <!-- Header Header Logo -->
+            <div class="space-y-2">
+                <div class="flex justify-center items-center gap-3">
+                    <div class="w-12 h-12 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center iris-glow">
+                        <i class="fa-solid fa-award text-amber-400 text-2xl"></i>
+                    </div>
+                </div>
+                <h2 class="font-orbitron font-extrabold text-2xl sm:text-3xl text-amber-300 tracking-wider">SIJIL PENGHARGAAN AKADEMI M.A.T.O.</h2>
+                <p class="font-orbitron text-xs text-cyan-400 tracking-widest uppercase">Pencapaian Misi Matematik Tahun 3 KSSR Semakan</p>
+            </div>
+
+            <!-- Body Text -->
+            <div class="space-y-4 max-w-xl mx-auto my-4">
+                <p class="text-sm text-slate-300">Dengan ini disahkan bahawa Ejen Muda:</p>
+                <h3 id="certAgentName" class="font-orbitron font-black text-2xl sm:text-4xl text-cyan-300 tracking-wide underline underline-offset-8 decoration-amber-400">
+                    EJEN ALI
+                </h3>
+                <p class="text-xs font-orbitron text-slate-400">
+                    TERAS: <span id="certAgentTeras" class="text-cyan-400 font-bold">TEKNO</span> | PANGKAT: <span id="certAgentRank" class="text-amber-400 font-bold">EJEN TERAS</span>
+                </p>
+                <p class="text-sm text-slate-200 leading-relaxed pt-2">
+                    Telah berjaya menyelesaikan tugasan taktik matematik dan menunjukkan kecemerlangan pemikiran aras tinggi serta integriti tinggi dalam Akademi M.A.T.O.
+                </p>
+            </div>
+
+            <!-- Stats Box inside Cert -->
+            <div class="grid grid-cols-3 gap-4 bg-slate-950/80 p-4 rounded-xl border border-amber-500/40 font-orbitron max-w-lg mx-auto">
+                <div>
+                    <p class="text-[10px] text-slate-400">JUMLAH SKOR</p>
+                    <p id="certTotalScore" class="text-xl font-bold text-amber-400">0 PTS</p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-400">PERMATA IRIS</p>
+                    <p id="certGems" class="text-xl font-bold text-cyan-300 flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-gem text-cyan-400 text-sm"></i> <span id="certGemsVal">0</span>
+                    </p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-400">JUMLAH BINTANG</p>
+                    <p id="certStars" class="text-xl font-bold text-amber-300 flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-star text-amber-400 text-sm"></i> <span id="certStarsVal">0</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Official Seal & Signatures -->
+            <div class="flex justify-between items-end max-w-lg mx-auto pt-4 border-t border-slate-800">
+                <div class="text-left space-y-1">
+                    <p class="text-[11px] text-slate-400 font-orbitron">TARIKH PENGANUGERAHAN:</p>
+                    <p id="certDate" class="text-xs font-bold text-cyan-300 font-orbitron">22 JULAI 2026</p>
+                </div>
+                <!-- Cyber Stamp -->
+                <div class="w-20 h-20 rounded-full border-2 border-dashed border-amber-400 flex items-center justify-center text-[10px] font-orbitron text-amber-400 transform -rotate-12 bg-amber-500/10">
+                    <div class="text-center">
+                        <i class="fa-solid fa-shield-halved text-lg"></i>
+                        <p class="font-bold">M.A.T.O. PASSED</p>
+                    </div>
+                </div>
+                <div class="text-right space-y-1">
+                    <p class="text-[11px] text-slate-400 font-orbitron">PENGESAHAN IRIS:</p>
+                    <p class="text-xs font-bold text-amber-300 font-orbitron">AKADEMI M.A.T.O.</p>
+                </div>
+            </div>
+
+            <!-- Controls (Print & Close) -->
+            <div class="flex justify-center gap-3 pt-4 no-print flex-wrap">
+                <button id="btnPrintCert" class="px-5 py-2.5 bg-amber-500 text-slate-950 font-orbitron font-extrabold rounded-lg hover:bg-amber-400 transition flex items-center gap-2 text-xs">
+                    <i class="fa-solid fa-print"></i> CETAK / SIMPAN SIJIL
+                </button>
+                <button id="btnCertShareGC" class="px-5 py-2.5 bg-emerald-600 text-white font-orbitron font-bold rounded-lg hover:bg-emerald-500 transition flex items-center gap-2 text-xs shadow-lg shadow-emerald-900/50">
+                    <i class="fa-solid fa-share-nodes"></i> KONGSI KE GC
+                </button>
+                <button id="btnCloseCert" class="px-5 py-2.5 bg-slate-800 text-slate-300 font-orbitron font-bold rounded-lg border border-slate-600 hover:bg-slate-700 transition text-xs">
+                    TUTUP
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="w-full text-center py-2 text-[11px] text-slate-500 font-rajdhani border-t border-slate-800/60 bg-slate-950/90">
+        Misi Matematik Ejen Ali &copy; Tahun 3 KSSR Semakan | Modul Pembelajaran Interaktif Akademi M.A.T.O.
+    </footer>
+
+    <script>
+        /* ==========================================================================
+           1. QUESTION BANK DATA (YEAR 3 MATH - 9 UNITS, 15 QUESTIONS PER UNIT)
+           ========================================================================== */
+        const MATH_DATA = [
+            {
+                unitId: 1,
+                unitTitle: "UNIT 1: NOMBOR HINGGA 10 000",
+                description: "Nilai tempat, nilai digit, cerakinan, bundar, pola nombor.",
+                questions: [
+                    { diff: "ARAS RENDAH", q: "Tulis 'Empat ribu lima ratus enam' dalam bentuk angka.", options: ["4 506", "4 560", "4 056", "4 500"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Apakah nilai tempat bagi digit 7 dalam nombor 8 732?", options: ["Ribu", "Ratus", "Puluh", "Sa"], correct: 1 },
+                    { diff: "ARAS RENDAH", q: "Apakah nilai digit bagi 9 dalam nombor 9 145?", options: ["90", "900", "9 000", "9"], correct: 2 },
+                    { diff: "ARAS RENDAH", q: "Cerakinkan 5 621 mengikut nilai tempat.", options: ["5 ribu + 6 ratus + 2 puluh + 1 sa", "5000 + 600 + 20 + 1", "56 + 21", "5000 + 621"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Manakah nombor yang nilainya paling besar?", options: ["6 430", "6 340", "6 403", "6 043"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Bundarkan 4 876 kepada puluh terdekat.", options: ["4 870", "4 880", "4 900", "5 000"], correct: 1 },
+                    { diff: "ARAS SEDERHANA", q: "Bundarkan 7 249 kepada ratus terdekat.", options: ["7 200", "7 300", "7 250", "7 000"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Bundarkan 8 960 kepada ribu terdekat.", options: ["8 000", "8 900", "9 000", "9 100"], correct: 2 },
+                    { diff: "ARAS SEDERHANA", q: "Lengkapkan pola nombor: 2 100, 2 200, 2 300, ____, 2 500", options: ["2 350", "2 400", "2 450", "2 600"], correct: 1 },
+                    { diff: "ARAS SEDERHANA", q: "Susun nombor mengikut tertib menaik: 3 410, 3 140, 3 401, 3 041", options: ["3 041, 3 140, 3 401, 3 410", "3 410, 3 401, 3 140, 3 041", "3 140, 3 041, 3 401, 3 410", "3 041, 3 401, 3 140, 3 410"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Ejen Ali ada 3 450 cip TEKNO. Ejen Bakar beri 1 230 cip lagi. Berapa jumlah cip mereka?", type: "input", correctInput: "4680" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Nombor manakah yang menjadi 5 000 apabila dibundarkan kepada ribu terdekat?", options: ["4 399", "4 890", "5 501", "5 600"], correct: 1 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Cari beza antara nilai digit 8 dalam 8 420 dan nilai digit 2 dalam 8 420.", type: "input", correctInput: "7980" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Sebuah kotak ada 2 500 guli. M.A.T.O. tambah 1 350 guli lagi. Berapakah jumlah guli?", type: "input", correctInput: "3850" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Apakah nombor 4 digit terkecil yang boleh dibentuk daripada digit 0, 5, 2, 8 tanpa ulangan?", options: ["0 258", "2 058", "2 508", "2 850"], correct: 1 }
+                ]
+            },
+            {
+                unitId: 2,
+                unitTitle: "UNIT 2: TAMBAH, TOLAK, DARAB & BAHAGI",
+                description: "Operasi asas matematik dan penyelesaian masalah harian.",
+                questions: [
+                    { diff: "ARAS RENDAH", q: "1 245 + 3 512 = ?", options: ["4 757", "4 755", "4 657", "5 757"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "5 890 - 2 340 = ?", options: ["3 550", "3 450", "3 560", "2 550"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "6 x 7 = ?", options: ["36", "42", "48", "54"], correct: 1 },
+                    { diff: "ARAS RENDAH", q: "56 ÷ 8 = ?", options: ["6", "7", "8", "9"], correct: 1 },
+                    { diff: "ARAS RENDAH", q: "2 314 + 1 025 + 410 = ?", options: ["3 749", "3 649", "3 849", "3 759"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "8 000 - 3 450 = ?", options: ["4 550", "4 650", "5 550", "4 450"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Hitung 124 x 4 =", options: ["486", "496", "492", "504"], correct: 1 },
+                    { diff: "ARAS SEDERHANA", q: "848 ÷ 4 =", options: ["212", "202", "222", "214"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Cari hasil darab 305 x 6.", options: ["1 830", "1 800", "1 820", "1 850"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Selesaikan: 6 500 - 2 100 - 1 200 =", options: ["3 200", "3 300", "3 100", "3 400"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Ejen Alicia ada 12 kotak pemancar. Setiap kotak ada 15 pemancar. Berapa jumlah pemancar?", type: "input", correctInput: "180" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Akademi M.A.T.O. mengagihkan 450 gajet kepada 9 pasukan secara saksama. Setiap pasukan dapat?", type: "input", correctInput: "50" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Ejen Rizwan mengumpul 4 500 mata. Dia guna 1 850 mata untuk gajet. Berapa baki mata?", type: "input", correctInput: "2650" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "(120 x 5) + 350 =", options: ["950", "900", "850", "1000"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Sebuah kilang buat 2 400 dron sehari. Berapa dron dihasilkan dalam masa 3 hari?", type: "input", correctInput: "7200" }
+                ]
+            },
+            {
+                unitId: 3,
+                unitTitle: "UNIT 3: PECAHAN, PERPULUHAN & PERATUS",
+                description: "Pecahan wajar, pecahan setara, perpuluhan dan peratus.",
+                questions: [
+                    { diff: "ARAS RENDAH", q: "Manakah pecahan wajar?", options: ["3/4", "5/2", "7/3", "9/4"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Permudahkan pecahan 2/4.", options: ["1/2", "1/4", "3/4", "2/2"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "1/5 + 2/5 =", options: ["3/5", "3/10", "1/5", "4/5"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "7/9 - 4/9 =", options: ["3/9", "3/0", "1/9", "2/9"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Tulis 0.45 dalam perkataan.", options: ["Sifar perpuluhan empat lima", "Sifar perpuluhan empat puluh lima", "Empat puluh lima", "Empat perpuluhan lima"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Tukar 0.7 kepada pecahan.", options: ["7/10", "7/100", "7/1", "1/7"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Tukar 3/100 kepada perpuluhan.", options: ["0.03", "0.3", "0.003", "3.0"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Tukar 65/100 kepada peratus.", options: ["65%", "6.5%", "0.65%", "650%"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Tulis 48% dalam pecahan seratus.", options: ["48/100", "48/10", "4.8/100", "100/48"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Bandingkan: Manakah yang lebih besar, 0.6 atau 0.42?", options: ["0.6", "0.42", "Kedua-duanya sama", "Tidak pasti"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "1/2 daripada 20 penjejak IRIS ialah?", type: "input", correctInput: "10" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Ejen Khai makan 2/8 kek dan Ejen Zass makan 3/8 kek. Berapa jumlah pecahan kek dimakan?", options: ["5/8", "6/8", "1/8", "5/16"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Ejen Comot minum 0.35L susu dan Comot II minum 0.4L. Berapakah jumlah isi padu susu?", type: "input", correctInput: "0.75" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "80% daripada 100 pelatih lulus ujian. Berapakah bilangan pelatih yang lulus?", type: "input", correctInput: "80" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Selesaikan: 1 - 0.35 =", options: ["0.65", "0.75", "0.55", "0.45"], correct: 0 }
+                ]
+            },
+            {
+                unitId: 4,
+                unitTitle: "UNIT 4: WANG",
+                description: "Tambah, tolak, darab, bahagi wang dan mata wang asing.",
+                questions: [
+                    { diff: "ARAS RENDAH", q: "RM 45.20 + RM 23.50 =", options: ["RM 68.70", "RM 68.50", "RM 67.70", "RM 69.70"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "RM 100.00 - RM 37.40 =", options: ["RM 62.60", "RM 63.60", "RM 62.40", "RM 72.60"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "RM 85.00 x 4 =", options: ["RM 340.00", "RM 320.00", "RM 360.00", "RM 300.00"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "RM 450.00 ÷ 5 =", options: ["RM 90.00", "RM 80.00", "RM 100.00", "RM 70.00"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Bundarkan RM 84.65 kepada ringgit terdekat.", options: ["RM 85.00", "RM 84.00", "RM 84.70", "RM 80.00"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "RM 1 200 + RM 3 450 =", options: ["RM 4 650", "RM 4 550", "RM 4 750", "RM 5 650"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "RM 5 000 - RM 1 850 =", options: ["RM 3 150", "RM 3 250", "RM 3 050", "RM 4 150"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Nyatakan jumlah nilai bagi 3 keping RM50 dan 2 keping RM10.", type: "input", correctInput: "170" },
+                    { diff: "ARAS SEDERHANA", q: "Apakah mata wang rasmi bagi negara Jepun?", options: ["Yen", "Dollar", "Baht", "Rupiah"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Apakah mata wang rasmi bagi negara Thailand?", options: ["Baht", "Peso", "Rupiah", "Dong"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Ejen Ali beli Yoyo RM89.90 dan kad SD RM25.00. Jumlah bayaran ialah?", options: ["RM 114.90", "RM 115.00", "RM 104.90", "RM 124.90"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Ejen Moon bayar RM100 untuk cermin mata RM72.50. Berapakah baki wang diterima?", type: "input", correctInput: "27.50" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Ejen Mika simpan RM 5 sehari. Berapa jumlah simpanannya dalam 30 hari?", type: "input", correctInput: "150" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "RM 2 400 dibahagikan kepada 6 ejen secara saksama. Berapa ringgit seorang dapat?", type: "input", correctInput: "400" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Tukar $10 Singapore Dollar ke Ringgit jika $1 = RM 3.20.", type: "input", correctInput: "32" }
+                ]
+            },
+            {
+                unitId: 5,
+                unitTitle: "UNIT 5: MASA DAN WAKTU",
+                description: "Pukulan jam, konversi unit masa dan tempoh masa.",
+                questions: [
+                    { diff: "ARAS RENDAH", q: "1 minit = ____ saat.", options: ["60 saat", "100 saat", "30 saat", "12 saat"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "1 jam = ____ minit.", options: ["60 minit", "100 minit", "24 minit", "12 minit"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "1 hari = ____ jam.", options: ["24 jam", "12 jam", "60 jam", "48 jam"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "1 minggu = ____ hari.", options: ["7 hari", "5 hari", "10 hari", "30 hari"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Tukar 2 jam kepada minit.", options: ["120 minit", "100 minit", "60 minit", "180 minit"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Tukar 180 saat kepada minit.", options: ["3 minit", "2 minit", "4 minit", "18 minit"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Jam 08:30 a.m. hingga 10:30 a.m. Berapakah tempoh masa?", options: ["2 jam", "3 jam", "1 jam", "2 jam 30 minit"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "3 jam 20 minit + 2 jam 15 minit =", options: ["5 jam 35 minit", "5 jam 25 minit", "6 jam 35 minit", "5 jam 30 minit"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "8 jam 40 minit - 3 jam 10 minit =", options: ["5 jam 30 minit", "5 jam 20 minit", "4 jam 30 minit", "5 jam 40 minit"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Misi bermula jam 2:15 p.m. dan tamat jam 3:45 p.m. Berapakah durasi misi?", options: ["1 jam 30 minit", "1 jam 15 minit", "2 jam", "45 minit"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Latihan Akademi bermula jam 8:00 pagi dan berlangsung 4 jam. Pukul berapa latihan tamat?", type: "input", correctInput: "12:00" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Ejen Roza mengambil masa 45 saat untuk menembak 5 sasaran. Purata masa 1 sasaran?", type: "input", correctInput: "9" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "4 hari 12 jam + 2 hari 8 jam =", options: ["6 hari 20 jam", "6 hari 18 jam", "7 hari 20 jam", "5 hari 20 jam"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Ejen Iman jalankan ujian stamina selama 2 jam 15 minit. Tukar masa ini ke minit.", type: "input", correctInput: "135" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Berapa minitkah dari jam 10:15 pagi hingga 11:00 pagi?", type: "input", correctInput: "45" }
+                ]
+            },
+            {
+                unitId: 6,
+                unitTitle: "UNIT 6: PANJANG, JISIM & ISI PADU CECAIR",
+                description: "Pengukuran dan penukaran unit m, cm, kg, g, l, ml.",
+                questions: [
+                    { diff: "ARAS RENDAH", q: "1 meter (m) = ____ sentimeter (cm).", options: ["100 cm", "10 cm", "1000 cm", "1 cm"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "1 kilogram (kg) = ____ gram (g).", options: ["1 000 g", "100 g", "10 g", "10 000 g"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "1 liter (l) = ____ mililiter (ml).", options: ["1 000 ml", "100 ml", "10 ml", "500 ml"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "4 m 25 cm = ____ cm.", options: ["425 cm", "405 cm", "450 cm", "4250 cm"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "3 500 g = ____ kg ____ g.", options: ["3 kg 500 g", "35 kg", "30 kg 500 g", "3 kg 50 g"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "2 050 ml = ____ l ____ ml.", options: ["2 l 50 ml", "20 l 50 ml", "2 l 500 ml", "2 l 5 ml"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "240 cm + 180 cm = ____ cm.", options: ["420 cm", "410 cm", "430 cm", "320 cm"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "5 kg 400 g - 2 kg 150 g =", options: ["3 kg 250 g", "3 kg 350 g", "2 kg 250 g", "3 kg 150 g"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "4 l 200 ml x 3 =", options: ["12 l 600 ml", "12 l 200 ml", "7 l 600 ml", "12 l 500 ml"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Panjang tali Atlas ialah 3 m 50 cm. Tali dipotong 1 m 20 cm. Baki panjang tali?", options: ["2 m 30 cm", "2 m 20 cm", "1 m 30 cm", "2 m 50 cm"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Jisim perisai Ejen Dos ialah 4 kg. Jisim pedang ialah 1 200 g. Jumlah jisim peralatan?", options: ["5 kg 200 g", "4 kg 200 g", "5 kg 20 g", "6 kg"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Bekas A ada 1 l 500 ml cecair. Bekas B ada 2 l 250 ml. Berapakah jumlah cecair?", options: ["3 l 750 ml", "3 l 650 ml", "4 l 750 ml", "3 l 850 ml"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "15 kg beras dibahagikan sama rata kepada 5 beg. Berapakah jisim 1 beg?", type: "input", correctInput: "3" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Tinggi tiang radar ialah 8 m 40 cm. Dibagi 2 bahagian sama panjang. Panjang 1 bahagian?", options: ["4 m 20 cm", "4 m 10 cm", "4 m 40 cm", "2 m 20 cm"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Ejen Ali lari jarak 2 km 500 m. Berapakah jarak itu dalam meter?", type: "input", correctInput: "2500" }
+                ]
+            },
+            {
+                unitId: 7,
+                unitTitle: "UNIT 7: BENTUK",
+                description: "Prisma, poligon sekata, paksi simetri dan ciri-ciri bentuk.",
+                questions: [
+                    { diff: "ARAS RENDAH", q: "Apakah nama bentuk 2D yang mempunyai 3 sisi dan 3 bucu?", options: ["Segi tiga", "Segi empat", "Bulatan", "Pentagon"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Bentuk 2D yang mempunyai 4 sisi sama panjang dan 4 sudut tegak ialah?", options: ["Segi empat sama", "Segi empat tepat", "Segi tiga", "Trapezium"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Berapakah bilangan bucu bagi sebuah kubus?", options: ["8 bucu", "6 bucu", "12 bucu", "4 bucu"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Berapakah bilangan muka rata bagi sebuah kuboid?", options: ["6 muka rata", "4 muka rata", "8 muka rata", "12 muka rata"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Bentuk 3D yang mempunyai 1 muka lengkung dan 2 muka rata bulatan ialah?", options: ["Silinder", "Kon", "Sfera", "Kubus"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Bentuk 3D yang mempunyai 1 puncak dan 1 muka rata bulatan ialah?", options: ["Kon", "Silinder", "Piramid", "Sfera"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Poligon sekata dengan 5 sisi dinamakan?", options: ["Pentagon", "Heksagon", "Oktagon", "Heptagon"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Poligon sekata dengan 6 sisi dinamakan?", options: ["Heksagon", "Pentagon", "Oktagon", "Dekagon"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Poligon sekata dengan 8 sisi dinamakan?", options: ["Oktagon", "Heksagon", "Pentagon", "Heptagon"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Berapakah bilangan tepi bagi piramid tapak segi empat sama?", options: ["8 tepi", "5 tepi", "6 tepi", "12 tepi"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Namakan garis lurus yang membahagikan sesuatu bentuk kepada dua bahagian sama saiz.", options: ["Paksi simetri", "Garis lurus", "Paksi koordinat", "Garis serenjang"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Berapakah bilangan paksi simetri bagi segi empat sama?", type: "input", correctInput: "4" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Prisma segi tiga mempunyai berapa muka rata semuanya?", options: ["5 muka rata", "4 muka rata", "6 muka rata", "3 muka rata"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Berapakah bilangan bucu bagi sebuah silinder?", type: "input", correctInput: "0" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Prisma tapak segi empat sama juga dikenali sebagai?", options: ["Kubus / Kuboid", "Piramid", "Silinder", "Kon"], correct: 0 }
+                ]
+            },
+            {
+                unitId: 8,
+                unitTitle: "UNIT 8: KEDUDUKAN",
+                description: "Koordinat mengufuk, mencancang dan kedudukan objek.",
+                questions: [
+                    { diff: "ARAS RENDAH", q: "Garis mengufuk pada satah koordinat dikenali sebagai?", options: ["Paksi-x", "Paksi-y", "Asalan", "Paksi tengah"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Garis mencancang pada satah koordinat dikenali sebagai?", options: ["Paksi-y", "Paksi-x", "Asalan", "Paksi condong"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Titik persilangan paksi-x dan paksi-y dinamakan?", options: ["Asalan (0,0)", "Titik tengah", "Puncak", "Paksi"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Kedudukan ditanda sebagai (3, 4). Angka 3 mewakili?", options: ["Jarak mengufuk", "Jarak mencancang", "Asalan", "Skala"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Kedudukan ditanda sebagai (2, 5). Angka 5 mewakili?", options: ["Jarak mencancang", "Jarak mengufuk", "Asalan", "Bucu"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Dari asalan (0,0), bergerak 4 unit ke kanan dan 2 unit ke atas. Koordinatnya ialah?", options: ["(4, 2)", "(2, 4)", "(4, 4)", "(2, 2)"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Jika Ejen Ali berada di (1, 1) dan bergerak 3 unit ke kanan, kedudukan baharu ialah?", options: ["(4, 1)", "(1, 4)", "(3, 1)", "(4, 4)"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Jika Ejen Alicia di (2, 3) dan bergerak 2 unit ke atas, kedudukan baharu ialah?", options: ["(2, 5)", "(4, 3)", "(2, 1)", "(5, 2)"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Berapakah jarak mengufuk dari titik (1, 2) ke titik (5, 2)?", type: "input", correctInput: "4" },
+                    { diff: "ARAS SEDERHANA", q: "Berapakah jarak mencancang dari titik (3, 1) ke titik (3, 6)?", type: "input", correctInput: "5" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Pusat Kawalan M.A.T.O. berada di (0,0). Menara di (5,0). Jarak mengufuknya ialah?", type: "input", correctInput: "5" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Gajet TEKNO di (2, 4) dan Gajet INVISO di (2, 9). Jarak antara kedua-duanya ialah?", type: "input", correctInput: "5" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Dari (3, 3) bergerak 2 unit ke kiri dan 1 unit ke bawah. Koordinat baharu ialah?", options: ["(1, 2)", "(5, 4)", "(1, 4)", "(2, 1)"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Koordinat asalan ditulis sebagai?", options: ["(0,0)", "(1,1)", "(0,1)", "(1,0)"], correct: 0 },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Jika titik A(4, 2) dan titik B(4, 7), kedua-dua titik berada pada paksi yang sama iaitu?", options: ["Paksi mencancang yang sama", "Paksi mengufuk yang sama", "Asalan", "Paksi condong"], correct: 0 }
+                ]
+            },
+            {
+                unitId: 9,
+                unitTitle: "UNIT 9: DATA",
+                description: "Piktograf, carta palang, mod, julat dan analisis data.",
+                questions: [
+                    { diff: "ARAS RENDAH", q: "Carta yang menggunakan simbol atau gambar untuk mewakili data dinamakan?", options: ["Piktograf", "Carta palang", "Carta pai", "Jadual"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Carta yang menggunakan palang untuk mewakili data dinamakan?", options: ["Carta palang", "Piktograf", "Graf garis", "Carta bulatan"], correct: 0 },
+                    { diff: "ARAS RENDAH", q: "Jika 1 simbol bintang mewakili 5 mata, 4 bintang mewakili berapa mata?", type: "input", correctInput: "20" },
+                    { diff: "ARAS RENDAH", q: "Jika 1 simbol gajet mewakili 10 unit, berapa simbol diperlukan untuk 50 gajet?", type: "input", correctInput: "5" },
+                    { diff: "ARAS RENDAH", q: "Nilai yang mempunyai kekerapan paling tinggi dinamakan?", options: ["Mod", "Julat", "Min", "Median"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Beza antara nilai tertinggi dan nilai terendah dalam data dipanggil?", options: ["Julat", "Mod", "Min", "Kekerapan"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Apakah maksud kekerapan?", options: ["Bilangan kemunculan sesuatu data", "Nilai paling tinggi", "Purata data", "Tajuk graf"], correct: 0 },
+                    { diff: "ARAS SEDERHANA", q: "Data jualan gajet: Isnin (10), Selasa (15), Rabu (20). Jumlah jualan 3 hari?", type: "input", correctInput: "45" },
+                    { diff: "ARAS SEDERHANA", q: "Mod bagi set data: 4, 5, 5, 6, 7, 5, 8 ialah?", type: "input", correctInput: "5" },
+                    { diff: "ARAS SEDERHANA", q: "Jika 1 simbol epal = 2 epal, berapa simbol diperlukan untuk 18 epal?", type: "input", correctInput: "9" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Jadual menunjukkan 12 pelatih menyukai Teras Tekno dan 8 Neuro. Berapakah beza pelatih?", type: "input", correctInput: "4" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Berapakah jumlah data jika kekerapan kumpulan A = 15, B = 25, C = 10?", type: "input", correctInput: "50" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Dalam piktograf, 1 simbol = 4 senapang. Jika ada 3.5 simbol, berapa jumlah senapang?", type: "input", correctInput: "14" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Purata (min) bagi nilai 10, 20 dan 30 ialah?", type: "input", correctInput: "20" },
+                    { diff: "ARAS TINGGI (KBAT)", q: "Tajuk sesuatu carta berfungsi untuk memberikan maklumat tentang?", options: ["Jenis data yang dikumpul", "Bilangan pembuat carta", "Tarikh hari ini", "Warna carta"], correct: 0 }
+                ]
+            }
+        ];
+
+        /* ==========================================================================
+           2. GLOBAL STATE VARIABLES
+           ========================================================================== */
+        let agentProfile = {
+            name: 'Ejen Ali',
+            teras: 'Tekno',
+            totalScore: 0,
+            gems: 0,
+            totalStars: 0,
+            completedUnits: {}
+        };
+
+        let currentUnitIndex = 0;
+        let currentQIndex = 0;
+        let currentUnitScore = 0;
+        let currentUnitCorrectCount = 0;
+        let selectedOption = null;
+
+        /* ==========================================================================
+           3. WHITEBOARD & PALM REJECTION LOGIC
+           ========================================================================== */
+        const canvas = document.getElementById('scratchCanvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        let isDrawing = false;
+        let wbTool = 'pen';
+        let wbColor = '#00f3ff';
+        let wbLineWidth = 3;
+        let palmRejectionEnabled = true;
+
+        let undoStack = [];
+        let redoStack = [];
+        const MAX_STACK = 15;
+
+        function initCanvasSize() {
+            if (!canvas || !ctx) return;
+            const container = canvas.parentElement;
+            if (!container) return;
+            
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+
+            if (w <= 0 || h <= 0) return;
+
+            let tempImg = null;
+            if (canvas.width > 0 && canvas.height > 0) {
+                try { tempImg = ctx.getImageData(0, 0, canvas.width, canvas.height); } catch(e) {}
+            }
+
+            canvas.width = w;
+            canvas.height = h;
+
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            if (tempImg) {
+                try { ctx.putImageData(tempImg, 0, 0); } catch(e) {}
+            } else {
+                saveCanvasState();
+            }
+        }
+
+        function saveCanvasState() {
+            if (!canvas || canvas.width <= 0 || canvas.height <= 0) return;
+            if (undoStack.length >= MAX_STACK) undoStack.shift();
+            try {
+                undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+            } catch(e) {}
+            redoStack = [];
+        }
+
+        function undoCanvas() {
+            if (!ctx) return;
+            if (undoStack.length > 1) {
+                redoStack.push(undoStack.pop());
+                const state = undoStack[undoStack.length - 1];
+                ctx.putImageData(state, 0, 0);
+            }
+        }
+
+        function redoCanvas() {
+            if (!ctx) return;
+            if (redoStack.length > 0) {
+                const state = redoStack.pop();
+                undoStack.push(state);
+                ctx.putImageData(state, 0, 0);
+            }
+        }
+
+        function clearCanvas() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            saveCanvasState();
+        }
+
+        function getCanvasCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function isValidPointer(e) {
+            if (!palmRejectionEnabled) return true;
+            if (e.pointerType === 'touch') {
+                if (!e.isPrimary) return false;
+                if (e.width > 28 || e.height > 28) return false;
+            }
+            return true;
+        }
+
+        if (canvas) {
+            canvas.addEventListener('pointerdown', (e) => {
+                if (!isValidPointer(e)) return;
+                isDrawing = true;
+                canvas.setPointerCapture(e.pointerId);
+                const { x, y } = getCanvasCoords(e);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            });
+
+            canvas.addEventListener('pointermove', (e) => {
+                if (!isDrawing || !isValidPointer(e)) return;
+                const { x, y } = getCanvasCoords(e);
+                
+                ctx.strokeStyle = (wbTool === 'eraser') ? '#020617' : wbColor;
+                ctx.lineWidth = (wbTool === 'eraser') ? 22 : wbLineWidth;
+                
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            });
+
+            const stopDrawing = (e) => {
+                if (isDrawing) {
+                    isDrawing = false;
+                    try { canvas.releasePointerCapture(e.pointerId); } catch(err){}
+                    saveCanvasState();
+                }
+            };
+
+            canvas.addEventListener('pointerup', stopDrawing);
+            canvas.addEventListener('pointercancel', stopDrawing);
+        }
+
+        /* ==========================================================================
+           4. AUDIO SYNTHESIS
+           ========================================================================== */
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function playSound(type) {
+            try {
+                if (!audioCtx) audioCtx = new AudioCtx();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.setValueAtTime(880, now + 0.1);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.2);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                }
+            } catch(e) {}
+        }
+
+        /* ==========================================================================
+           5. UI SCREEN MANAGEMENT & LOCALSTORAGE
+           ========================================================================== */
+        function loadProfile() {
+            const saved = localStorage.getItem('ejen_ali_math_profile');
+            if (saved) {
+                try {
+                    agentProfile = JSON.parse(saved);
+                    return true;
+                } catch(e){}
+            }
+            return false;
+        }
+
+        function saveProfile() {
+            localStorage.setItem('ejen_ali_math_profile', JSON.stringify(agentProfile));
+        }
+
+        function updateUIHeader() {
+            document.getElementById('headerAgentName').textContent = agentProfile.name;
+            document.getElementById('headerTerasBadge').textContent = agentProfile.teras.toUpperCase();
+            
+            const b = document.getElementById('headerTerasBadge');
+            b.className = "text-xs font-bold px-2 py-0.5 rounded text-black font-orbitron ";
+            if (agentProfile.teras === 'Tekno') b.classList.add('bg-cyan-400');
+            else if (agentProfile.teras === 'Neuro') b.classList.add('bg-emerald-400');
+            else if (agentProfile.teras === 'Inviso') b.classList.add('bg-rose-400');
+            else if (agentProfile.teras === 'Kombat') b.classList.add('bg-amber-400');
+
+            document.getElementById('headerGemsCount').textContent = agentProfile.gems || 0;
+            document.getElementById('headerStarsCount').textContent = agentProfile.totalStars || 0;
+            document.getElementById('headerAgentInfo').classList.remove('hidden');
+        }
+
+        function showScreen(screenId) {
+            document.getElementById('screenRegister').classList.add('hidden');
+            document.getElementById('screenUnitMenu').classList.add('hidden');
+            document.getElementById('screenGame').classList.add('hidden');
+            document.getElementById('screenResult').classList.add('hidden');
+
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function calculateRank(score) {
+            if (score >= 1000) return "EJEN LEGENDARY";
+            if (score >= 600) return "EJEN ELITE";
+            if (score >= 300) return "EJEN TERAS";
+            if (score >= 100) return "EJEN MUDA";
+            return "EJEN PERCUBAAN";
+        }
+
+        function renderUnitMenu() {
+            updateUIHeader();
+            document.getElementById('dashAgentName').textContent = agentProfile.name;
+            document.getElementById('dashTerasBadge').textContent = agentProfile.teras.toUpperCase();
+            document.getElementById('dashTotalScore').textContent = agentProfile.totalScore || 0;
+            document.getElementById('dashGems').querySelector('span').textContent = agentProfile.gems || 0;
+            document.getElementById('dashStars').querySelector('span').textContent = agentProfile.totalStars || 0;
+            document.getElementById('badgeAvatar').textContent = agentProfile.name.charAt(0).toUpperCase();
+
+            const rank = calculateRank(agentProfile.totalScore || 0);
+            document.getElementById('dashRank').innerHTML = `<i class="fa-solid fa-medal mr-1"></i> PANGKAT: ${rank}`;
+
+            const grid = document.getElementById('unitGrid');
+            grid.innerHTML = '';
+
+            MATH_DATA.forEach((unit, idx) => {
+                const comp = agentProfile.completedUnits[unit.unitId];
+                const card = document.createElement('div');
+                card.className = "hud-card p-5 rounded-xl hover:border-cyan-400 transition cursor-pointer flex flex-col justify-between group";
+                
+                let starsHtml = '';
+                if (comp && comp.stars) {
+                    for (let s = 0; s < 3; s++) {
+                        if (s < comp.stars) {
+                            starsHtml += `<i class="fa-solid fa-star text-amber-400 text-xs"></i>`;
+                        } else {
+                            starsHtml += `<i class="fa-regular fa-star text-slate-600 text-xs"></i>`;
+                        }
+                    }
+                }
+
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-orbitron text-cyan-400 font-bold">UNIT 0${unit.unitId}</span>
+                            ${comp ? `<div class="flex items-center gap-1.5">${starsHtml} <span class="text-xs font-orbitron text-emerald-400 ml-1">${comp.score} PTS</span></div>` : `<span class="text-[10px] text-slate-500 font-orbitron">15 SOALAN</span>`}
+                        </div>
+                        <h4 class="font-orbitron font-bold text-slate-100 group-hover:text-cyan-300 transition text-base">${unit.unitTitle}</h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">${unit.description}</p>
+                    </div>
+                    <div class="pt-4 flex items-center justify-between border-t border-slate-800/80 mt-3">
+                        <span class="text-[11px] text-slate-500 font-orbitron">ARAS 1 - 3</span>
+                        <button class="px-3 py-1.5 hud-btn text-xs font-orbitron font-bold text-cyan-300 rounded group-hover:bg-cyan-400 group-hover:text-black transition">
+                            ${comp ? 'ULANG MISI' : 'MULA MISI'} <i class="fa-solid fa-play ml-1"></i>
+                        </button>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    playSound('click');
+                    startMission(idx);
+                });
+
+                grid.appendChild(card);
+            });
+
+            showScreen('screenUnitMenu');
+        }
+
+        /* ==========================================================================
+           6. GAMEPLAY ENGINE & DWI WINDOW LAYOUT
+           ========================================================================== */
+        function startMission(unitIdx) {
+            currentUnitIndex = unitIdx;
+            currentQIndex = 0;
+            currentUnitScore = 0;
+            currentUnitCorrectCount = 0;
+
+            loadQuestion();
+            showScreen('screenGame');
+        }
+
+        function loadQuestion() {
+            selectedOption = null;
+            const unit = MATH_DATA[currentUnitIndex];
+            const q = unit.questions[currentQIndex];
+
+            document.getElementById('gameUnitTitle').textContent = unit.unitTitle;
+            document.getElementById('gameQIndex').textContent = currentQIndex + 1;
+            document.getElementById('gameCurrentScore').textContent = currentUnitScore;
+            document.getElementById('gameDifficultyBadge').textContent = q.diff;
+            document.getElementById('gameQuestionPrompt').textContent = q.q;
+
+            const pct = ((currentQIndex + 1) / 15) * 100;
+            document.getElementById('gameProgressBar').style.width = `${pct}%`;
+
+            const fb = document.getElementById('gameFeedback');
+            fb.className = "hidden p-3 rounded-lg font-orbitron text-center text-xs sm:text-sm font-bold tracking-wide";
+            document.getElementById('btnSubmitAnswer').classList.remove('hidden');
+            document.getElementById('btnNextQuestion').classList.add('hidden');
+
+            const ansArea = document.getElementById('gameAnswerArea');
+            ansArea.innerHTML = '';
+
+            if (q.type === 'input') {
+                ansArea.innerHTML = `
+                    <div class="max-w-xs mx-auto space-y-2 text-center">
+                        <label class="block text-xs font-orbitron text-cyan-400">TAIP JAWAPAN TEPAT:</label>
+                        <input type="text" id="userDirectInput" autocomplete="off" placeholder="Jawapan anda..." 
+                            class="w-full text-center py-2.5 bg-slate-900 border-2 border-cyan-500/60 rounded-lg font-orbitron text-lg text-cyan-200 focus:outline-none focus:border-cyan-300">
+                    </div>
+                `;
+            } else {
+                const grid = document.createElement('div');
+                grid.className = "grid grid-cols-1 sm:grid-cols-2 gap-2.5";
+
+                q.options.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "q-opt-btn p-3 bg-slate-900/90 border border-slate-700/80 rounded-lg text-left font-orbitron text-xs sm:text-sm text-slate-200 hover:border-cyan-400 hover:bg-slate-800 transition flex items-center gap-3";
+                    btn.innerHTML = `
+                        <span class="w-6 h-6 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center text-xs font-bold text-cyan-400 flex-shrink-0">${String.fromCharCode(65 + idx)}</span>
+                        <span>${opt}</span>
+                    `;
+
+                    btn.addEventListener('click', () => {
+                        playSound('click');
+                        document.querySelectorAll('.q-opt-btn').forEach(b => {
+                            b.classList.remove('border-cyan-400', 'bg-cyan-950/40', 'ring-2', 'ring-cyan-400');
+                        });
+                        btn.classList.add('border-cyan-400', 'bg-cyan-950/40', 'ring-2', 'ring-cyan-400');
+                        selectedOption = idx;
+                    });
+
+                    grid.appendChild(btn);
+                });
+
+                ansArea.appendChild(grid);
+            }
+        }
+
+        function submitAnswer() {
+            const unit = MATH_DATA[currentUnitIndex];
+            const q = unit.questions[currentQIndex];
+            let isCorrect = false;
+
+            if (q.type === 'input') {
+                const val = document.getElementById('userDirectInput').value.trim();
+                if (!val) return;
+                isCorrect = (val.toLowerCase() === q.correctInput.toLowerCase());
+            } else {
+                if (selectedOption === null) return;
+                isCorrect = (selectedOption === q.correct);
+            }
+
+            const fb = document.getElementById('gameFeedback');
+            fb.classList.remove('hidden');
+
+            if (isCorrect) {
+                playSound('correct');
+                currentUnitScore += 10;
+                currentUnitCorrectCount++;
+                fb.classList.add('bg-emerald-950/80', 'border', 'border-emerald-500/50', 'text-emerald-300');
+                fb.innerHTML = `<i class="fa-solid fa-circle-check mr-2"></i> TAHNIAH EJEN! JAWAPAN TEPAT. (+10 PTS, +10 PERMATA 💎)`;
+            } else {
+                playSound('wrong');
+                fb.classList.add('bg-rose-950/80', 'border', 'border-rose-500/50', 'text-rose-300');
+                const rightAnsText = (q.type === 'input') ? q.correctInput : q.options[q.correct];
+                fb.innerHTML = `<i class="fa-solid fa-circle-xmark mr-2"></i> JAWAPAN SEBENAR: <span class="underline">${rightAnsText}</span>`;
+            }
+
+            document.getElementById('gameCurrentScore').textContent = currentUnitScore;
+            document.getElementById('btnSubmitAnswer').classList.add('hidden');
+            document.getElementById('btnNextQuestion').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            currentQIndex++;
+            if (currentQIndex < 15) {
+                loadQuestion();
+            } else {
+                finishMission();
+            }
+        }
+
+        function finishMission() {
+            const unit = MATH_DATA[currentUnitIndex];
+            
+            if (!agentProfile.completedUnits) agentProfile.completedUnits = {};
+
+            // Calculate Stars earned for this session (3 Stars = 80%+, 2 Stars = 50%+, 1 Star = <50%)
+            let earnedStars = 1;
+            const pct = Math.round((currentUnitCorrectCount / 15) * 100);
+            if (pct >= 80) earnedStars = 3;
+            else if (pct >= 50) earnedStars = 2;
+
+            const gemsEarned = currentUnitCorrectCount * 10;
+
+            const prevScore = agentProfile.completedUnits[unit.unitId] ? agentProfile.completedUnits[unit.unitId].score : 0;
+            const prevStars = agentProfile.completedUnits[unit.unitId] ? agentProfile.completedUnits[unit.unitId].stars : 0;
+
+            if (currentUnitScore > prevScore) {
+                agentProfile.totalScore = (agentProfile.totalScore || 0) - prevScore + currentUnitScore;
+                agentProfile.gems = (agentProfile.gems || 0) + gemsEarned;
+                agentProfile.totalStars = (agentProfile.totalStars || 0) - prevStars + earnedStars;
+
+                agentProfile.completedUnits[unit.unitId] = {
+                    score: currentUnitScore,
+                    correct: currentUnitCorrectCount,
+                    stars: earnedStars
+                };
+                saveProfile();
+            }
+
+            // Render Results Screen
+            document.getElementById('resCorrect').textContent = `${currentUnitCorrectCount} / 15`;
+            document.getElementById('resScore').textContent = `${currentUnitScore} PTS`;
+            document.getElementById('resPercentage').textContent = `${pct}%`;
+            document.getElementById('resGemsEarned').innerHTML = `<i class="fa-solid fa-gem text-cyan-400"></i> +${gemsEarned}`;
+
+            const starsContainer = document.getElementById('resStarsContainer');
+            starsContainer.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < earnedStars) {
+                    starsContainer.innerHTML += `<i class="fa-solid fa-star text-amber-400"></i>`;
+                } else {
+                    starsContainer.innerHTML += `<i class="fa-regular fa-star text-slate-600"></i>`;
+                }
+            }
+
+            const commentEl = document.getElementById('resIrisComment');
+            if (pct >= 80) {
+                commentEl.textContent = "Analisis IRIS: Tahniah Ejen! Anda telah menunjukkan kebolehan aras tinggi yang sangat mantap bagi unit ini.";
+            } else if (pct >= 50) {
+                commentEl.textContent = "Analisis IRIS: Misi berjaya dilaksanakan dengan memuaskan! Teruskan latihan untuk meningkatkan kelajuan dan ketepatan.";
+            } else {
+                commentEl.textContent = "Analisis IRIS: Amaran! Penguasaan konsep matematik anda masih di aras minima. Gunakan Papan Mengira HUD dan cuba lagi.";
+            }
+
+            showScreen('screenResult');
+        }
+
+        /* ==========================================================================
+           7. CERTIFICATE GENERATOR
+           ========================================================================== */
+        function openCertificateModal() {
+            playSound('click');
+            document.getElementById('certAgentName').textContent = agentProfile.name.toUpperCase();
+            document.getElementById('certAgentTeras').textContent = agentProfile.teras.toUpperCase();
+            document.getElementById('certAgentRank').textContent = calculateRank(agentProfile.totalScore || 0);
+
+            document.getElementById('certTotalScore').textContent = `${agentProfile.totalScore || 0} PTS`;
+            document.getElementById('certGemsVal').textContent = agentProfile.gems || 0;
+            document.getElementById('certStarsVal').textContent = agentProfile.totalStars || 0;
+
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('ms-MY', { day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('certDate').textContent = dateStr.toUpperCase();
+
+            document.getElementById('modalCertificate').classList.remove('hidden');
+        }
+
+        function closeCertificateModal() {
+            playSound('click');
+            document.getElementById('modalCertificate').classList.add('hidden');
+        }
+
+        /* ==========================================================================
+           8. DOM INITIALIZATION & EVENT LISTENERS
+           ========================================================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            const hasProfile = loadProfile();
+            if (hasProfile && agentProfile.name) {
+                renderUnitMenu();
+            } else {
+                showScreen('screenRegister');
+            }
+
+            document.getElementById('formRegister').addEventListener('submit', (e) => {
+                e.preventDefault();
+                playSound('click');
+                const name = document.getElementById('inputAgentName').value.trim();
+                const teras = document.querySelector('input[name="terasChoice"]:checked').value;
+
+                if (name) {
+                    agentProfile.name = name;
+                    agentProfile.teras = teras;
+                    saveProfile();
+                    renderUnitMenu();
+                }
+            });
+
+            document.getElementById('btnSwitchAgent').addEventListener('click', () => {
+                playSound('click');
+                showScreen('screenRegister');
+            });
+
+            document.getElementById('btnBackToMenu').addEventListener('click', () => {
+                playSound('click');
+                renderUnitMenu();
+            });
+
+            document.getElementById('btnSubmitAnswer').addEventListener('click', submitAnswer);
+            document.getElementById('btnNextQuestion').addEventListener('click', nextQuestion);
+
+            document.getElementById('btnRetryUnit').addEventListener('click', () => {
+                playSound('click');
+                startMission(currentUnitIndex);
+            });
+
+            document.getElementById('btnResultToMenu').addEventListener('click', () => {
+                playSound('click');
+                renderUnitMenu();
+            });
+
+            // CERTIFICATE BUTTONS
+            document.getElementById('btnOpenCertFromMenu').addEventListener('click', openCertificateModal);
+            document.getElementById('btnViewCertFromRes').addEventListener('click', openCertificateModal);
+            document.getElementById('btnCloseCert').addEventListener('click', closeCertificateModal);
+            document.getElementById('btnPrintCert').addEventListener('click', () => {
+                window.print();
+            });
+
+            function showToast(msg) {
+                const toast = document.getElementById('hudToast');
+                const toastMsg = document.getElementById('hudToastMsg');
+                if (!toast || !toastMsg) return;
+                toastMsg.textContent = msg;
+                toast.classList.remove('hidden');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 4000);
+            }
+
+            function shareToGoogleClassroom() {
+                playSound('click');
+                const unit = MATH_DATA[currentUnitIndex] ? MATH_DATA[currentUnitIndex].unitTitle : "MATEMATIK TAHUN 3";
+                const rank = calculateRank(agentProfile.totalScore || 0);
+
+                const summaryText = `🎯 [LAPORAN MISI MATEMATIK M.A.T.O.]\n` +
+                    `👤 Ejen: ${agentProfile.name} (${agentProfile.teras.toUpperCase()})\n` +
+                    `🎖️ Pangkat: ${rank}\n` +
+                    `📘 Unit: ${unit}\n` +
+                    `✅ Keputusan: ${currentUnitCorrectCount}/15 Soalan Betul\n` +
+                    `⭐ Skor Misi: ${currentUnitScore} PTS (${Math.round((currentUnitCorrectCount/15)*100)}%)\n` +
+                    `💎 Permata IRIS: ${agentProfile.gems || 0}\n` +
+                    `-----------------------------------\n` +
+                    `Diselesaikan melalui Aplikasi Misi Matematik Ejen Ali.`;
+
+                // Copy summary to clipboard
+                const dummy = document.createElement('textarea');
+                document.body.appendChild(dummy);
+                dummy.value = summaryText;
+                dummy.select();
+                try {
+                    document.execCommand('copy');
+                } catch(e) {}
+                document.body.removeChild(dummy);
+
+                showToast("Ringkasan Keputusan disalin! Buka Google Classroom untuk tampal (paste).");
+
+                // Open Google Classroom share dialog
+                const currentUrl = window.location.href;
+                const shareUrl = `https://classroom.google.com/share?url=${encodeURIComponent(currentUrl)}`;
+                window.open(shareUrl, '_blank');
+            }
+
+            document.getElementById('btnShareGC').addEventListener('click', shareToGoogleClassroom);
+            document.getElementById('btnCertShareGC').addEventListener('click', shareToGoogleClassroom);
+
+            // DWI WINDOW WHITEBOARD TOGGLE
+            const wbPanel = document.getElementById('whiteboardPanel');
+            const questionCol = document.getElementById('gameQuestionCol');
+
+            function toggleWhiteboard() {
+                playSound('click');
+                const isHidden = wbPanel.classList.contains('hidden');
+                
+                if (isHidden) {
+                    wbPanel.classList.remove('hidden');
+                    questionCol.classList.remove('w-full');
+                    questionCol.classList.add('w-full', 'lg:w-1/2');
+                    setTimeout(() => { initCanvasSize(); }, 80);
+                } else {
+                    wbPanel.classList.add('hidden');
+                    questionCol.classList.remove('lg:w-1/2');
+                    questionCol.classList.add('w-full');
+                }
+            }
+
+            document.getElementById('btnToggleWhiteboard').addEventListener('click', toggleWhiteboard);
+
+            document.getElementById('wbTogglePalm').addEventListener('click', () => {
+                playSound('click');
+                palmRejectionEnabled = !palmRejectionEnabled;
+                const btn = document.getElementById('wbTogglePalm');
+                const text = document.getElementById('palmStatusText');
+
+                if (palmRejectionEnabled) {
+                    btn.className = "text-[10px] bg-slate-800 text-emerald-400 border border-emerald-500/40 px-2 py-1 rounded font-orbitron flex items-center gap-1 hover:bg-slate-700 transition";
+                    text.textContent = "ON";
+                } else {
+                    btn.className = "text-[10px] bg-slate-800 text-amber-400 border border-amber-500/40 px-2 py-1 rounded font-orbitron flex items-center gap-1 hover:bg-slate-700 transition";
+                    text.textContent = "OFF (JARI)";
+                }
+            });
+
+            const btnPen = document.getElementById('wbToolPen');
+            const btnEraser = document.getElementById('wbToolEraser');
+
+            btnPen.addEventListener('click', () => {
+                playSound('click');
+                wbTool = 'pen';
+                btnPen.className = "px-2 py-1 bg-cyan-500 text-black font-bold rounded text-xs font-orbitron flex items-center gap-1";
+                btnEraser.className = "px-2 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700 rounded text-xs font-orbitron flex items-center gap-1 border border-slate-600";
+            });
+
+            btnEraser.addEventListener('click', () => {
+                playSound('click');
+                wbTool = 'eraser';
+                btnEraser.className = "px-2 py-1 bg-cyan-500 text-black font-bold rounded text-xs font-orbitron flex items-center gap-1";
+                btnPen.className = "px-2 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700 rounded text-xs font-orbitron flex items-center gap-1 border border-slate-600";
+            });
+
+            document.querySelectorAll('.wb-color-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    playSound('click');
+                    wbColor = btn.getAttribute('data-color');
+                    document.querySelectorAll('.wb-color-btn').forEach(b => b.classList.remove('ring-2', 'ring-cyan-300'));
+                    btn.classList.add('ring-2', 'ring-cyan-300');
+                    if (wbTool === 'eraser') btnPen.click();
+                });
+            });
+
+            document.getElementById('wbClear').addEventListener('click', () => {
+                playSound('click');
+                clearCanvas();
+            });
+            document.getElementById('wbUndo').addEventListener('click', () => {
+                playSound('click');
+                undoCanvas();
+            });
+            document.getElementById('wbRedo').addEventListener('click', () => {
+                playSound('click');
+                redoCanvas();
+            });
+
+            window.addEventListener('resize', () => {
+                if (!wbPanel.classList.contains('hidden')) {
+                    initCanvasSize();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
